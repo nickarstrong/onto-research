@@ -1,0 +1,83 @@
+% ============================================================
+% ONTO-Bench Ethics Appendix
+% Include with: \input{appendix_ethics}
+% ============================================================
+
+\section{Ethics Statement}
+\label{sec:ethics}
+
+\subsection{Data Collection and Privacy}
+
+\textbf{No Personal Data.} ONTO-Bench contains only scientific questions and does not include any personally identifiable information (PII). All questions concern abstract scientific knowledge rather than individual people.
+
+\textbf{Public Sources.} All dataset content is derived from publicly available sources:
+\begin{itemize}
+    \item Clay Mathematics Institute (public problem statements)
+    \item NSF and ERC grand challenge documents (public)
+    \item Physics and biology open problem surveys (published literature)
+    \item Established textbooks (published works)
+\end{itemize}
+
+\textbf{No Human Subjects.} This research does not involve human subjects. No surveys, interviews, or user studies were conducted. IRB approval was not required.
+
+\subsection{Synthetic Data Disclosure}
+
+A portion of ONTO-Bench questions were generated or expanded using large language models (Claude, GPT-4) with subsequent human validation. We disclose this to ensure transparency:
+
+\begin{itemize}
+    \item \textbf{Generation Process}: LLMs generated candidate questions following specific templates
+    \item \textbf{Human Validation}: All generated content was reviewed and validated by human curators
+    \item \textbf{Source Verification}: UNKNOWN labels were verified against authoritative problem lists
+    \item \textbf{Potential Bias}: LLM-generated questions may reflect biases in training data
+\end{itemize}
+
+\subsection{Intended Use}
+
+ONTO-Bench is intended for:
+\begin{itemize}
+    \item Research evaluation of AI epistemic capabilities
+    \item Academic benchmarking of calibration methods
+    \item Understanding knowledge boundaries in language models
+\end{itemize}
+
+ONTO-Bench is \textbf{not} intended as:
+\begin{itemize}
+    \item A deployment criterion for production systems
+    \item A measure of general intelligence or capability
+    \item A guarantee of safety or reliability
+\end{itemize}
+
+\subsection{Potential Negative Impacts}
+
+\textbf{Benchmark Gaming.} As with any benchmark, there is risk of overfitting or gaming. We mitigate this through:
+\begin{itemize}
+    \item Hidden test set labels (leaderboard only)
+    \item Version hashing for reproducibility
+    \item Governance policy for verification
+\end{itemize}
+
+\textbf{Overconfidence in Results.} High performance on ONTO-Bench does not guarantee safe deployment. Epistemic calibration is one dimension of AI safety among many.
+
+\textbf{Cultural Bias.} Our dataset reflects Western scientific consensus and English-language sources. Epistemic norms vary across cultures, and our framing of ``unknown'' may not be universal.
+
+\subsection{Broader Impact}
+
+We believe ONTO-Bench contributes positively to AI safety by:
+\begin{enumerate}
+    \item Highlighting a concrete failure mode (epistemic miscalibration)
+    \item Providing measurable evaluation criteria
+    \item Encouraging development of more calibrated systems
+\end{enumerate}
+
+However, we acknowledge that no benchmark fully captures the complexity of real-world epistemic challenges.
+
+\subsection{Licensing}
+
+All materials are released under permissive licenses:
+\begin{itemize}
+    \item Code: Apache 2.0
+    \item Dataset: Apache 2.0
+    \item Paper: CC-BY 4.0
+\end{itemize}
+
+This enables academic and commercial use while requiring attribution.

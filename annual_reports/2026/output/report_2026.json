@@ -1,0 +1,72 @@
+{
+  "version": "1.0",
+  "year": 2026,
+  "generated_at": "January 26, 2026",
+  "summary": {
+    "year": 2026,
+    "total_submissions": 4,
+    "unique_models": 4,
+    "unique_orgs": 1,
+    "best_u_f1": 0.5792,
+    "best_model": "onto",
+    "mean_u_f1": 0.1912,
+    "mean_ece": 0.32,
+    "improvement_vs_prior": null
+  },
+  "rankings": [
+    {
+      "rank": 1,
+      "model": "onto",
+      "organization": "Unknown",
+      "u_f1": 0.5792,
+      "u_recall": 0.9636,
+      "u_precision": 0.4141,
+      "ece": 0.3007,
+      "accuracy": 0.4254,
+      "submitted_at": "2026-01-26T18:36:04.097333",
+      "verified": false
+    },
+    {
+      "rank": 2,
+      "model": "claude3_mock",
+      "organization": "Unknown",
+      "u_f1": 0.1515,
+      "u_recall": 0.0909,
+      "u_precision": 0.4545,
+      "ece": 0.3067,
+      "accuracy": 0.4776,
+      "submitted_at": "2026-01-26T18:36:04.097344",
+      "verified": false
+    },
+    {
+      "rank": 3,
+      "model": "llama3_mock",
+      "organization": "Unknown",
+      "u_f1": 0.0174,
+      "u_recall": 0.0091,
+      "u_precision": 0.2,
+      "ece": 0.3317,
+      "accuracy": 0.459,
+      "submitted_at": "2026-01-26T18:36:04.097343",
+      "verified": false
+    },
+    {
+      "rank": 4,
+      "model": "gpt4_mock",
+      "organization": "Unknown",
+      "u_f1": 0.0167,
+      "u_recall": 0.0091,
+      "u_precision": 0.1,
+      "ece": 0.341,
+      "accuracy": 0.4403,
+      "submitted_at": "2026-01-26T18:36:04.097341",
+      "verified": false
+    }
+  ],
+  "insights": [
+    "**Top performer**: onto (Unknown) achieved U-F1 of 0.58, detecting 96% of genuinely unanswerable questions.",
+    "**Epistemic gap persists**: Average U-F1 of 0.19 indicates most models still fail to identify unknowns.",
+    "**Calibration challenge**: Mean ECE of 0.32 shows significant overconfidence across models.",
+    "**Detection crisis**: 3 of 4 models detect <10% of unknowns."
+  ]
+}

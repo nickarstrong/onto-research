@@ -1,0 +1,62 @@
+[
+  {
+    "model_a": "onto",
+    "model_b": "gpt4_mock",
+    "metric": "accuracy",
+    "test_type": "t-test",
+    "t_statistic": -0.3481,
+    "p_value": 0.727905,
+    "significant": false,
+    "effect_size": -0.0301
+  },
+  {
+    "model_a": "onto",
+    "model_b": "gpt4_mock",
+    "metric": "accuracy",
+    "test_type": "mann-whitney",
+    "t_statistic": 35376.0,
+    "p_value": 0.727797,
+    "significant": false,
+    "effect_size": null
+  },
+  {
+    "model_a": "onto",
+    "model_b": "llama3_mock",
+    "metric": "accuracy",
+    "test_type": "t-test",
+    "t_statistic": -0.7817,
+    "p_value": 0.434725,
+    "significant": false,
+    "effect_size": -0.0676
+  },
+  {
+    "model_a": "onto",
+    "model_b": "llama3_mock",
+    "metric": "accuracy",
+    "test_type": "mann-whitney",
+    "t_statistic": 34706.0,
+    "p_value": 0.434402,
+    "significant": false,
+    "effect_size": null
+  },
+  {
+    "model_a": "onto",
+    "model_b": "claude3_mock",
+    "metric": "accuracy",
+    "test_type": "t-test",
+    "t_statistic": -1.2146,
+    "p_value": 0.225074,
+    "significant": false,
+    "effect_size": -0.105
+  },
+  {
+    "model_a": "onto",
+    "model_b": "claude3_mock",
+    "metric": "accuracy",
+    "test_type": "mann-whitney",
+    "t_statistic": 34036.0,
+    "p_value": 0.224866,
+    "significant": false,
+    "effect_size": null
+  }
+]

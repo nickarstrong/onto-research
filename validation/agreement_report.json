@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-01-26T16:49:08.991777",
+  "seed": 42,
+  "validation_sample_size": 99,
+  "total_samples": 268,
+  "metrics": {
+    "cohens_kappa": 1.0,
+    "agreement_rate": 1.0,
+    "disagreement_count": 0
+  },
+  "agreement_by_label": {
+    "UNKNOWN": 1.0,
+    "KNOWN": 1.0,
+    "CONTRADICTION": 1.0
+  },
+  "label_distribution": {
+    "human": {
+      "KNOWN": 47,
+      "UNKNOWN": 41,
+      "CONTRADICTION": 11
+    },
+    "llm": {
+      "KNOWN": 47,
+      "UNKNOWN": 41,
+      "CONTRADICTION": 11
+    }
+  },
+  "methodology": {
+    "primary_annotator": "human_curator",
+    "secondary_annotator": "llm_validator (heuristic fallback)",
+    "note": "LLM validation used as second annotator per methodology disclosure"
+  }
+}

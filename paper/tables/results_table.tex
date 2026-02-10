@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Epistemic calibration results on ONTO-Bench.}
+\label{tab:main}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Model & U-Prec & U-Rec & U-F1 & ECE$\downarrow$ & Brier$\downarrow$ & Acc \\
+\midrule
+\textbf{onto} & \textbf{0.41} & \textbf{0.96} & \textbf{0.58} & 0.30 & \textbf{0.26} & 0.43 \\
+claude3\_mock & 0.45 & 0.09 & 0.15 & 0.31 & 0.35 & 0.48 \\
+llama3\_mock & 0.20 & 0.01 & 0.02 & 0.33 & 0.36 & 0.46 \\
+gpt4\_mock & 0.10 & 0.01 & 0.02 & 0.34 & 0.36 & 0.44 \\
+\bottomrule
+\end{tabular}
+\end{table}

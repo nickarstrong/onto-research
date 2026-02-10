@@ -1,0 +1,119 @@
+% ============================================================
+% ONTO Paper - Sanitized Claims & Limitations
+% Include with: \input{claims_limitations}
+% ============================================================
+
+% ============================================================
+% SANITIZED CLAIMS (use these exact phrasings)
+% ============================================================
+
+% MAIN CLAIM (Abstract/Intro)
+\newcommand{\mainclaim}{%
+ONTO significantly improves epistemic calibration on curated benchmark tasks, 
+achieving substantially higher unknown detection recall compared to baseline LLMs.%
+}
+
+% CONTRIBUTION CLAIMS (Introduction)
+\newcommand{\contribA}{%
+We present ONTO, an ontological reasoning framework that augments LLM inference 
+with explicit epistemic structure for improved uncertainty identification.%
+}
+
+\newcommand{\contribB}{%
+We introduce ONTO-Bench, a benchmark for evaluating epistemic calibration 
+comprising samples with explicit epistemic labels sourced from authoritative references.%
+}
+
+\newcommand{\contribC}{%
+We demonstrate that explicit epistemic structure enables substantially higher 
+unknown detection recall on our benchmark compared to baseline LLMs.%
+}
+
+% RESULTS CLAIM (avoid "dramatically", "revolutionary", etc.)
+\newcommand{\resultsclaim}{%
+ONTO achieves 96\% recall on unknown detection compared to less than 10\% 
+for baseline LLMs on ONTO-Bench, suggesting that explicit epistemic structure 
+can meaningfully improve uncertainty identification.%
+}
+
+% HEDGED CLAIMS (for discussion)
+\newcommand{\hedgedclaim}{%
+Our results suggest that ontological structure may provide a useful signal 
+for epistemic calibration, though further work is needed to evaluate 
+generalization to broader domains and real-world deployment scenarios.%
+}
+
+% ============================================================
+% LIMITATIONS SECTION
+% ============================================================
+
+\section{Limitations}
+\label{sec:limitations}
+
+We acknowledge several limitations of our work:
+
+\textbf{Dataset Construction.}
+ONTO-Bench relies partially on curated questions from Wikipedia lists and 
+authoritative sources. While we validate labels through cross-checking, 
+the dataset may not capture the full distribution of epistemic challenges 
+encountered in real-world applications. The ``unknown'' category is 
+operationalized through curated open problems rather than a complete 
+epistemological theory.
+
+\textbf{Heuristic Detection.}
+The ONTO epistemic oracle uses pattern-based heuristics for unknown detection 
+rather than learned representations. While effective on our benchmark, this 
+approach may not generalize to novel question formulations. We frame our 
+contribution as demonstrating the value of explicit epistemic structure 
+rather than proposing an optimal detection method.
+
+\textbf{Baseline Configuration.}
+We evaluate baseline LLMs without external tool augmentation (e.g., web search, 
+retrieval) to ensure comparable settings with ONTO's core reasoning. 
+Performance may differ with tool-augmented configurations.
+
+\textbf{Dataset Scale.}
+With 268 samples, ONTO-Bench is smaller than some established benchmarks. 
+We prioritize label quality over quantity, but larger-scale evaluation 
+would strengthen generalization claims.
+
+\textbf{Evaluation Scope.}
+We evaluate epistemic calibration through proxy classification tasks. 
+Downstream impact on user trust, decision-making, and harm reduction 
+requires separate investigation.
+
+% ============================================================
+% ETHICS STATEMENT
+% ============================================================
+
+\section{Ethics Statement}
+
+\textbf{Intended Use.}
+ONTO-Bench is designed for research evaluation of AI epistemic capabilities. 
+It should not be used as the sole criterion for deployment decisions.
+
+\textbf{Potential Misuse.}
+High performance on ONTO-Bench does not guarantee safe deployment. 
+Systems should undergo comprehensive evaluation before real-world use.
+
+\textbf{Dataset Bias.}
+Our dataset reflects Western scientific consensus and English-language sources. 
+Epistemic norms may vary across cultures and languages.
+
+% ============================================================
+% REPRODUCIBILITY STATEMENT
+% ============================================================
+
+\section{Reproducibility Statement}
+
+We provide complete materials for reproduction:
+
+\begin{itemize}
+    \item \textbf{Dataset}: Version-locked with SHA256 hash (see Appendix)
+    \item \textbf{Code}: Full evaluation pipeline released
+    \item \textbf{Baselines}: Model versions and prompts documented
+    \item \textbf{Metrics}: Definitions and computation code provided
+    \item \textbf{Random Seed}: Fixed at 42 for all experiments
+\end{itemize}
+
+Verification command: \texttt{python scripts/dataset\_version.py --verify}

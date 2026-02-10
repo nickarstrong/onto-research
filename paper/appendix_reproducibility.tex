@@ -1,0 +1,127 @@
+% ============================================================
+% ONTO-Bench Reproducibility Appendix
+% Include with: \input{appendix_reproducibility}
+% ============================================================
+
+\section{Reproducibility Statement}
+\label{sec:reproducibility}
+
+We provide comprehensive documentation to enable full reproduction of our results.
+
+\subsection{Dataset}
+
+\begin{itemize}
+    \item \textbf{Version}: 1.1
+    \item \textbf{SHA256}: \texttt{cb6978046e249ab6f9e9c905ea376c87f60720bfab6e845acf3318483db51067}
+    \item \textbf{Random Seed}: 42 (used for all splits and sampling)
+    \item \textbf{Split Ratio}: 80\% train, 20\% test
+    \item \textbf{Stratification}: By epistemic label (KNOWN, UNKNOWN, CONTRADICTION)
+\end{itemize}
+
+Dataset verification:
+\begin{verbatim}
+python scripts/dataset_version.py --verify
+# Expected: Dataset verification PASSED
+\end{verbatim}
+
+\subsection{Model Versions}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+Model & Version & Provider \\
+\midrule
+GPT-4 & gpt-4-0125-preview & OpenAI \\
+Claude 3 & claude-3-sonnet-20240229 & Anthropic \\
+Llama 3 & llama-3-70b & Meta \\
+ONTO & 5.3.0 (heuristic oracle) & Local \\
+\bottomrule
+\end{tabular}
+\caption{Baseline model versions.}
+\label{tab:model_versions}
+\end{table}
+
+\subsection{Evaluation Protocol}
+
+\begin{enumerate}
+    \item Load dataset from \texttt{data/*.jsonl}
+    \item For each model, run prediction on all samples
+    \item Store predictions in \texttt{outputs/\{model\}.jsonl}
+    \item Compute metrics using \texttt{scripts/metrics.py}
+    \item Generate significance tests (two-sample $t$-test, $\alpha = 0.01$)
+\end{enumerate}
+
+\subsection{Metrics Definitions}
+
+\textbf{Unknown Detection Metrics:}
+\begin{align}
+    \text{U-Precision} &= \frac{|\{q : \hat{y}_q = \text{UNK} \land y_q = \text{UNK}\}|}{|\{q : \hat{y}_q = \text{UNK}\}|} \\
+    \text{U-Recall} &= \frac{|\{q : \hat{y}_q = \text{UNK} \land y_q = \text{UNK}\}|}{|\{q : y_q = \text{UNK}\}|} \\
+    \text{U-F1} &= \frac{2 \cdot \text{U-Precision} \cdot \text{U-Recall}}{\text{U-Precision} + \text{U-Recall}}
+\end{align}
+
+\textbf{Calibration Metrics:}
+\begin{align}
+    \text{ECE} &= \sum_{m=1}^{M} \frac{|B_m|}{n} \left| \text{acc}(B_m) - \text{conf}(B_m) \right| \\
+    \text{Brier} &= \frac{1}{n} \sum_{i=1}^{n} (f_i - o_i)^2
+\end{align}
+where $B_m$ are confidence bins, $\text{acc}(B_m)$ is accuracy in bin $m$, $\text{conf}(B_m)$ is mean confidence in bin $m$, $f_i$ is predicted confidence, and $o_i$ is outcome (1 if correct, 0 otherwise).
+
+\subsection{Computational Requirements}
+
+\begin{itemize}
+    \item \textbf{Hardware}: Any modern CPU (no GPU required)
+    \item \textbf{Memory}: 8GB RAM minimum
+    \item \textbf{Runtime}: $<$5 minutes for full evaluation
+    \item \textbf{Dependencies}: Python 3.10+, NumPy, SciPy, Matplotlib
+\end{itemize}
+
+\subsection{Full Reproduction Pipeline}
+
+\begin{verbatim}
+# Clone repository
+git clone https://github.com/onto-project/onto-bench
+cd onto-bench
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Verify dataset integrity
+python scripts/dataset_version.py --verify
+
+# Run baselines (requires API keys for real models)
+export OPENAI_API_KEY=sk-...
+export ANTHROPIC_API_KEY=sk-ant-...
+python baselines/run_all.py
+
+# Compute metrics
+python scripts/metrics.py
+
+# Generate paper tables
+python scripts/generate_tables.py
+
+# Generate figures
+python scripts/generate_plots.py
+
+# View results
+cat results/metrics.json
+\end{verbatim}
+
+\subsection{Code and Data Availability}
+
+\begin{itemize}
+    \item \textbf{Code}: \url{https://github.com/onto-project/onto-bench}
+    \item \textbf{Dataset}: Included in repository under \texttt{data/}
+    \item \textbf{License}: Apache 2.0
+\end{itemize}
+
+\subsection{Limitations of Reproducibility}
+
+\begin{enumerate}
+    \item \textbf{API Non-Determinism}: LLM APIs (GPT-4, Claude) may produce slightly different outputs across runs due to non-deterministic sampling. We report results from a single run; variance is expected to be small.
+    
+    \item \textbf{Model Updates}: Commercial LLMs are periodically updated. Results may differ if model versions change.
+    
+    \item \textbf{ONTO Oracle}: The current ONTO baseline uses a heuristic oracle rather than the full ONTO server. This provides a lower bound on ONTO performance.
+\end{enumerate}

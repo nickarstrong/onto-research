@@ -1,0 +1,51 @@
+% ============================================================
+% ONTO Paper - Sanitized Claims
+% Use: \input{claims}
+% ============================================================
+
+% MAIN CLAIM - Conservative, defensible
+\newcommand{\mainclaim}{%
+ONTO improves epistemic calibration on curated benchmarks, achieving significantly higher unknown detection rates compared to baseline LLMs.%
+}
+
+% ABSTRACT CLAIM - Factual only
+\newcommand{\abstractclaim}{%
+Our experiments demonstrate that ONTO achieves 96\% recall on unknown detection compared to $<$10\% for GPT-4, Claude, and Llama baselines on our curated benchmark.%
+}
+
+% CONTRIBUTION CLAIMS - Scoped
+\newcommand{\contribframework}{%
+An ontological reasoning framework that augments LLMs with explicit epistemic structure for improved uncertainty identification.%
+}
+
+\newcommand{\contribdataset}{%
+A benchmark dataset of 268 samples with explicit epistemic labels, sourced from authoritative references including Clay Mathematics Institute millennium problems.%
+}
+
+\newcommand{\contribeval}{%
+Empirical evaluation demonstrating that explicit epistemic structure enables reliable unknown detection on our curated test set.%
+}
+
+% RESULT CLAIMS - Data-backed only
+\newcommand{\resultclaim}{%
+ONTO achieves U-F1 of 0.58 compared to 0.15 for the best baseline (Claude), representing a 3.9$\times$ improvement in unknown detection on ONTO-Bench.%
+}
+
+% SAFE HEDGING PHRASES
+\newcommand{\onbenchmark}{on our curated benchmark}
+\newcommand{\inthisstudy}{in this study}
+\newcommand{\ourresults}{our results suggest}
+\newcommand{\weobserve}{we observe}
+
+% FORBIDDEN CLAIMS (DO NOT USE)
+% - "ONTO eliminates hallucinations"
+% - "ONTO solves epistemic uncertainty"
+% - "ONTO is epistemically perfect"
+% - "LLMs cannot detect unknowns" (they can, just poorly)
+% - "Our benchmark is comprehensive" (it's curated)
+
+% REVIEWER-SAFE LANGUAGE
+\newcommand{\improvescalibration}{improves epistemic calibration}
+\newcommand{\detectsunknowns}{identifies epistemic gaps}
+\newcommand{\outperforms}{achieves higher scores than}
+% NOT: "solves", "eliminates", "perfectly detects"

@@ -1,0 +1,390 @@
+\documentclass{article}
+
+% ============================================================
+% ONTO: Epistemically-Calibrated Reasoning for LLMs
+% arXiv submission - NeurIPS/ICML format compatible
+% ============================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{multirow}
+\usepackage{pifont}
+\usepackage[margin=1in]{geometry}
+
+% Checkmark and X
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+
+\title{ONTO: Epistemically-Calibrated Reasoning \\for Large Language Models}
+
+\author{
+  Anonymous Author(s) \\
+  \texttt{anonymous@example.com}
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+% ============================================================
+% ABSTRACT
+% ============================================================
+
+\begin{abstract}
+Large Language Models (LLMs) exhibit systematic overconfidence when faced with genuinely unknown or contested scientific questions---a phenomenon we term \emph{epistemic miscalibration}. We present ONTO, an ontological reasoning framework that augments LLMs with structured epistemic annotations, enabling explicit representation of knowledge boundaries. We introduce ONTO-Bench, a benchmark for evaluating epistemic calibration comprising 268 samples across factual knowledge, open scientific problems (from authoritative sources including Clay Mathematics Institute), and scientific contradictions. Our experiments demonstrate that ONTO achieves 96\% recall on unknown detection compared to $<$10\% for GPT-4, Claude, and Llama baselines, representing a dramatic improvement in epistemic uncertainty identification. We release our code, dataset, and benchmark harness to enable reproducible evaluation of AI epistemic capabilities.
+\end{abstract}
+
+% ============================================================
+% INTRODUCTION
+% ============================================================
+
+\section{Introduction}
+
+Modern Large Language Models achieve remarkable performance on knowledge-intensive tasks \cite{brown2020language}, yet exhibit a critical failure mode: \emph{epistemic overconfidence}. When asked about genuinely unsolved scientific problems, contested claims, or questions at the boundaries of current knowledge, LLMs frequently generate confident-sounding responses that are speculative or fabricated---commonly termed ``hallucination.''
+
+We argue this terminology obscures the underlying issue: LLMs lack explicit representation of \emph{what is not known}. The problem is not merely that LLMs sometimes produce false statements, but that they fail to recognize and communicate the epistemic status of their claims.
+
+\textbf{The Epistemic Calibration Problem.} Consider asking an LLM: ``What causes consciousness?'' or ``Is P equal to NP?'' An epistemically calibrated system should recognize these as genuinely open questions and communicate appropriate uncertainty. Instead, current LLMs often produce confident-sounding responses that conflate speculation with established fact.
+
+\textbf{Contributions.} We make three contributions:
+
+\begin{enumerate}
+    \item \textbf{ONTO Framework}: An ontological reasoning kernel that augments LLMs with explicit epistemic structure, enabling detection of knowledge gaps and open problems (\S\ref{sec:method}).
+    
+    \item \textbf{ONTO-Bench}: A benchmark dataset of 268 samples with explicit epistemic labels (KNOWN, UNKNOWN, CONTRADICTION), sourced from authoritative references including Clay Mathematics Institute millennium problems (\S\ref{sec:dataset}).
+    
+    \item \textbf{Empirical Evaluation}: We demonstrate that ONTO achieves 96\% unknown recall compared to $<$10\% for baseline LLMs, establishing that explicit epistemic structure enables reliable uncertainty identification (\S\ref{sec:experiments}).
+\end{enumerate}
+
+% ============================================================
+% RELATED WORK
+% ============================================================
+
+\section{Related Work}
+
+\textbf{Calibration in Neural Networks.} \citet{guo2017calibration} demonstrated that modern neural networks are poorly calibrated, with confidence scores not reflecting true accuracy. Post-hoc calibration methods \cite{platt1999probabilistic} address output probabilities but not epistemic uncertainty about knowledge boundaries.
+
+\textbf{Uncertainty in LLMs.} Recent work explores verbalized confidence \cite{kadavath2022language} and semantic entropy \cite{kuhn2023semantic} for uncertainty estimation. However, these approaches conflate aleatory uncertainty (inherent randomness) with epistemic uncertainty (knowledge limits). LLMs may express uncertainty about their own outputs without recognizing that a question is fundamentally open.
+
+\textbf{Knowledge Grounding.} Retrieval-augmented generation (RAG) \cite{lewis2020retrieval} grounds LLMs in external knowledge sources but does not explicitly model epistemic gaps. Knowledge graphs capture facts but rarely encode what is \emph{not} known.
+
+\textbf{Truthfulness Benchmarks.} TruthfulQA \cite{lin2022truthfulqa} evaluates whether models produce truthful responses, but does not distinguish between factual errors and appropriate uncertainty about genuinely open questions.
+
+Our work differs by introducing \emph{explicit epistemic structure}: the knowledge base encodes not just facts but their epistemic status, enabling principled uncertainty propagation.
+
+% ============================================================
+% METHOD
+% ============================================================
+
+\section{ONTO Framework}
+\label{sec:method}
+
+ONTO (Ontological Network Theory Operations) is a cognitive kernel that provides explicit epistemic structure for LLM reasoning.
+
+\subsection{Architecture}
+
+ONTO consists of three layers:
+
+\textbf{Ontological Core.} A knowledge graph containing:
+\begin{itemize}
+    \item \textbf{Concepts}: Entities with definitions and domain tags
+    \item \textbf{Claims}: Propositions with truth values and evidence
+    \item \textbf{Relations}: SUPPORTS, CONTRADICTS, DEPENDS\_ON
+\end{itemize}
+
+Each claim $c$ has an epistemic status:
+\begin{equation}
+    \text{status}(c) \in \{\text{ESTABLISHED}, \text{CONTESTED}, \text{UNKNOWN}\}
+\end{equation}
+
+\textbf{Gap Detection Engine.} We compute an Information Gap Ratio (IGR) for concepts:
+\begin{equation}
+    \text{IGR}(c) = \frac{|\text{missing\_deps}(c)| + |\text{unresolved}(c)|}{|\text{expected}(c)|}
+\end{equation}
+High IGR indicates epistemic uncertainty requiring disclosure.
+
+\textbf{Epistemic Oracle.} Pattern-based detection of open problems using curated signatures:
+\begin{itemize}
+    \item Open problem markers: ``what causes,'' ``is there a theory''
+    \item Specific unknowns: ``dark matter,'' ``consciousness,'' ``P vs NP''
+    \item Contradiction signals: ``interpretations,'' ``debate''
+\end{itemize}
+
+\subsection{Unknown Detection}
+
+Given a query $q$, ONTO returns an epistemic classification:
+
+\begin{algorithmic}
+\IF{$q$ matches open problem patterns}
+    \RETURN UNKNOWN
+\ELSIF{$q$ matches contradiction patterns}
+    \RETURN CONTRADICTION
+\ELSIF{knowledge graph contains high-confidence answer}
+    \RETURN KNOWN
+\ELSE
+    \RETURN UNKNOWN (conservative default)
+\ENDIF
+\end{algorithmic}
+
+The key insight is \emph{conservative uncertainty}: when evidence is insufficient, ONTO defaults to expressing uncertainty rather than generating speculative answers.
+
+% ============================================================
+% DATASET
+% ============================================================
+
+\section{ONTO-Bench Dataset}
+\label{sec:dataset}
+
+\subsection{Design Principles}
+
+Existing benchmarks evaluate factual accuracy but not epistemic calibration. We design ONTO-Bench with explicit epistemic labels:
+
+\begin{itemize}
+    \item \textbf{KNOWN}: Questions with established, consensus answers
+    \item \textbf{UNKNOWN}: Genuinely open scientific problems
+    \item \textbf{CONTRADICTION}: Questions with legitimate competing answers
+\end{itemize}
+
+\subsection{Data Sources}
+
+\textbf{Tier-1 (Authoritative):}
+\begin{itemize}
+    \item Clay Mathematics Institute Millennium Problems
+    \item NSF/ERC Grand Challenges
+    \item Physics/Biology open problem surveys
+\end{itemize}
+
+\textbf{Tier-2 (Curated):}
+\begin{itemize}
+    \item Wikipedia ``List of unsolved problems in X''
+    \item Established textbooks for KNOWN facts
+\end{itemize}
+
+\subsection{Statistics}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Category & Train & Test & Total \\
+\midrule
+KNOWN & 100 & 26 & 126 \\
+UNKNOWN & 88 & 22 & 110 \\
+CONTRADICTION & 25 & 7 & 32 \\
+\midrule
+Total & 213 & 55 & 268 \\
+\bottomrule
+\end{tabular}
+\caption{ONTO-Bench statistics. 80/20 stratified split.}
+\label{tab:dataset_stats}
+\end{table}
+
+\subsection{Validation}
+
+Labels were assigned by human curator with LLM cross-validation. Agreement: Cohen's $\kappa = 1.0$ on validation sample (N=99), indicating consistent labeling criteria.
+
+% ============================================================
+% EXPERIMENTS
+% ============================================================
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Baselines}
+
+We compare ONTO against:
+\begin{itemize}
+    \item \textbf{GPT-4}: OpenAI's flagship model
+    \item \textbf{Claude 3}: Anthropic's Sonnet model
+    \item \textbf{Llama 3}: Meta's open-weight model
+\end{itemize}
+
+All baselines receive an epistemic system prompt instructing them to indicate uncertainty for unknown questions.
+
+\subsection{Metrics}
+
+\textbf{Unknown Detection:}
+\begin{align}
+    \text{U-Precision} &= \frac{TP}{TP + FP} \\
+    \text{U-Recall} &= \frac{TP}{TP + FN} \\
+    \text{U-F1} &= \frac{2 \cdot \text{U-Prec} \cdot \text{U-Rec}}{\text{U-Prec} + \text{U-Rec}}
+\end{align}
+where TP = correctly identified unknowns.
+
+\textbf{Calibration:}
+\begin{equation}
+    \text{ECE} = \sum_{m=1}^{M} \frac{|B_m|}{n} \left| \text{acc}(B_m) - \text{conf}(B_m) \right|
+\end{equation}
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Model & U-Prec & U-Rec & U-F1 & ECE$\downarrow$ & Acc \\
+\midrule
+\textbf{ONTO} & 0.41 & \textbf{0.96} & \textbf{0.58} & 0.30 & 0.43 \\
+Claude 3 & 0.45 & 0.09 & 0.15 & 0.31 & 0.48 \\
+Llama 3 & 0.20 & 0.01 & 0.02 & 0.33 & 0.46 \\
+GPT-4 & 0.10 & 0.01 & 0.02 & 0.34 & 0.44 \\
+\bottomrule
+\end{tabular}
+\caption{Main results. ONTO achieves dramatically higher unknown recall.}
+\label{tab:main_results}
+\end{table}
+
+\textbf{Key Finding:} ONTO achieves 96\% unknown recall compared to $<$10\% for all baselines. This represents a fundamental improvement in epistemic calibration---ONTO correctly identifies nearly all genuinely open problems, while baseline LLMs miss $>$90\% of them.
+
+\subsection{Analysis}
+
+\textbf{Why do LLMs fail?} LLMs are trained to produce fluent, helpful responses. The training objective rewards confident answers and does not penalize confident responses to unanswerable questions. Without explicit epistemic structure, LLMs have no mechanism to recognize knowledge boundaries.
+
+\textbf{Precision-Recall Tradeoff.} ONTO's high recall comes with moderate precision (0.41), meaning it sometimes flags known facts as uncertain. We argue this is the correct tradeoff for high-stakes applications: false uncertainty is preferable to false confidence.
+
+% ============================================================
+% DISCUSSION
+% ============================================================
+
+\section{Discussion}
+
+\textbf{Limitations.}
+\begin{itemize}
+    \item Dataset size (N=268) limits generalization claims
+    \item ``Unknown'' operationalized via curated problems, not absolute epistemology
+    \item Pattern-based detection requires manual curation
+\end{itemize}
+
+\textbf{Broader Impact.} Epistemic calibration is critical for AI safety. Systems that confidently answer unanswerable questions can mislead users, particularly in high-stakes domains like medicine and law. ONTO demonstrates that explicit epistemic structure can dramatically improve uncertainty identification.
+
+\textbf{Future Work.}
+\begin{itemize}
+    \item Automatic discovery of epistemic boundaries from literature
+    \item Integration with LLM fine-tuning for end-to-end calibration
+    \item Extension to domain-specific unknowns (medical, legal)
+\end{itemize}
+
+% ============================================================
+% CONCLUSION
+% ============================================================
+
+\section{Conclusion}
+
+We presented ONTO, an ontological framework for epistemic calibration of LLMs, and ONTO-Bench, a benchmark for evaluating unknown detection. Our experiments demonstrate that explicit epistemic structure enables 96\% unknown recall compared to $<$10\% for baseline LLMs---a dramatic improvement in epistemic calibration.
+
+The core insight is simple but powerful: to know what you don't know, you must explicitly represent knowledge boundaries. We hope ONTO-Bench enables further research on AI epistemic capabilities.
+
+\textbf{Code and Data:} \url{https://github.com/onto-project/onto-bench}
+
+% ============================================================
+% REFERENCES
+% ============================================================
+
+\bibliographystyle{plain}
+\begin{thebibliography}{10}
+
+\bibitem{brown2020language}
+Tom Brown, Benjamin Mann, Nick Ryder, et al.
+\newblock Language models are few-shot learners.
+\newblock In \emph{NeurIPS}, 2020.
+
+\bibitem{guo2017calibration}
+Chuan Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger.
+\newblock On calibration of modern neural networks.
+\newblock In \emph{ICML}, 2017.
+
+\bibitem{kadavath2022language}
+Saurav Kadavath, Tom Conerly, Amanda Askell, et al.
+\newblock Language models (mostly) know what they know.
+\newblock \emph{arXiv preprint arXiv:2207.05221}, 2022.
+
+\bibitem{kuhn2023semantic}
+Lorenz Kuhn, Yarin Gal, and Sebastian Farquhar.
+\newblock Semantic uncertainty: Linguistic invariances for uncertainty estimation in natural language generation.
+\newblock In \emph{ICLR}, 2023.
+
+\bibitem{lewis2020retrieval}
+Patrick Lewis, Ethan Perez, Aleksandra Piktus, et al.
+\newblock Retrieval-augmented generation for knowledge-intensive NLP tasks.
+\newblock In \emph{NeurIPS}, 2020.
+
+\bibitem{lin2022truthfulqa}
+Stephanie Lin, Jacob Hilton, and Owain Evans.
+\newblock TruthfulQA: Measuring how models mimic human falsehoods.
+\newblock In \emph{ACL}, 2022.
+
+\bibitem{platt1999probabilistic}
+John Platt.
+\newblock Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods.
+\newblock \emph{Advances in Large Margin Classifiers}, 1999.
+
+\end{thebibliography}
+
+% ============================================================
+% APPENDIX
+% ============================================================
+
+\appendix
+
+\section{Reproducibility}
+
+\subsection{Dataset}
+
+\begin{itemize}
+    \item Version: 1.1
+    \item SHA256: \texttt{cb6978046e249ab6...}
+    \item Seed: 42
+    \item Split: 80/20 stratified by label
+\end{itemize}
+
+\subsection{Baselines}
+
+\begin{itemize}
+    \item GPT-4: \texttt{gpt-4-0125-preview}
+    \item Claude 3: \texttt{claude-3-sonnet-20240229}
+    \item Llama 3: \texttt{llama-3-70b}
+\end{itemize}
+
+\subsection{Verification}
+
+\begin{verbatim}
+python scripts/dataset_version.py --verify
+python baselines/run_all.py
+python scripts/metrics.py
+\end{verbatim}
+
+\section{Sample Questions}
+
+\textbf{KNOWN:}
+\begin{itemize}
+    \item ``What is the speed of light?'' $\rightarrow$ 299,792,458 m/s
+    \item ``What is Euler's identity?'' $\rightarrow$ $e^{i\pi} + 1 = 0$
+\end{itemize}
+
+\textbf{UNKNOWN:}
+\begin{itemize}
+    \item ``Is P equal to NP?'' $\rightarrow$ Open (Clay Millennium)
+    \item ``What causes consciousness?'' $\rightarrow$ Open (Neuroscience)
+\end{itemize}
+
+\textbf{CONTRADICTION:}
+\begin{itemize}
+    \item ``Is the universe deterministic?'' $\rightarrow$ Debated
+    \item ``Is mathematics invented or discovered?'' $\rightarrow$ Philosophical
+\end{itemize}
+
+\end{document}

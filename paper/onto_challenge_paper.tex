@@ -1,0 +1,289 @@
+\documentclass{article}
+
+% ============================================================
+% The ONTO-Bench Challenge: 
+% Evaluating Epistemic Calibration in Foundation Models
+% ============================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+
+\title{The ONTO-Bench Challenge: \\
+Evaluating Epistemic Calibration in Foundation Models}
+
+\author{
+  [Author Names] \\
+  [Affiliations] \\
+  \texttt{[emails]}
+}
+
+\date{NeurIPS 2026 Datasets and Benchmarks Track}
+
+\begin{document}
+
+\maketitle
+
+% ============================================================
+% ABSTRACT
+% ============================================================
+
+\begin{abstract}
+We present the ONTO-Bench Challenge, a systematic evaluation of epistemic calibration across foundation models. The challenge addresses a critical question: \emph{Do AI systems know what they don't know?} We evaluate [N] models across [M] organizations on 268 questions spanning established facts, genuinely open scientific problems, and contested claims. Our results reveal a persistent epistemic calibration gap: even the best-performing models correctly identify genuinely unanswerable questions less than [X]\% of the time, while achieving [Y]\% accuracy on factual questions. We release updated baselines, analysis tools, and a public leaderboard to track progress on this fundamental challenge.
+\end{abstract}
+
+% ============================================================
+% INTRODUCTION
+% ============================================================
+
+\section{Introduction}
+
+The ONTO-Bench Challenge addresses a fundamental question in AI safety: \emph{Can AI systems recognize the boundaries of their knowledge?}
+
+This question matters for three reasons:
+
+\textbf{Safety.} AI systems deployed in high-stakes domains (medicine, law, science) must distinguish between established knowledge and genuine uncertainty. Confident answers to unanswerable questions are not merely unhelpful—they are potentially dangerous.
+
+\textbf{Trust.} Human users calibrate trust based on AI confidence. Systems that express uniform confidence regardless of epistemic status undermine appropriate reliance.
+
+\textbf{Science.} Progress in AI requires understanding failure modes. Epistemic miscalibration represents a systematic failure that current training methods do not address.
+
+\subsection{Challenge Structure}
+
+The ONTO-Bench Challenge evaluates models on three tasks:
+
+\begin{enumerate}
+    \item \textbf{Known Detection}: Correctly answering established factual questions
+    \item \textbf{Unknown Detection}: Recognizing genuinely open problems
+    \item \textbf{Contradiction Detection}: Identifying legitimately contested claims
+\end{enumerate}
+
+Models receive a question and must return:
+\begin{itemize}
+    \item Predicted epistemic label (KNOWN / UNKNOWN / CONTRADICTION)
+    \item Confidence score (0-1)
+    \item Optional: reasoning trace
+\end{itemize}
+
+\subsection{Key Findings}
+
+Our evaluation of [N] models reveals:
+
+\begin{itemize}
+    \item \textbf{Unknown Detection Gap}: Models detect unknowns at [X]\% recall vs. human baseline of [Y]\%
+    \item \textbf{Confidence Miscalibration}: Average ECE of [Z] across models
+    \item \textbf{Architecture Independence}: The gap persists across model families, sizes, and training approaches
+    \item \textbf{Prompting Insufficiency}: System prompts improve unknown detection by only [W] percentage points
+\end{itemize}
+
+% ============================================================
+% RELATED WORK
+% ============================================================
+
+\section{Related Challenges}
+
+\textbf{TruthfulQA} \cite{lin2022truthfulqa} evaluates whether models produce truthful responses but does not distinguish between factual errors and appropriate uncertainty.
+
+\textbf{MMLU} \cite{hendrycks2021mmlu} evaluates knowledge breadth but treats all questions as having definitive answers.
+
+\textbf{BIG-Bench} \cite{srivastava2022bigbench} includes diverse tasks but lacks explicit epistemic labeling.
+
+ONTO-Bench is the first challenge with explicit epistemic labels including genuinely open scientific problems.
+
+% ============================================================
+% DATASET
+% ============================================================
+
+\section{Dataset}
+
+\subsection{Composition}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+Category & Count & \% & Example Source \\
+\midrule
+KNOWN & 126 & 47\% & Physics constants, theorems \\
+UNKNOWN & 110 & 41\% & Clay Millennium Problems \\
+CONTRADICTION & 32 & 12\% & Interpretation debates \\
+\midrule
+Total & 268 & 100\% & \\
+\bottomrule
+\end{tabular}
+\caption{ONTO-Bench dataset composition.}
+\end{table}
+
+\subsection{Quality Assurance}
+
+\begin{itemize}
+    \item \textbf{Source Verification}: All UNKNOWN labels verified against authoritative problem lists
+    \item \textbf{Cross-Validation}: Inter-annotator agreement $\kappa > 0.9$
+    \item \textbf{Version Control}: SHA256 hash for reproducibility
+\end{itemize}
+
+% ============================================================
+% EVALUATION
+% ============================================================
+
+\section{Evaluation Protocol}
+
+\subsection{Metrics}
+
+\textbf{Primary Metrics:}
+\begin{itemize}
+    \item \textbf{U-F1}: F1 score for UNKNOWN class
+    \item \textbf{U-Recall}: True positive rate for unknowns
+    \item \textbf{ECE}: Expected Calibration Error
+\end{itemize}
+
+\textbf{Secondary Metrics:}
+\begin{itemize}
+    \item \textbf{AUROC-U}: Area under ROC for unknown detection
+    \item \textbf{Selective Risk}: Error rate at 80\% coverage
+\end{itemize}
+
+\subsection{Baselines}
+
+We evaluate:
+\begin{itemize}
+    \item OpenAI: GPT-4, GPT-4 Turbo, GPT-4o
+    \item Anthropic: Claude 3 Opus, Sonnet, Haiku
+    \item Google: Gemini Pro, Ultra
+    \item Meta: Llama 3 8B, 70B
+    \item Open: Mistral, Mixtral
+    \item ONTO: Explicit epistemic structure
+\end{itemize}
+
+% ============================================================
+% RESULTS
+% ============================================================
+
+\section{Results}
+
+\subsection{Main Results}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Model & U-Prec & U-Rec & U-F1 & ECE$\downarrow$ & AUROC \\
+\midrule
+ONTO & -- & -- & -- & -- & -- \\
+GPT-4o & -- & -- & -- & -- & -- \\
+Claude 3 Opus & -- & -- & -- & -- & -- \\
+Gemini Ultra & -- & -- & -- & -- & -- \\
+Llama 3 70B & -- & -- & -- & -- & -- \\
+\midrule
+\textit{Human} & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\caption{Challenge results. [To be filled with actual results]}
+\end{table}
+
+\subsection{Analysis}
+
+\textbf{Finding 1: The Unknown Detection Gap is Real}
+
+[Analysis of why models fail to detect unknowns]
+
+\textbf{Finding 2: Size Doesn't Help}
+
+[Analysis of scaling behavior]
+
+\textbf{Finding 3: RLHF May Hurt Calibration}
+
+[Analysis of training method effects]
+
+% ============================================================
+% DISCUSSION
+% ============================================================
+
+\section{Discussion}
+
+\subsection{Why Do Models Fail?}
+
+We hypothesize three contributing factors:
+
+\begin{enumerate}
+    \item \textbf{Training Objective}: Language modeling rewards fluent responses regardless of epistemic status
+    \item \textbf{RLHF Pressure}: Human preference may favor confident responses
+    \item \textbf{Lack of Structure}: Models lack explicit representation of knowledge boundaries
+\end{enumerate}
+
+\subsection{Implications for AI Safety}
+
+[Discussion of safety implications]
+
+\subsection{Limitations}
+
+\begin{itemize}
+    \item Dataset reflects Western scientific consensus
+    \item ``Unknown'' operationalized through curated problems
+    \item Results may not generalize to all domains
+\end{itemize}
+
+% ============================================================
+% CHALLENGE LOGISTICS
+% ============================================================
+
+\section{Challenge Information}
+
+\subsection{Participation}
+
+\begin{itemize}
+    \item \textbf{Leaderboard}: \url{https://onto-bench.org}
+    \item \textbf{Code}: \url{https://github.com/onto-project/onto-bench}
+    \item \textbf{Submission Format}: JSONL with predictions
+\end{itemize}
+
+\subsection{Timeline}
+
+\begin{itemize}
+    \item Challenge launch: [Date]
+    \item Submission deadline: [Date]
+    \item Results announcement: [Date]
+    \item Workshop: [Conference, Date]
+\end{itemize}
+
+\subsection{Prizes}
+
+[Optional: prizes or recognition]
+
+% ============================================================
+% CONCLUSION
+% ============================================================
+
+\section{Conclusion}
+
+The ONTO-Bench Challenge reveals a fundamental gap in AI epistemic capabilities. Current foundation models, regardless of scale or architecture, fail to recognize genuinely unanswerable questions. We hope this challenge catalyzes research on epistemic calibration—a critical dimension of AI safety.
+
+% ============================================================
+% REFERENCES
+% ============================================================
+
+\bibliographystyle{plain}
+\begin{thebibliography}{10}
+
+\bibitem{lin2022truthfulqa}
+Stephanie Lin, Jacob Hilton, and Owain Evans.
+\newblock TruthfulQA: Measuring how models mimic human falsehoods.
+\newblock In \emph{ACL}, 2022.
+
+\bibitem{hendrycks2021mmlu}
+Dan Hendrycks et al.
+\newblock Measuring massive multitask language understanding.
+\newblock In \emph{ICLR}, 2021.
+
+\bibitem{srivastava2022bigbench}
+Aarohi Srivastava et al.
+\newblock Beyond the imitation game: Quantifying and extrapolating the capabilities of language models.
+\newblock \emph{arXiv:2206.04615}, 2022.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,23 @@
+{
+  "seed": 42,
+  "train_ratio": 0.8,
+  "created_at": "2026-01-26T16:48:37.593743",
+  "total_samples": 268,
+  "train_count": 213,
+  "test_count": 55,
+  "train_distribution": {
+    "UNKNOWN": 88,
+    "KNOWN": 100,
+    "CONTRADICTION": 25
+  },
+  "test_distribution": {
+    "KNOWN": 26,
+    "UNKNOWN": 22,
+    "CONTRADICTION": 7
+  },
+  "original_distribution": {
+    "KNOWN": 126,
+    "UNKNOWN": 110,
+    "CONTRADICTION": 32
+  }
+}

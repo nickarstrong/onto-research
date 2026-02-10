@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "hash": "f7afe56dbd8827e7",
+  "created_at": "2026-01-26T16:32:04.585419",
+  "seed": 42,
+  "total_samples": 148,
+  "labels": {
+    "KNOWN": 64,
+    "UNKNOWN": 67,
+    "CONTRADICTION": 17
+  },
+  "domains": {
+    "mathematics": 28,
+    "physics": 42,
+    "biology": 28,
+    "computer_science": 18,
+    "philosophy": 13,
+    "cosmology": 1,
+    "logic": 1,
+    "information_theory": 9,
+    "chemistry": 8
+  },
+  "sources": {
+    "TIER2_CURATED": 70,
+    "TIER1_AUTHORITY": 78
+  },
+  "validated_count": 148,
+  "validation_rate": 1.0
+}

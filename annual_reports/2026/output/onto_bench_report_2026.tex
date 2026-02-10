@@ -1,0 +1,97 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+
+\title{State of Epistemic Calibration 2026}
+\author{ONTO-Bench Consortium}
+\date{Generated: January 26, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report presents the 2026 evaluation of epistemic calibration 
+across 4 AI models from 1 
+organizations submitted to ONTO-Bench. The best-performing model achieved 
+U-F1 of 0.58, while the average remains at 
+0.19, indicating continued challenges in unknown 
+detection across the AI industry.
+\end{abstract}
+
+\section{Executive Summary}
+
+\begin{itemize}
+    \item \textbf{Top performer\textbf{: onto (Unknown) achieved U-F1 of 0.58, detecting 96% of genuinely unanswerable questions.
+    \item \textbf{Epistemic gap persists\textbf{: Average U-F1 of 0.19 indicates most models still fail to identify unknowns.
+    \item \textbf{Calibration challenge\textbf{: Mean ECE of 0.32 shows significant overconfidence across models.
+    \item \textbf{Detection crisis\textbf{: 3 of 4 models detect <10% of unknowns.
+\end{itemize}
+
+\section{Leaderboard}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}rlccccc@{}}
+\toprule
+Rank & Model & Organization & U-F1 & U-Rec & ECE & Ver \\
+\midrule
+    1 & onto & Unknown & 0.58 & 0.96 & 0.30 &  \\
+    2 & claude3_mock & Unknown & 0.15 & 0.09 & 0.31 &  \\
+    3 & llama3_mock & Unknown & 0.02 & 0.01 & 0.33 &  \\
+    4 & gpt4_mock & Unknown & 0.02 & 0.01 & 0.34 &  \\
+\bottomrule
+\end{tabular}
+\caption{Top 15 models by U-F1 score. Ver = Verified submission.}
+\end{table}
+
+\section{Key Statistics}
+
+\begin{itemize}
+    \item Total submissions: 4
+    \item Unique models: 4
+    \item Unique organizations: 1
+    \item Best U-F1: 0.5792 (onto)
+    \item Mean U-F1: 0.1912
+    \item Mean ECE: 0.3200
+\end{itemize}
+
+\section{Methodology}
+
+All models evaluated on ONTO-Bench v1.8 test set (55 samples) using 
+standardized evaluation protocol. Metrics computed using official 
+ONTO-Bench evaluation scripts.
+
+\subsection{Metrics}
+
+\begin{itemize}
+    \item \textbf{U-F1}: F1 score for UNKNOWN class detection
+    \item \textbf{U-Recall}: Fraction of unknowns correctly identified
+    \item \textbf{ECE}: Expected Calibration Error (lower is better)
+\end{itemize}
+
+\section{Citation}
+
+\begin{verbatim}
+@techreport{ontobench2026,
+  title={State of Epistemic Calibration 2026},
+  author={ONTO-Bench Consortium},
+  year={2026},
+  url={https://onto-bench.org/reports/2026}
+}
+\end{verbatim}
+
+\section{Contact}
+
+\begin{itemize}
+    \item Website: \url{https://onto-bench.org}
+    \item Leaderboard: \url{https://onto-bench.org/leaderboard}
+    \item GitHub: \url{https://github.com/onto-project/onto-bench}
+\end{itemize}
+
+\end{document}

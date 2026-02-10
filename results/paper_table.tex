@@ -1,0 +1,32 @@
+% Results Table
+\begin{table}[h]
+\centering
+\begin{tabular}{lccccccc}
+\toprule
+Model & U-Prec & U-Rec & U-F1 & ECE$\downarrow$ & Brier$\downarrow$ & Acc \\
+\midrule
+\textbf{onto} & \textbf{0.41} & \textbf{0.96} & \textbf{0.58} & \textbf{0.30} & \textbf{0.26} & \textbf{0.43} \\
+claude3_mock & 0.45 & 0.09 & 0.15 & 0.31 & 0.35 & 0.48 \\
+llama3_mock & 0.20 & 0.01 & 0.02 & 0.33 & 0.36 & 0.46 \\
+gpt4_mock & 0.10 & 0.01 & 0.02 & 0.34 & 0.36 & 0.44 \\
+\bottomrule
+\end{tabular}
+\caption{Epistemic calibration results on ONTO-Bench.}
+\label{tab:results}
+\end{table}
+
+% Significance Table
+\begin{table}[h]
+\centering
+\begin{tabular}{llccc}
+\toprule
+Comparison & Test & $t$-stat & $p$-value & Sig. \\
+\midrule
+onto vs gpt4_mock & t-test & -0.3481 & 0.7279 & No \\
+onto vs llama3_mock & t-test & -0.7817 & 0.4347 & No \\
+onto vs claude3_mock & t-test & -1.2146 & 0.2251 & No \\
+\bottomrule
+\end{tabular}
+\caption{Statistical significance of ONTO improvements ($^{**}$: $p < 0.01$).}
+\label{tab:significance}
+\end{table}

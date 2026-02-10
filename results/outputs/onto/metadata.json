@@ -1,0 +1,12 @@
+{
+  "name": "onto",
+  "version": "5.3.0",
+  "provider": "onto",
+  "run_timestamp": "2026-01-26T16:48:56.222026",
+  "total_samples": 268,
+  "total_time_sec": 0.20755815505981445,
+  "avg_latency_ms": 0.7744707278351286,
+  "config": {
+    "seed": 42
+  }
+}

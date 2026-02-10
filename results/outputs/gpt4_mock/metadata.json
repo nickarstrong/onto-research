@@ -1,0 +1,12 @@
+{
+  "name": "gpt4_mock",
+  "version": "mock-1.0",
+  "provider": "mock",
+  "run_timestamp": "2026-01-26T16:48:55.997001",
+  "total_samples": 268,
+  "total_time_sec": 9.036064147949219e-05,
+  "avg_latency_ms": 0.0003371665726846723,
+  "config": {
+    "seed": 42
+  }
+}

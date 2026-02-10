@@ -1,0 +1,11 @@
+{
+  "year": 2026,
+  "total_submissions": 4,
+  "unique_models": 4,
+  "unique_orgs": 1,
+  "best_u_f1": 0.5792,
+  "best_model": "onto",
+  "mean_u_f1": 0.1912,
+  "mean_ece": 0.32,
+  "improvement_vs_prior": null
+}

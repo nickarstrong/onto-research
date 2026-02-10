@@ -1,0 +1,35 @@
+% ============================================================
+% ONTO Paper - Limitations Section
+% Use: \input{limitations}
+% ============================================================
+
+\section{Limitations}
+\label{sec:limitations}
+
+We acknowledge several limitations of this work:
+
+\paragraph{Dataset Construction.}
+ONTO-Bench was constructed using a combination of authoritative sources (Clay Mathematics Institute, physics surveys) and curated expansions. Some samples were generated with LLM assistance and subsequently validated. This may introduce distributional biases not present in naturally-occurring questions. We mitigate this risk through:
+\begin{itemize}
+    \item Human validation of a stratified sample
+    \item Dataset versioning with cryptographic hashes for reproducibility
+    \item Transparent documentation of data sources
+\end{itemize}
+
+\paragraph{Definition of ``Unknown.''}
+We operationalize ``unknown'' as questions appearing in authoritative lists of open problems (e.g., Clay Millennium Problems, NSF Grand Challenges). This is a \emph{proxy} for genuine epistemic uncertainty, not a philosophical claim about the nature of knowledge. Some questions labeled UNKNOWN may eventually be resolved; some questions labeled KNOWN may have subtleties we did not capture.
+
+\paragraph{Baseline Evaluation Setting.}
+All baselines (GPT-4, Claude, Llama) were evaluated without access to external tools, web search, or retrieval augmentation. This matches ONTO's core setting but may underestimate baseline capabilities in tool-augmented deployments. We chose this setting to isolate the contribution of explicit epistemic structure.
+
+\paragraph{Heuristic Unknown Detection.}
+ONTO's current unknown detection relies on pattern matching against curated open problem signatures and ontology gap analysis. This is a \emph{heuristic approach}, not a learned model. While effective on our benchmark, it may not generalize to domains outside our curated patterns. Future work should explore learned epistemic classifiers.
+
+\paragraph{Dataset Scale.}
+At 268 samples, ONTO-Bench is smaller than some established benchmarks (e.g., MMLU with 14K questions). We prioritize quality and epistemic validity over scale. Larger datasets risk label noise; our samples are individually validated against authoritative sources.
+
+\paragraph{Generalization.}
+Our results demonstrate improved unknown detection \emph{on ONTO-Bench}. We do not claim ONTO will generalize to arbitrary domains without additional ontology engineering. The framework requires domain-specific knowledge encoding.
+
+\paragraph{Reproducibility Constraints.}
+Commercial LLM APIs (GPT-4, Claude) are non-deterministic and subject to model updates. Our reported results reflect a single evaluation run. Minor variations are expected across runs. We provide all outputs for verification.
