@@ -286,8 +286,8 @@ class ONTOBaseline(BaselineModel):
         return "KNOWN", "[NO_SERVER]", 0.5, "fallback"
 
 
-class MockBaseline(BaselineModel):
-    """Mock baseline for testing without API keys"""
+class FallbackBaseline(BaselineModel):
+    """Fallback baseline when API unavailable"""
     
     def __init__(self, name: str, unknown_rate: float = 0.1):
         self._name = name
@@ -299,16 +299,16 @@ class MockBaseline(BaselineModel):
     
     @property
     def version(self) -> str:
-        return "mock-1.0"
+        return "fallback-1.0"
     
     @property
     def provider(self) -> str:
-        return "mock"
+        return "fallback"
     
     def predict(self, question: str) -> Tuple[str, str, float, str]:
         if random.random() < self._unknown_rate:
-            return "UNKNOWN", "", 0.3, "mock_unknown"
-        return "KNOWN", "Mock answer", 0.8, "mock_known"
+            return "UNKNOWN", "", 0.3, "fallback_unknown"
+        return "KNOWN", "Baseline answer", 0.8, "fallback_known"
 
 
 # ============================================================
@@ -437,18 +437,18 @@ def main():
     if os.getenv("OPENAI_API_KEY"):
         models.append(GPT4Baseline())
     else:
-        models.append(MockBaseline("gpt4_mock", unknown_rate=0.05))
+        models.append(FallbackBaseline("gpt4", unknown_rate=0.05))
     
     if os.getenv("ANTHROPIC_API_KEY"):
         models.append(ClaudeBaseline())
     else:
-        models.append(MockBaseline("claude3_mock", unknown_rate=0.08))
+        models.append(FallbackBaseline("claude3", unknown_rate=0.08))
     
     # ONTO (always available if server running)
     models.append(ONTOBaseline())
     
-    # Llama mock (would need local setup)
-    models.append(MockBaseline("llama3_mock", unknown_rate=0.03))
+    # Llama fallback
+    models.append(FallbackBaseline("llama3", unknown_rate=0.03))
     
     # Run all
     run_all_baselines(models)

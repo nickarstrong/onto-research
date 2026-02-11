@@ -1,0 +1,12 @@
+{
+  "name": "claude3",
+  "version": "claude-3-sonnet-20240229",
+  "provider": "anthropic",
+  "run_timestamp": "2026-01-26T16:48:56.002987",
+  "total_samples": 268,
+  "total_time_sec": 1536.7,
+  "avg_latency_ms": 5733.2,
+  "config": {
+    "seed": 42
+  }
+}

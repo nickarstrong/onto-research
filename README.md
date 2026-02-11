@@ -40,9 +40,7 @@ onto-research/
 │   └── generate_plots.py    # Generate figures for paper
 ├── paper/                   # Paper source (LaTeX)
 ├── arxiv_submission/        # arXiv submission package
-├── results/                 # Evaluation outputs + metrics
-├── research/                # Extended research plans
-└── validation/              # Inter-annotator agreement
+└── results/                 # Evaluation outputs + metrics
 ```
 
 ---
@@ -56,8 +54,6 @@ onto-research/
 - **CONTRADICTION** (32): Questions with legitimate competing answers (e.g., quantum interpretation)
 
 Domains: physics, mathematics, biology, computer science, philosophy, chemistry, cosmology, information theory, logic.
-
-All samples validated. Tier-1 sources (authoritative institutions) + Tier-2 sources (curated references).
 
 ---
 

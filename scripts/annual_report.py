@@ -360,15 +360,15 @@ ONTO-Bench evaluation scripts.
   title={{State of Epistemic Calibration {data.year}}},
   author={{ONTO-Bench Consortium}},
   year={{{data.year}}},
-  url={{https://onto-bench.org/reports/{data.year}}}
+  url={{https://ontostandard.org/audits/{data.year}}}
 }}
 \\end{{verbatim}}
 
 \\section{{Contact}}
 
 \\begin{{itemize}}
-    \\item Website: \\url{{https://onto-bench.org}}
-    \\item Leaderboard: \\url{{https://onto-bench.org/leaderboard}}
+    \\item Website: \\url{{https://ontostandard.org}}
+    \\item Leaderboard: \\url{{https://ontostandard.org/audits}}
     \\item GitHub: \\url{{https://github.com/onto-project/onto-bench}}
 \\end{{itemize}}
 
@@ -473,7 +473,7 @@ def generate_html(data: ReportData, output_dir: Path) -> Path:
         <footer class="text-center text-gray-500 text-sm">
             <p>© {data.year} ONTO-Bench Consortium</p>
             <p>
-                <a href="https://onto-bench.org" class="underline">onto-bench.org</a>
+                <a href="https://ontostandard.org" class="underline">ontostandard.org</a>
             </p>
         </footer>
     </div>

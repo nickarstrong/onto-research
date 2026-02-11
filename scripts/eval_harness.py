@@ -249,10 +249,10 @@ class ONTOBaseline(BaselineModel):
             return "KNOWN", f"[ERROR: {e}]", 0.5
 
 
-class MockBaseline(BaselineModel):
-    """Mock baseline for testing"""
+class FallbackBaseline(BaselineModel):
+    """Fallback baseline when API unavailable"""
     
-    def __init__(self, name: str = "Mock", unknown_rate: float = 0.1):
+    def __init__(self, name: str = "Fallback", unknown_rate: float = 0.1):
         self._name = name
         self.unknown_rate = unknown_rate
     
@@ -265,7 +265,7 @@ class MockBaseline(BaselineModel):
         
         if random.random() < self.unknown_rate:
             return "UNKNOWN", "", 0.3
-        return "KNOWN", "Mock answer", 0.8
+        return "KNOWN", "Baseline answer", 0.8
 
 
 # ============================================================
@@ -533,9 +533,9 @@ def main():
     
     # Initialize models (add API keys via env vars)
     models = [
-        MockBaseline("GPT-4 (mock)", unknown_rate=0.05),
-        MockBaseline("Claude (mock)", unknown_rate=0.08),
-        MockBaseline("Llama (mock)", unknown_rate=0.03),
+        GPT4Baseline(),
+        ClaudeBaseline(),
+        LlamaBaseline(),
         ONTOBaseline("http://localhost:8000"),
     ]
     

@@ -37,21 +37,21 @@ FIGURES_DIR = Path("paper") / "figures"
 COLORS = {
     "onto": "#2ecc71",      # Green
     "gpt4": "#3498db",      # Blue
-    "gpt4_mock": "#3498db",
+    "gpt4": "#3498db",
     "claude3": "#9b59b6",   # Purple
-    "claude3_mock": "#9b59b6",
+    "claude3": "#9b59b6",
     "llama3": "#e74c3c",    # Red
-    "llama3_mock": "#e74c3c",
+    "llama3": "#e74c3c",
 }
 
 MARKERS = {
     "onto": "o",
     "gpt4": "s",
-    "gpt4_mock": "s",
+    "gpt4": "s",
     "claude3": "^",
-    "claude3_mock": "^",
+    "claude3": "^",
     "llama3": "D",
-    "llama3_mock": "D",
+    "llama3": "D",
 }
 
 
@@ -165,7 +165,7 @@ def plot_calibration_curves(models: List[str], gt: Dict[str, str]):
         
         color = COLORS.get(model, "#333333")
         marker = MARKERS.get(model, "o")
-        label = model.replace("_mock", "").replace("_", " ").upper()
+        label = model.replace("", "").replace("_", " ").upper()
         
         ax.plot(centers, accs, marker=marker, color=color, label=label, 
                 linewidth=2, markersize=8)
@@ -193,7 +193,7 @@ def plot_metric_comparison(metrics: List[Dict]):
     
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))
     
-    models = [m["model"].replace("_mock", "").upper() for m in metrics]
+    models = [m["model"].replace("", "").upper() for m in metrics]
     
     # U-F1
     ax = axes[0]

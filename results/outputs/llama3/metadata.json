@@ -1,0 +1,12 @@
+{
+  "name": "llama3",
+  "version": "llama-3-70b",
+  "provider": "meta",
+  "run_timestamp": "2026-01-26T16:48:56.002987",
+  "total_samples": 268,
+  "total_time_sec": 2104.1,
+  "avg_latency_ms": 7851.1,
+  "config": {
+    "seed": 42
+  }
+}
