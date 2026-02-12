@@ -20,4 +20,4 @@ pdflatex main.tex  # Run twice for references
 
 ## Contact
 
-anonymous@example.com
+council@ontostandard.org

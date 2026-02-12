@@ -102,7 +102,7 @@ pdflatex main.tex  # Run twice for references
 
 ## Contact
 
-anonymous@example.com
+council@ontostandard.org
 """
     with open(OUTPUT_DIR / "README.txt", 'w') as f:
         f.write(readme)

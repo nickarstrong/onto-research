@@ -1,0 +1,12 @@
+{
+  "name": "gpt4",
+  "version": "gpt-4-0125-preview",
+  "provider": "openai",
+  "run_timestamp": "2026-01-26T16:48:55.997001",
+  "total_samples": 268,
+  "total_time_sec": 1842.3,
+  "avg_latency_ms": 6874.2,
+  "config": {
+    "seed": 42
+  }
+}
