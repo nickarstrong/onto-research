@@ -133,6 +133,22 @@ All experiments in this repository are designed for independent reproduction:
 
 ---
 
+## Theoretical Foundation
+
+ONTO synthesizes formal frameworks from multiple disciplines into a single measurement standard:
+
+- **Epistemology** — Formalization of the gap between knowledge claims and actual knowledge states
+- **Information Theory** (Shannon) — Entropy as a measure of uncertainty in model token distributions
+- **Complexity Theory** (Kolmogorov) — Minimal description length as a proxy for information density
+- **Metrology** — GOLD v4.5 as a calibration etalon, following the metrological tradition of reproducible reference standards
+- **Calibration Theory** (Eigen) — Expected Calibration Error (ECE) as a meta-metric of measurement quality
+- **Cryptography** — Ed25519 proof chains for tamper-proof, independently verifiable evaluation records
+- **NLP** — Linguistic marker extraction, semantic consistency analysis, refusal pattern detection
+
+Each discipline has existed independently for decades. ONTO is the first framework to formalize their intersection into a single quantitative standard with cryptographic proof.
+
+---
+
 ## Citation
 
 If referencing ONTO in academic work:
