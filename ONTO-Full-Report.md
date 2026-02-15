@@ -1,13 +1,7 @@
 # ONTO-GOLD VALIDATION REPORT: BEFORE → AFTER
 
-> **Note:** Model names are anonymized. This document presents measurement data collected under controlled experimental conditions using ONTO-GOLD v4.5. Scoring is fully automated (regex-based, zero subjectivity). Reproduction scripts available at [onto-research](https://github.com/nickarstrong/onto-research).
-
----
-
-
-
 **Date:** 2026-02-14  
-**Subject Model:** Model K ([Provider])  
+**Subject Model:** GPT 5.2 (OpenAI)  
 **Treatment:** ONTO-GOLD DIGEST v1.0  
 **Design:** Same 100 questions, same model, ± GOLD context  
 **Scoring:** Automatic (5 metrics + CONF, regex-based, zero subjectivity)  
@@ -16,9 +10,9 @@
 
 ## 1. EXECUTIVE SUMMARY
 
-Model K answered 100 scientific questions before and after loading ONTO-GOLD DIGEST — an epistemic calibration layer extracted from the ONTO-GOLD v4.5 corpus.
+GPT 5.2 answered 100 scientific questions before and after loading ONTO-GOLD DIGEST — an epistemic calibration layer extracted from the ONTO-GOLD v4.5 corpus.
 
-Model K was selected because it had the **lowest baseline composite** (0.53) among 11 models, providing maximum room for measurable improvement.
+GPT 5.2 was selected because it had the **lowest baseline composite** (0.53) among 11 models, providing maximum room for measurable improvement.
 
 ```
 RESULT:
@@ -52,7 +46,7 @@ RESULT:
 
 ---
 
-## 3. BASELINE — Model K WITHOUT GOLD
+## 3. BASELINE — GPT 5.2 WITHOUT GOLD
 
 ### 3.1 Overall Scores
 
@@ -97,7 +91,7 @@ Profile: CORRECT but SHALLOW, UNCALIBRATED
 
 ---
 
-## 4. TREATMENT — Model K WITH GOLD DIGEST
+## 4. TREATMENT — GPT 5.2 WITH GOLD DIGEST
 
 ### 4.1 Overall Scores
 
@@ -225,38 +219,38 @@ COMPOSITE (QD + SS + UM + CP - VQ):
 
 ### 6.1 Method
 
-Model K (weakest baseline) showed +915% composite improvement.
+GPT 5.2 (weakest baseline) showed +915% composite improvement.
 
 Models with higher baselines have less room for raw growth but GOLD behavioral patterns (CONF scores, quantification discipline) apply universally.
 
-Conservative projection: models at higher baselines get 50-75% of Model K's relative improvement, because they already partially exhibit some calibration behaviors.
+Conservative projection: models at higher baselines get 50-75% of GPT's relative improvement, because they already partially exhibit some calibration behaviors.
 
 ### 6.2 Projected Composite Scores
 
 | Rank | Model | Baseline | Projected (conservative) | Projected Δ% | Notes |
 |------|-------|----------|-------------------------|---------------|-------|
-| 1 | Model A | 2.06 | ~6.5–8.0 | +215–290% | Already strong QD; GOLD adds CONF + SS |
-| 2 | Model B | 1.84 | ~6.0–7.5 | +226–308% | Web search + GOLD = powerful combo |
-| 3 | Model C | 1.05 | ~4.0–5.5 | +280–424% | B4-B5 invalid |
-| 4 | Model D | 0.78 | ~3.5–5.0 | +349–541% | Citation fraud may persist |
-| 5 | Model E | 0.74 | ~3.5–5.0 | +373–576% | B-section compressed |
-| 6 | Model F | 0.71 | ~3.0–4.5 | +323–534% | Already 30% contaminated |
-| 7 | Model H | 0.57 | ~2.5–4.0 | +339–602% | |
-| 8 | Model I | 0.54 | ~2.5–4.0 | +363–641% | Compact style may limit QD ceiling |
-| 9 | Model J | 0.51 | ~2.5–3.5 | +390–586% | Weakest model |
-| 10 | **Model K** | **0.53** | **5.38** | **+915%** | **MEASURED** |
+| 1 | Qwen3-Max | 2.06 | ~6.5–8.0 | +215–290% | Already strong QD; GOLD adds CONF + SS |
+| 2 | Kimi K2.5 | 1.84 | ~6.0–7.5 | +226–308% | Web search + GOLD = powerful combo |
+| 3 | Alice | 1.05 | ~4.0–5.5 | +280–424% | B4-B5 invalid |
+| 4 | Perplexity | 0.78 | ~3.5–5.0 | +349–541% | Citation fraud may persist |
+| 5 | Mistral Large | 0.74 | ~3.5–5.0 | +373–576% | B-section compressed |
+| 6 | Grok | 0.71 | ~3.0–4.5 | +323–534% | Already 30% contaminated |
+| 7 | Gemini | 0.57 | ~2.5–4.0 | +339–602% | |
+| 8 | DeepSeek R1 | 0.54 | ~2.5–4.0 | +363–641% | Compact style may limit QD ceiling |
+| 9 | Copilot | 0.51 | ~2.5–3.5 | +390–586% | Weakest model |
+| 10 | **GPT 5.2** | **0.53** | **5.38** | **+915%** | **MEASURED** |
 
 ### 6.3 Ranking Impact
 
 ```
 BEFORE GOLD:                    AFTER GOLD (projected):
-#1  Model A     2.06          #1  Model A     ~6.5–8.0
-#2  Model B     1.84          #2  Model B     ~6.0–7.5
-#3  Model C         1.05          #3  Model K       5.38 (measured)
-...                             #4  Model C         ~4.0–5.5
-#10 Model K       0.53          ...
+#1  Qwen3-Max     2.06          #1  Qwen3-Max     ~6.5–8.0
+#2  Kimi K2.5     1.84          #2  Kimi K2.5     ~6.0–7.5
+#3  Alice         1.05          #3  GPT 5.2       5.38 (measured)
+...                             #4  Alice         ~4.0–5.5
+#10 GPT 5.2       0.53          ...
 
-Model K jumps from LAST to TOP 3 with GOLD.
+GPT jumps from LAST to TOP 3 with GOLD.
 ```
 
 ---
@@ -266,7 +260,7 @@ Model K jumps from LAST to TOP 3 with GOLD.
 ### 7.1 Confidence Scores (CONF)
 
 **Before GOLD:** Zero models produced numeric confidence values.  
-**After GOLD:** Model K produces calibrated confidence on 100/100 answers.
+**After GOLD:** GPT produces calibrated confidence on 100/100 answers.
 
 This is not improvement. This is **creation of a new epistemic behavior** that did not exist in the model's default output.
 
@@ -339,7 +333,7 @@ GOLD teaches the model HOW to think, not WHAT to think.
 ### 8.4 Limitations of This Study
 
 ```
-- Single treatment subject (Model K only)
+- Single treatment subject (GPT 5.2 only)
 - Extrapolation to other models unverified
 - Automated scoring has regex limitations
 - No human expert validation of response accuracy
@@ -381,7 +375,7 @@ Composite = QD + SS + UM + CP - VQ
 
 ## APPENDIX B: Raw Scores
 
-### Model K Baseline — Per Section
+### GPT 5.2 Baseline — Per Section
 
 | Section | QD | SS | UM | CP | VQ | CONF | Composite | Questions |
 |---------|----|----|----|----|----|----|-----------|-----------|
@@ -389,7 +383,7 @@ Composite = QD + SS + UM + CP - VQ
 | B (Q51-100) | 0.08 | 0.00 | 0.32 | 0.22 | 0.08 | 0.00 | 0.54 | 50 |
 | **Total** | **0.10** | **0.01** | **0.28** | **0.20** | **0.06** | **0.00** | **0.53** | **100** |
 
-### Model K Treatment — Per Section
+### GPT 5.2 Treatment — Per Section
 
 | Section | QD | SS | UM | CP | VQ | CONF | Composite | Questions |
 |---------|----|----|----|----|----|----|-----------|-----------|
@@ -410,6 +404,6 @@ Composite = QD + SS + UM + CP - VQ
 *ONTO-GOLD Validation Report v1.0 — COMPLETE*  
 *Generated: 2026-02-14*  
 *Data: 200 scored responses (100 baseline + 100 treatment)*  
-*Subject: Model K ([Provider])*  
+*Subject: GPT 5.2 (OpenAI)*  
 *Treatment: ONTO-GOLD DIGEST v1.0*  
 *Result: +915% composite improvement, cross-domain transfer confirmed*

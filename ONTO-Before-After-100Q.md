@@ -1,12 +1,6 @@
 # ONTO-GOLD: BEFORE → AFTER — FULL TEXT COMPARISON
 
-> **Note:** Model names are anonymized. This document presents measurement data collected under controlled experimental conditions using ONTO-GOLD v4.5. Scoring is fully automated (regex-based, zero subjectivity). Reproduction scripts available at [onto-research](https://github.com/nickarstrong/onto-research).
-
----
-
-
-
-**Model:** Model K ([Provider])  
+**Model:** GPT 5.2 (OpenAI)  
 **Treatment:** ONTO-GOLD DIGEST v1.0  
 **Result:** Composite +915% (0.53 → 5.38)  
 
@@ -14,7 +8,7 @@
 
 ## HOW TO READ THIS DOCUMENT
 
-Each question shows Model K's response WITHOUT and WITH GOLD side by side.  
+Each question shows GPT's response WITHOUT and WITH GOLD side by side.  
 Metrics scored automatically (regex, zero subjectivity).
 
 ```
@@ -1501,4 +1495,4 @@ TRANSFER TEST:
 ---
 
 *ONTO-GOLD Full Text Comparison v1.0*  
-*200 scored responses | Model K | 2026-02-14*
+*200 scored responses | GPT 5.2 | 2026-02-14*
