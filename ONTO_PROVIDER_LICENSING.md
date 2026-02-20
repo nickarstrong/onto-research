@@ -52,7 +52,7 @@ ONTO Server ──SSE stream──▸ Your Infrastructure
 ### Enterprise — $250,000/yr
 *We certify your model.*
 
-- GOLD TIER 6 (Full Corpus) via SSE stream
+- GOLD TIER 4 (Full Corpus) via SSE stream
 - Up to 100 models
 - Monthly benchmark reports
 - **"ONTO Certified" public certificate** — show to your enterprise clients
