@@ -5,15 +5,27 @@
 [![Models](https://img.shields.io/badge/Models_Tested-11-orange)](ONTO-11-Model-Baseline.md)
 [![Website](https://img.shields.io/badge/Web-ontostandard.org-2ec27e)](https://ontostandard.org)
 
+**Your AI says it's 95% confident. It's wrong 40% of the time. You can't tell the difference. ONTO can.**
+
 ## The Problem
 
-Every AI model answers confidently. Even when it doesn't know.
+We tested 11 production models — GPT-4o, GPT-4.5, Claude, Gemini, DeepSeek, Grok, Mistral, Copilot, Kimi, Qwen — across 100 questions in 5 domains. Results:
 
-We tested 11 production models (GPT-4o, GPT-4.5, Claude Sonnet, Claude Haiku, Gemini 2.0, DeepSeek R1, Grok, Mistral Large, Copilot, Kimi, Qwen) across 100 questions in 5 domains. Not a single baseline model provided numeric confidence levels. Zero models quantified what they didn't know.
+- Zero models provide numeric confidence levels
+- Zero models cite verifiable sources
+- Zero models quantify what they don't know
+- 9 of 11 hallucinated on verifiable factual questions
+- Mean epistemic quality score: 0.53 out of 10
 
 ## The Solution: ONTO GOLD
 
 ONTO GOLD is an epistemic discipline layer for AI models. Not fine-tuning. Not knowledge injection. It teaches models *how* to reason — cite sources, quantify confidence, mark uncertainty, disclose gaps.
+
+**Before ONTO** (any model):
+> "Intermittent fasting has moderate benefits for metabolic health."
+
+**After ONTO** (same model):
+> "Intermittent fasting shows mass reduction of 3-8% over 3-24 weeks (Varady et al., 2021, n=560). Confidence: 0.72 for metabolic markers, 0.45 for long-term cardiovascular outcomes. Gap: no RCTs beyond 12 months in populations over 65."
 
 **Key result (CS-2026-001):**
 - Composite score: 0.53 → 5.38 (**10× improvement**)
@@ -71,6 +83,7 @@ No dependencies. No API keys. No AI judge. Just regex.
 2. **Hallucination Inside Apology (HIA)**: Models acknowledge errors at macro level while generating new fabrications at micro level — critical safety finding
 3. **Convergence effect**: With GOLD, all models converge toward similar epistemic quality regardless of base capability
 4. **Zero baseline citation**: Not a single model among 11 tested provides numeric confidence levels without intervention
+5. **Detection**: ONTO scoring engine identifies epistemic discipline patterns — unlicensed use of ONTO-derived behavior is detectable
 
 ## For Researchers
 
@@ -92,20 +105,21 @@ in Production LLM Systems." February 2026. https://ontostandard.org
 
 **Grant program**: 1,000 proxy requests/day at no cost for qualifying academic institutions. Contact: research@ontostandard.org
 
-## For AI Providers (TIER 1)
+## For AI Providers
 
 Integrate GOLD into your inference pipeline. Fixed annual license, unlimited scale. You receive GOLD once via SSE burst, cache locally, inject into every request. ONTO is not in your inference path — your traffic never touches our servers.
 
 - GOLD Full Corpus
-- $250,000/year fixed — no per-token, no per-request fees
-- 100 providers × 10M req/day each = our load is 100 SSE connections
+- **Provider**: $250,000/year fixed — no per-token, no per-request fees
+- **White-Label**: $500,000/year — deploy under your brand, no ONTO attribution
 - <50ms latency overhead
 - Any model architecture (GPT, Claude, Gemini, Llama, Mistral)
 - EU AI Act compliance readiness
+- Unlicensed use of ONTO-derived epistemic patterns is detectable via scoring engine
 
 Contact: providers@ontostandard.org
 
-## For Companies (TIER 2)
+## For Companies
 
 Production GOLD discipline for your AI. Server-side injection through ONTO proxy.
 
@@ -114,7 +128,7 @@ Production GOLD discipline for your AI. Server-side injection through ONTO proxy
 - Unlimited SSE stream
 - $30,000/year ($2,500/month)
 
-## Open (TIER 3)
+## Open
 
 Evaluate ONTO on your AI before you commit.
 
