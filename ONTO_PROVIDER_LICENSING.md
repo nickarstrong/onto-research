@@ -1,9 +1,9 @@
 # ONTO — AI Provider Licensing
 
 **Document:** ONTO-LICENSING-PROVIDERS-2026  
-**Version:** 1.0  
+**Version:** 2.0  
 **Date:** 2026-02-20  
-**Contact:** council@ontostandard.org
+**Contact:** providers@ontostandard.org
 
 ---
 
@@ -15,7 +15,7 @@ You integrate GOLD once. Your model's epistemic behavior changes across all outp
 
 ---
 
-## How Provider Integration Works
+## How It Works
 
 ```
 ONTO Server ──SSE stream──▸ Your Infrastructure
@@ -32,57 +32,22 @@ ONTO Server ──SSE stream──▸ Your Infrastructure
 3. Inject into system prompt pipeline — one-time setup
 4. Heartbeat every 300s confirms active license
 
-**ONTO is not in your inference path.** After initial sync, your latency = your latency.
+**ONTO is not in your inference path.** After initial sync, your latency = your latency. Your model serves 10K or 10M requests/day — your ONTO cost is identical.
 
 ---
 
-## Provider License
+## Provider License — $250,000/yr
 
-### Standard — $120,000/yr
-*We evaluate your model.*
+Fixed annual fee. No per-token, per-request, or per-user charges.
 
-- GOLD TIER 4 (Extended Corpus) via SSE stream
-- Cache locally, inject unlimited — no per-request fees
-- Up to 20 models
-- Quarterly epistemic benchmark (100-question evaluation, published score)
-- "ONTO Evaluated" badge
-- 12-month audit trail
+**Includes:**
+
+- GOLD Full Corpus via SSE stream
+- All production models covered
+- Unlimited scoring API
+- Ed25519 cryptographic proof chain
+- Full audit trail
 - Email support
-
-### Enterprise — $250,000/yr
-*We certify your model.*
-
-- GOLD TIER 4 (Full Corpus) via SSE stream
-- Up to 100 models
-- Monthly benchmark reports
-- **"ONTO Certified" public certificate** — show to your enterprise clients
-- Ed25519 signed verification endpoint — your clients verify independently
-- 24-month audit trail
-- Early access to GOLD updates
-- Dedicated support + SLA
-
-### Strategic Partner — $500,000+/yr
-*We build the standard together.*
-
-- Everything in Enterprise
-- Unlimited models
-- **White-label certification** — brand as your own quality layer
-- Custom GOLD modules for your domain (medical, legal, finance)
-- Advisory board seat
-- Joint research publication rights
-- Co-development of domain-specific scoring
-
----
-
-**Fixed annual fee. No per-token, per-request, or per-user charges.**
-
-At scale, ONTO cost approaches zero per request:
-
-| Your daily volume | Standard ($120K/yr) | Enterprise ($250K/yr) |
-|---|---|---|
-| 100K req/day | $0.003/req | $0.007/req |
-| 1M req/day | $0.0003/req | $0.0007/req |
-| 10M req/day | $0.00003/req | $0.00007/req |
 
 ---
 
@@ -90,13 +55,19 @@ At scale, ONTO cost approaches zero per request:
 
 | Component | Cost |
 |-----------|------|
-| ONTO license | $120K–$250K/yr (fixed) |
+| ONTO license | $250,000/yr (fixed) |
 | Token overhead per request | 0 (GOLD cached locally) |
 | Compute overhead | Negligible (KV cache reuse) |
 | Bandwidth to ONTO | ~1 SSE burst + heartbeat/300s |
 | Integration engineering | One-time, <1 day |
 
-Your model serves 10K or 10M requests/day — your ONTO cost is identical.
+At scale:
+
+| Your daily volume | Cost per request |
+|---|---|
+| 100K req/day | $0.007 |
+| 1M req/day | $0.0007 |
+| 10M req/day | $0.00007 |
 
 ---
 
@@ -119,9 +90,9 @@ No baseline model has calibrated confidence or gap quantification. ONTO adds bot
 
 ## Why This Matters For Your Business
 
-**Enterprise procurement.** B2B clients increasingly require verifiable AI quality. ONTO certification is an independent, reproducible quality signal that shortens procurement cycles.
+**Enterprise procurement.** B2B clients increasingly require verifiable AI quality. ONTO is an independent, reproducible quality signal that shortens procurement cycles.
 
-**Regulatory readiness.** EU AI Act requires transparency and accuracy reporting for high-risk AI. ONTO-certified models produce the audit artifacts regulators expect.
+**Regulatory readiness.** EU AI Act requires transparency and accuracy reporting for high-risk AI. ONTO-equipped models produce the audit artifacts regulators expect.
 
 **Competitive differentiation.** In a market where model capabilities converge, epistemic discipline is the measurable differentiator. First provider with independent quality verification wins enterprise trust.
 
@@ -131,7 +102,7 @@ No baseline model has calibrated confidence or gap quantification. ONTO adds bot
 
 ## Verification Architecture
 
-- Deterministic scoring engine (993 lines, regex-based, zero AI judge)
+- Deterministic scoring engine (regex-based, zero AI judge)
 - Ed25519 cryptographic proof chain (104 bytes per evaluation)
 - Public verification endpoint
 - Fully reproducible — same input produces identical score on any machine
@@ -139,17 +110,11 @@ No baseline model has calibrated confidence or gap quantification. ONTO adds bot
 
 ---
 
-## Founding Program
-
-First 20 providers: pay 12 months, receive 24 months. Case study rights, quarterly advisory calls, roadmap influence.
-
----
-
 ## Next Step
 
 Request an independent evaluation of your model's epistemic behavior.
 
-**council@ontostandard.org**
+**providers@ontostandard.org**
 
 ---
 
