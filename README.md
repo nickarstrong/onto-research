@@ -92,16 +92,35 @@ in Production LLM Systems." February 2026. https://ontostandard.org
 
 **Grant program**: 1,000 proxy requests/day at no cost for qualifying academic institutions. Contact: research@ontostandard.org
 
-## For AI Providers
+## For AI Providers (TIER 1)
 
-Integrate GOLD into your inference pipeline. Fixed price, unlimited scale. Your model gets measurably better output — cited sources, calibrated confidence, honest uncertainty.
+Integrate GOLD into your inference pipeline. Fixed annual license, unlimited scale. You receive GOLD once via SSE burst, cache locally, inject into every request. ONTO is not in your inference path — your traffic never touches our servers.
 
-- 10× epistemic improvement (measured, CS-2026-001)
+- GOLD Full Corpus
+- $250,000/year fixed — no per-token, no per-request fees
+- 100 providers × 10M req/day each = our load is 100 SSE connections
 - <50ms latency overhead
 - Any model architecture (GPT, Claude, Gemini, Llama, Mistral)
 - EU AI Act compliance readiness
 
 Contact: providers@ontostandard.org
+
+## For Companies (TIER 2)
+
+Production GOLD discipline for your AI. Server-side injection through ONTO proxy.
+
+- 1,000 proxy requests/day
+- GOLD Extended Corpus
+- Unlimited SSE stream
+- $30,000/year ($2,500/month)
+
+## Open (TIER 3)
+
+Evaluate ONTO on your AI before you commit.
+
+- 10 proxy requests/day
+- GOLD Core
+- Free
 
 ## Links
 
