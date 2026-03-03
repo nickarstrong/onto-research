@@ -51,7 +51,7 @@ Same input = same score. Always. On any machine. In any language. `Var(Score) = 
 
 | File | Description |
 |------|-------------|
-| [onto-scoring.py](onto-scoring.py) | Scoring engine v3.0 (993 lines, zero dependencies) |
+| [onto-scoring.py](onto-scoring.py) | Scoring engine v3.1 (993 lines, zero dependencies) |
 | [ONTO-Full-Report.md](ONTO-Full-Report.md) | Complete experiment report with methodology |
 | [ONTO-11-Model-Baseline.md](ONTO-11-Model-Baseline.md) | All 11 models scored and compared |
 | [gold_experiment_questions.md](gold_experiment_questions.md) | 100 test questions across 5 domains |
