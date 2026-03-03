@@ -9,7 +9,7 @@
 
 ## The Problem
 
-We tested 11 production models — GPT-4o, GPT-4.5, Claude, Gemini, DeepSeek, Grok, Mistral, Copilot, Kimi, Qwen — across 100 questions in 5 domains. Results:
+We tested 11 production models — GPT 5.2, Claude Sonnet 4.5, Gemini, DeepSeek R1, Grok 4.2, Mistral Large, Copilot, Kimi K2.5, Qwen3-Max, Alice (Yandex), Perplexity — across 100 questions in 5 domains. Results:
 
 - Zero models provide numeric confidence levels
 - Zero models cite verifiable sources
@@ -28,10 +28,11 @@ ONTO GOLD is an epistemic discipline layer for AI models. Not fine-tuning. Not k
 > "Intermittent fasting shows mass reduction of 3-8% over 3-24 weeks (Varady et al., 2021, n=560). Confidence: 0.72 for metabolic markers, 0.45 for long-term cardiovascular outcomes. Gap: no RCTs beyond 12 months in populations over 65."
 
 **Key result (CS-2026-001):**
-- Composite score: 0.53 → 5.38 (**10× improvement**)
+- Composite score: 0.53 → 5.38 (**10× improvement**, aggregate mean across all 10 ranked models)
 - Variance: SD 0.58 → SD 0.11 (**5.4× reduction**)
 - Cross-domain transfer: **4/5 metrics** improve in domains not present in GOLD
 - Baseline mean: M=0.92 across 10 models
+- Dual-engine architecture: Python scoring engine (993 lines, regex) + Rust onto_core (entropy, Merkle, PyO3)
 
 ## How Scoring Works
 
@@ -53,7 +54,8 @@ Same input = same score. Always. On any machine. In any language. `Var(Score) = 
 |------|-------------|
 | [onto-scoring.py](onto-scoring.py) | Scoring engine v3.1 (993 lines, zero dependencies) |
 | [ONTO-Full-Report.md](ONTO-Full-Report.md) | Complete experiment report with methodology |
-| [ONTO-11-Model-Baseline.md](ONTO-11-Model-Baseline.md) | All 11 models scored and compared |
+| [ONTO-11-Model-Baseline.md](ONTO-11-Model-Baseline.md) | All 11 models scored and compared (10 ranked, 1 excluded) |
+| [ONTO-Before-After-100Q.md](ONTO-Before-After-100Q.md) | Full before/after responses for all 100 questions |
 | [gold_experiment_questions.md](gold_experiment_questions.md) | 100 test questions across 5 domains |
 
 ## Quick Start
