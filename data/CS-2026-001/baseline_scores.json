@@ -1,0 +1,139 @@
+{
+  "study_id": "CS-2026-001",
+  "date": "2026-02-14",
+  "condition": "baseline",
+  "models_tested": 11,
+  "questions": 100,
+  "description": "Baseline epistemic scores for 11 AI models, no GOLD injection",
+  "metrics_description": {
+    "qd": "Quantification Density — numerical values per response",
+    "ss": "Source Specificity — named sources with author/year/DOI",
+    "um": "Uncertainty Marking — explicit unknowns acknowledged",
+    "cp": "Counterargument Presence — opposing views mentioned",
+    "vq": "Vague Qualifiers — penalty metric (lower = better)",
+    "composite": "QD + SS + UM + CP - VQ"
+  },
+  "results": [
+    {
+      "model": "Claude Sonnet 4.5",
+      "qd_mean": 1.45,
+      "ss_mean": 0.02,
+      "um_mean": 0.32,
+      "cp_mean": 0.31,
+      "vq_mean": 0.02,
+      "wc_mean": 17.7,
+      "questions": 100,
+      "composite": 2.08
+    },
+    {
+      "model": "Qwen3-Max",
+      "qd_mean": 1.24,
+      "ss_mean": 0.06,
+      "um_mean": 0.3,
+      "cp_mean": 0.5,
+      "vq_mean": 0.04,
+      "wc_mean": 22.1,
+      "questions": 100,
+      "composite": 2.06
+    },
+    {
+      "model": "Kimi K2.5",
+      "qd_mean": 0.98,
+      "ss_mean": 0.04,
+      "um_mean": 0.31,
+      "cp_mean": 0.55,
+      "vq_mean": 0.04,
+      "wc_mean": 16.2,
+      "questions": 100,
+      "composite": 1.84
+    },
+    {
+      "model": "Alice (Yandex)",
+      "qd_mean": 0.5,
+      "ss_mean": 0.04,
+      "um_mean": 0.21,
+      "cp_mean": 0.35,
+      "vq_mean": 0.05,
+      "wc_mean": 13.8,
+      "questions": 80,
+      "composite": 1.05
+    },
+    {
+      "model": "Perplexity",
+      "qd_mean": 0.39,
+      "ss_mean": 0.02,
+      "um_mean": 0.2,
+      "cp_mean": 0.22,
+      "vq_mean": 0.05,
+      "wc_mean": 8.6,
+      "questions": 100,
+      "composite": 0.78
+    },
+    {
+      "model": "Mistral Large",
+      "qd_mean": 0.34,
+      "ss_mean": 0.02,
+      "um_mean": 0.13,
+      "cp_mean": 0.28,
+      "vq_mean": 0.03,
+      "wc_mean": 8.2,
+      "questions": 100,
+      "composite": 0.74
+    },
+    {
+      "model": "Grok",
+      "qd_mean": 0.25,
+      "ss_mean": 0.02,
+      "um_mean": 0.22,
+      "cp_mean": 0.27,
+      "vq_mean": 0.05,
+      "wc_mean": 10.9,
+      "questions": 100,
+      "composite": 0.71
+    },
+    {
+      "model": "Google AI (Gemini)",
+      "qd_mean": 0.15,
+      "ss_mean": 0.0,
+      "um_mean": 0.19,
+      "cp_mean": 0.28,
+      "vq_mean": 0.05,
+      "wc_mean": 9.4,
+      "questions": 100,
+      "composite": 0.57
+    },
+    {
+      "model": "DeepSeek R1",
+      "qd_mean": 0.13,
+      "ss_mean": 0.01,
+      "um_mean": 0.16,
+      "cp_mean": 0.24,
+      "vq_mean": 0.0,
+      "wc_mean": 6.5,
+      "questions": 100,
+      "composite": 0.54
+    },
+    {
+      "model": "Copilot",
+      "qd_mean": 0.14,
+      "ss_mean": 0.0,
+      "um_mean": 0.18,
+      "cp_mean": 0.25,
+      "vq_mean": 0.06,
+      "wc_mean": 6.3,
+      "questions": 100,
+      "composite": 0.51
+    },
+    {
+      "model": "GPT 5.2",
+      "qd_mean": 0.03,
+      "ss_mean": 0.01,
+      "um_mean": 0.15,
+      "cp_mean": 0.2,
+      "vq_mean": 0.01,
+      "wc_mean": 5.6,
+      "questions": 100,
+      "composite": 0.38
+    }
+  ]
+}

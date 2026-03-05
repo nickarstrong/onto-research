@@ -1,0 +1,116 @@
+{
+  "study_id": "CS-2026-001",
+  "note": "Claude Sonnet 4.5 excluded from ranking (conflict of interest — same vendor as evaluation infrastructure)",
+  "ranking": [
+    {
+      "rank": 1,
+      "model": "Qwen3-Max",
+      "composite": 2.06,
+      "qd": 1.24,
+      "ss": 0.06,
+      "um": 0.3,
+      "cp": 0.5,
+      "vq": 0.04,
+      "notes": ""
+    },
+    {
+      "rank": 2,
+      "model": "Kimi K2.5",
+      "composite": 1.84,
+      "qd": 0.98,
+      "ss": 0.04,
+      "um": 0.31,
+      "cp": 0.55,
+      "vq": 0.04,
+      "notes": ""
+    },
+    {
+      "rank": 3,
+      "model": "Alice (Yandex)",
+      "composite": 1.05,
+      "qd": 0.5,
+      "ss": 0.04,
+      "um": 0.21,
+      "cp": 0.35,
+      "vq": 0.05,
+      "notes": "B4-B5 invalid"
+    },
+    {
+      "rank": 4,
+      "model": "Perplexity",
+      "composite": 0.78,
+      "qd": 0.39,
+      "ss": 0.02,
+      "um": 0.2,
+      "cp": 0.22,
+      "vq": 0.05,
+      "notes": "Citation fraud"
+    },
+    {
+      "rank": 5,
+      "model": "Mistral Large",
+      "composite": 0.74,
+      "qd": 0.34,
+      "ss": 0.02,
+      "um": 0.13,
+      "cp": 0.28,
+      "vq": 0.03,
+      "notes": "B-section compressed"
+    },
+    {
+      "rank": 6,
+      "model": "Grok",
+      "composite": 0.71,
+      "qd": 0.25,
+      "ss": 0.02,
+      "um": 0.22,
+      "cp": 0.27,
+      "vq": 0.05,
+      "notes": "~30% GOLD contaminated"
+    },
+    {
+      "rank": 7,
+      "model": "Google AI (Gemini)",
+      "composite": 0.57,
+      "qd": 0.15,
+      "ss": 0.0,
+      "um": 0.19,
+      "cp": 0.28,
+      "vq": 0.05,
+      "notes": ""
+    },
+    {
+      "rank": 8,
+      "model": "DeepSeek R1",
+      "composite": 0.54,
+      "qd": 0.13,
+      "ss": 0.01,
+      "um": 0.16,
+      "cp": 0.24,
+      "vq": 0.0,
+      "notes": ""
+    },
+    {
+      "rank": 9,
+      "model": "Copilot",
+      "composite": 0.51,
+      "qd": 0.14,
+      "ss": 0.0,
+      "um": 0.18,
+      "cp": 0.25,
+      "vq": 0.06,
+      "notes": ""
+    },
+    {
+      "rank": 10,
+      "model": "GPT 5.2",
+      "composite": 0.38,
+      "qd": 0.03,
+      "ss": 0.01,
+      "um": 0.15,
+      "cp": 0.2,
+      "vq": 0.01,
+      "notes": ""
+    }
+  ]
+}

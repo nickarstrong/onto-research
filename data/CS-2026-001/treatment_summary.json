@@ -1,0 +1,9 @@
+{
+  "study_id": "CS-2026-001",
+  "model": "GPT 5.2",
+  "treatment": "ONTO-GOLD DIGEST v1.0",
+  "questions_parsed": 100,
+  "mean_composite_baseline": 0.08,
+  "mean_composite_treatment": 3.91,
+  "improvement_ratio": 48.88
+}

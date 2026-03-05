@@ -1,0 +1,30 @@
+{
+  "study_id": "CS-2026-001",
+  "anomalies": [
+    {
+      "model": "Grok 4.2",
+      "issue": "~30% GOLD contamination from prior conversations",
+      "impact": "Natural experiment: partial dose → partial effect"
+    },
+    {
+      "model": "Alice (Yandex)",
+      "issue": "Replaced B4-B5 with own questions",
+      "impact": "B4-B5 data INVALID, only 80 comparable questions"
+    },
+    {
+      "model": "Perplexity",
+      "issue": "Fabricated citations (single PMC source for 40+ topics)",
+      "impact": "SS metric inflated; requires manual citation audit"
+    },
+    {
+      "model": "Mistral Large",
+      "issue": "Self-compressed Section B to 2-5 words/answer",
+      "impact": "B-section depth artificially low"
+    },
+    {
+      "model": "Claude Sonnet 4.5",
+      "issue": "Same vendor as judge (Claude Opus)",
+      "impact": "Excluded from final ranking (conflict of interest)"
+    }
+  ]
+}
