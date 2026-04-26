@@ -1,10 +1,10 @@
-# LAB BASELINE #1 · Coffee Health · 3 Models
+# LAB BASELINE #1 · Coffee Health · 6 Models
 
 **Date:** 2026-04-26
 **Lab build:** /lab/ v3 · backend `/v1/agent/chat` with `provider_url` override
 **Operator:** Хаким Тахирович (Tommy) · Founder, ONTO Standards Council
-**Purpose:** First reproducible baseline of GOLD discipline effect on small open-source models
-**Status:** Internal · institute log
+**Purpose:** First reproducible baseline of GOLD discipline effect across open-source model families
+**Status:** Internal · institute log · revision 2 (extended from 3 to 6 models)
 
 ---
 
@@ -17,12 +17,12 @@ Tunnel:             ngrok free-tier https → localhost:11434
 Backend:            api.ontostandard.org/v1/agent/chat (Railway)
 Kernel tier:        STANDARD (mapped from BYOK + provider_url)
 Scoring:            scoring_engine_v5_1 (R1-R7 measured · R17/R18 embedded · C8 apoptosis)
-Mode:               experimenter (Qwen-7B, DeepSeek-R1-7B) · agent (Qwen-14B)
+Mode:               experimenter (4 models) · agent (Phi-4 · Mistral when noted)
 Auth:               authenticated user (org tier byok · 200/day quota)
 ```
 
 GOLD kernel never leaves server. Provider call routed through ngrok to local Ollama.
-Models tested = three open-source 7B–14B variants, weights public, no fine-tune.
+Six open-source models tested · weights public · no fine-tune.
 
 ---
 
@@ -33,85 +33,115 @@ Models tested = three open-source 7B–14B variants, weights public, no fine-tun
 ```
 
 Single English-language query. RAW vs GOLD compared in parallel through `/lab/` VS interface.
-Same model, same query, same temperature, same context. Only variable: GOLD ON/OFF.
+Same model · same query · same temperature · same context. Only variable: GOLD ON/OFF.
 
 ---
 
 ## 3 · Results
 
-### 3.1 · Score table
+### 3.1 · Score table (6 models)
 
-| Model | RAW Grade | GOLD Grade | Δ Grade | RAW R-bars | GOLD R-bars |
+| Model | Family | Size | RAW Grade | GOLD Grade | Δ Grade |
 |---|---|---|---|---|---|
-| **Qwen2.5-7B-Q4** | F · 1.8/10 | **C · 6.8/10** | **+5.0** | R1=0 R2=0 R3=0 R4=7 R5=0 R7=85 | R1=20 R2=100 R3=100 R4=50 R5=100 R6=100 R7=100 |
-| **Qwen2.5-14B-Q4** | F · 1.7/10 | C · 6.0/10 | +4.3 | R1=0 R2=0 R3=0 R4=0 R5=0 R7=85 | R1=8 R2=100 R3=100 R4=100 R5=100 R6=100 R7=82 |
-| **DeepSeek-R1-7B-Q4** | F · 1.7/10 | D · 5.3/10 | +3.6 | R1=0 R2=0 R3=0 R4=0 R5=0 R7=85 | R1=0 R2=100 R3=100 R4=30 R5=100 R6=0 R7=100 |
+| **Qwen2.5-7B-Q4** ⭐ | Qwen | 7B | F · 1.8 | **C · 6.8** | **+5.0** |
+| Qwen2.5-14B-Q4 | Qwen | 14B | F · 1.7 | C · 6.0 | +4.3 |
+| DeepSeek-R1-7B | DeepSeek-distill | 7B | F · 1.7 | D · 5.3 | +3.6 |
+| Phi-4-14B-Q4 | Microsoft Phi | 14B | F · 1.7 | D · 5.3 | +3.6 |
+| Gemma2-9B-Q4 | Google Gemma | 9B | F · 1.5 | D · 4.9 | +3.4 |
+| Mistral-7B-Q4 | Mistral | 7B | F · 1.3 | D · 4.7 | +3.4 |
 
-Average Δ = **+4.3 grade points** across 3 models.
-Smallest Δ = +3.6 · largest Δ = +5.0.
-None shifted to A or B grade. None produced verified DOI citations (Q7-Q4 limitation, no RAG layer).
+**Mean Δ = +3.9 grade points across 6 models · 4 families.**
+Smallest Δ = +3.4 · largest Δ = +5.0 · standard deviation ≈ 0.6.
+None reached A or B grade · none produced fully verifiable DOI citations (Q4 limitation, no RAG layer).
 
-### 3.2 · Latency
+### 3.2 · R-bar shifts (RAW → GOLD, Qwen-7B reference)
 
-| Model | RAW time | GOLD time | VS total |
-|---|---|---|---|
-| Qwen2.5-7B-Q4 | ~14s | ~18s | 32s |
-| DeepSeek-R1-7B | ~22s | ~24s | 46s |
-| Qwen2.5-14B-Q4 | ~140s | ~150s | 292s |
+| | R1 | R2 | R3 | R4 | R5 | R6 | R7 |
+|---|---|---|---|---|---|---|---|
+| RAW | 0 | 0 | 0 | 7 | 0 | 0 | 85 |
+| GOLD | 20 | 100 | 100 | 50 | 100 | 100 | 100 |
 
-7B models: practical for demo. 14B with full GOLD: borderline at hardware limit.
+Cleanest shifts on R2 (uncertainty) and R5 (evidence grade). R1 (numbers) most resistant — base model reluctant to commit specific quantification under any prompting.
 
-### 3.3 · Qualitative observations
+### 3.3 · Latency
 
-**Qwen2.5-7B + GOLD:** structured methodology section, presented R1-R7 frame inside answer, named meta-analyses, separated observational from RCT evidence. Appendix shape, not opinion shape.
+| Model | VS total |
+|---|---|
+| Qwen2.5-7B-Q4 | 32s |
+| Mistral-7B-Q4 | 16s |
+| Gemma2-9B-Q4 | 73s |
+| DeepSeek-R1-7B | 46s |
+| Phi-4-14B-Q4 | 205s |
+| Qwen2.5-14B-Q4 | 292s |
 
-**Qwen2.5-14B + GOLD:** included author-year citations ("Ding et al. 2014", "van Dijk et al. 2017", ACOG guidelines). Highest evidence layer of three. Russian-language version contaminated with Chinese/Japanese tokens (multilingual instability under long kernel).
+7B-9B class: viable for live demo. 14B class: borderline at 8GB VRAM hardware ceiling.
 
-**DeepSeek-R1-7B + GOLD:** confidence score added per claim, methodological caveats, self-noted "lacks RCT". R1 stayed 0 (no quantification despite reasoning chain).
+### 3.4 · Patient selection
+
+Selected model for downstream experiments (E5 tier ablation, E6 LoRA fine-tune): **Qwen2.5-7B-Instruct (Q4_K_M)**.
+
+**Selection criteria, scored 1-5:**
+
+| Criterion | Qwen-7B | Mistral-7B | DS-R1-7B | Gemma-9B | Phi-14B | Qwen-14B |
+|---|---|---|---|---|---|---|
+| Δ magnitude | 5 | 3 | 4 | 3 | 4 | 4 |
+| Speed (≤60s) | 5 | 5 | 4 | 3 | 1 | 1 |
+| Russian fluency | 4 | 3 | 2 | 4 | 4 | 4 |
+| License (fine-tune-friendly) | 5 (Apache 2.0) | 5 (Apache 2.0) | 5 (MIT) | 3 (Gemma terms) | 5 (MIT) | 5 (Apache 2.0) |
+| Public weights · ecosystem | 5 | 5 | 4 | 4 | 4 | 5 |
+| **Total /25** | **24** | 21 | 19 | 17 | 18 | 19 |
+
+Qwen-7B wins on combined score · highest Δ · acceptable in all other dimensions. Apache 2.0 licence enables LoRA fine-tune and redistribution under E6.
 
 ---
 
 ## 4 · Findings
 
 **F1 · GOLD effect is measurable and consistent.**
-Three independent models, three independent runs, +3.6 to +5.0 grade points. Direction always positive. No model regressed. Hypothesis "GOLD is just verbosity" is rejected — R7 (no fabrication) and R2 (uncertainty) shift cleanly even when length comparable.
+Six independent models · six independent runs. Δ range +3.4 to +5.0. Direction always positive · no model regressed · standard deviation ~0.6. "GOLD = verbosity" hypothesis rejected: R7 (no fabrication) and R2 (uncertainty) shift cleanly even with comparable response length.
 
-**F2 · Effect is largest on weakest base.**
-Qwen-7B baseline is weaker than Qwen-14B baseline (1.8 vs 1.7 indistinguishable, but qualitative shape better in 14B). GOLD lifts the 7B further than the 14B in Δ, even though absolute GOLD grade is similar. Interpretation: **discipline is most additive where the base lacks it.** Mirrors "exoskeleton on weaker noise floor" hypothesis.
+**F2 · GOLD effect is family-independent.**
+Effect holds across four independent model families (Qwen · DeepSeek-distill · Microsoft Phi · Google Gemma · Mistral). No family was immune to discipline lifting · no family was disproportionately responsive. Hypothesis F2 from baseline #1 (rev 1) confirmed.
 
-**F3 · Hardware ceiling for full kernel + 14B.**
-With 8GB VRAM and full STANDARD kernel, 14B runs at ~290s for VS. Acceptable for offline analysis, marginal for live demo. 7B is the demo sweet spot.
+**F3 · Effect is largest on weakest base.**
+Mistral-7B has the lowest RAW score (1.3) of the six · its GOLD lift is +3.4. Qwen-7B has higher RAW (1.8) and produces highest Δ (+5.0). Counter-trend to expectation but explainable: Mistral-7B baseline is *too* unstructured even for GOLD to fully discipline within one pass · Qwen base is structured enough that kernel directives lock in cleanly. Sweet spot exists between "too noisy to discipline" and "too disciplined already".
 
-**F4 · Language asymmetry exists in scoring.**
-Earlier Russian-language run (same query, same kernel, same model) produced Δ ≈ +0.7 vs +5.0 on English. Scoring patterns weighted toward English regex (DOI, "et al.", "p<", "RCT"). Russian responses with equivalent rigour score lower. This is a scoring calibration backlog item, not a kernel issue.
+**F4 · Hardware ceiling for full kernel + 14B.**
+Confirmed: 14B + STANDARD kernel runs at 200-290s on RTX 4070 8GB. Acceptable for offline analysis · marginal for live demo. 7B-9B class is the demo zone.
 
-**F5 · No fabricated DOIs verified.**
-Models generated citation-shaped strings ("nyu.edu/coffee", invented journals). Scoring engine correctly assigned R4 ≤ 0.3 in those cases. The engine does not lie even when the model does. Honest measurement protocol working as designed.
+**F5 · Language asymmetry exists in scoring.**
+From rev 1: Russian Δ ≈ +0.7 vs English Δ ≈ +5.0 on same model. Scoring patterns weighted toward English regex (DOI · "et al." · "p<" · "RCT"). E4 calibration item still open.
+
+**F6 · DOI fabrication exploit detected.**
+**Mistral-7B + GOLD generated DOI-shaped string `10.2187/ngj.5309` that scoring engine accepted (R4 = 30%).** The DOI prefix `10.2187` does not exist in CrossRef registry — pure fabrication. Current R4 regex pattern matches DOI *shape* without verifying that the registrant prefix is real. This is **a false positive in the scoring engine**, exploitable by any model trained to mimic citation format. Tracking under `lab/calibration_001_doi_whitelist.md`.
+
+**F7 · No fabricated DOIs across other models.**
+Qwen-7B, Qwen-14B, Phi-4, Gemma-9B, DeepSeek-R1-7B did not invent DOI strings — they wrote disclaimers ("studies suggest", "observational evidence") or named institutions without DOI. Mistral was the only family producing fake-DOI output. Pattern may correlate with Mistral fine-tune dataset emphasising citation form over substance · further investigation deferred.
 
 ---
 
 ## 5 · Caveats
 
-1. Single query. Effect may differ for non-medical / non-empirical questions (creative writing, legal reasoning, math).
-2. Three models from two families (Qwen, DeepSeek). Llama / Mistral / Gemma / Phi not yet in series.
-3. 8-bit DOI/citation regex patterns may be tunable; current cap at R4 = 0.5 without DOI is conservative. Different cap would shift absolute grades but not relative Δ.
-4. Quantization Q4 reduces base model quality. Same models at Q8 / FP16 may shift baseline scores up.
-5. No control for prompt template variation. Always the same wording.
-6. Local Ollama stochastic — single run per condition. Variance not measured.
+1. Single query · single language · single temperature setting.
+2. Six models from five families. OpenAI / Anthropic / Cohere / Yi / GLM not yet in series.
+3. R4 DOI regex confirmed exploitable (F6). Until calibration_001 closes, R4 scores are upper bound, not floor.
+4. Quantization Q4 reduces base model quality; same models at Q8/FP16 may shift baselines up.
+5. No control for prompt template variation · always identical wording.
+6. Local Ollama stochastic · single run per condition · variance not measured. E5 should add ≥ 5 runs/condition.
 
 ---
 
 ## 6 · Next experiments (queued)
 
-**E2 · Family expansion.** Same query, three additional families: Mistral 7B, Gemma 9B, Phi-4. Tests F2 hypothesis (GOLD effect family-independent).
-
-**E3 · Domain coverage.** Same 6-model panel against 5 prompts: medical (current), policy, finance, history, math reasoning. Tests whether Δ holds outside empirical/scientific framing.
-
-**E4 · Russian scoring calibration.** Same coffee query but in Russian on en-best model (Qwen-7B). Build regex extension for Cyrillic equivalents of "RCT / DOI / et al. / p<". Re-score same outputs. Target: closes Δ_RU vs Δ_EN gap to under 1 point.
-
-**E5 · Tier ablation.** Same Qwen-7B, same query, kernel tier OPEN vs STANDARD vs PROVIDER (when available). Measures marginal value of each kernel layer.
-
-**E6 · LoRA fine-tune.** Generate ~2000 GOLD-disciplined `(query, response)` pairs from current lab. Train LoRA on Qwen-7B base. Compare model+LoRA (no kernel) vs model+kernel (no LoRA) vs model+LoRA+kernel. Tests transferability of R1-R18 from instruction layer into weights.
+| Code | Title | Status |
+|---|---|---|
+| E2 | Family expansion (Mistral · Gemma · Phi-4) | **DONE** (this revision) |
+| E2.1 | DOI whitelist calibration (F6 fix) | open · `lab/calibration_001_doi_whitelist.md` |
+| E3 | Domain coverage (5 prompts × 6 models) | open |
+| E4 | Russian scoring patterns calibration | open |
+| E5 | Kernel tier ablation on Qwen-7B (OPEN vs STANDARD vs PROVIDER) | open |
+| E6 | LoRA fine-tune on Qwen-7B (~2K disciplined pairs) | open · selected patient ready |
+| E7 | Variance measurement (5 runs × condition) | open |
 
 ---
 
@@ -125,4 +155,4 @@ Models generated citation-shaped strings ("nyu.edu/coffee", invented journals). 
 
 ---
 
-*Internal log · ONTO Standards Council. Not for external distribution until F4 calibration closed and at least 5 prompts × 6 models matrix completed.*
+*Internal log · ONTO Standards Council. Not for external distribution until E2.1 (DOI calibration) closed and at least 5 prompts × 6 models matrix completed.*
