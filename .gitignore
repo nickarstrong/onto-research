@@ -1,0 +1,7 @@
+﻿lab/venv/
+lab/models/
+lab/llama-cpp/
+lab/logs/
+lab/gold/
+lab/data/
+lab/dpo/adapters/
