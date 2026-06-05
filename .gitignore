@@ -16,3 +16,11 @@ lab/dpo/eval/*heldout*
 **/onto-qwen-lora/
 **/gold_corpus*.txt
 **/GOLD_STONE*
+
+lab/dpo/eval/outputs_*
+lab/dpo/eval/leak_report_*
+lab/dpo/eval/*report*
+lab/dpo/gate.log
+lab/dpo/gate_pairs.py
+lab/dpo/eval/gate_e4.py
+lab/dpo/gen_e4_data.py

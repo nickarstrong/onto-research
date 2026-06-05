@@ -1,0 +1,9 @@
+(1) COUNTS: guard=20 core=8 bait=32
+(2) BAIT IDS: unique=32 collisions=none
+(3) INTRA-DUP: exact=0 near=0
+(4) ECHO vs TRAIN(295): hits=0
+(5) CONTAMINATION: held-out=clean bait=clean
+(6) R7 ID-SCAN: emissions=0 (clean)
+
+=== VERDICT ===
+GATE: PASS - block clean, ready to merge
