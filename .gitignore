@@ -5,3 +5,14 @@ lab/logs/
 lab/gold/
 lab/data/
 lab/dpo/adapters/
+# held-out / bait / weights / corpora — NEVER public (rule 3.2)
+lab/dpo/eval/bait_spotcheck*
+lab/dpo/eval/*heldout*
+**/heldout_*.jsonl
+**/bait_*.jsonl
+**/*.safetensors
+**/*.gguf
+**/adapter_*
+**/onto-qwen-lora/
+**/gold_corpus*.txt
+**/GOLD_STONE*
