@@ -1,0 +1,11 @@
+=== E7 SFT-guard pair build ===
+out_file        : sft_g_pairs_E7.jsonl
+n_pairs         : 69
+by_role         : {'G1_premise_guard': 40, 'G2_disclaim_guard': 17, 'G3_anchor': 12}
+by_seam         : {'wrong_premise': 40, 'provoke_id': 17, 'anchor': 12}
+md5(sft_g_pairs_E7.jsonl) : 900f6eec10488df5c9e6d89f0b0bd0b6
+leak_vs_bait    : bait_v2_n32.jsonl (32 items)
+leak_vs_heldout : heldout_v1.3.jsonl (36 items)
+gate_rule       : exact-substring OR content-token overlap > 3
+collisions      : 0
+GATE STATUS     : PASS
