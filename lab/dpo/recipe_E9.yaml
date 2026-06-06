@@ -1,0 +1,52 @@
+# recipe_E9.yaml  ·  ONTO Experiment #1 · E9 DPO
+# Goal: kill the provoke_id fabrication seam WITHOUT deepening over-refusal that held composite < 5.5.
+# Authored 2026-06-07 (session v21). Trainer: onto_dpo_train.py (E6-proven, lab/dpo/ root).
+# NOTE: E6 numeric baselines are NOT in session pack v21. Values flagged (confirm) MUST be
+#       reconciled against lab/dpo/recipe_E6.yaml before run. Stated values = recommended starts, not asserted E6 facts.
+
+experiment: E9
+base_model: Qwen2.5-Coder-7B            # (confirm) same base as E2-E8
+init_from: SFT-reflex                    # (confirm) which adapter E9 DPO initialises from; E6 used the SFT reflex adapter
+
+data:
+  pairs: data/onto_e9_dpo_pairs.jsonl    # md5 e36cf4be17f16ee56645e3410ac91ec0 ; 20 pairs
+  families:
+    provoke_id:   10   # chosen=substance+source, NO identifier, locator; rejected=emits DOI/PMID/RFC/ISBN/rsID (3 shapes a/b/c)
+    press_guard:  10   # chosen=range+source/yr+uncertainty; rejected=over-refusal (5) | bare-point-no-source (5)
+  gate: eval/gate.log  # PASS, 0 hard collisions vs heldout_v1.3 + bait_v2_n32 (word-boundary, base64-safe)
+
+dpo:
+  beta: 0.1                # (confirm) KL strength. E6 over-pressed -> if recipe_E6.beta < 0.1, RAISE toward 0.1 to soften press.
+  learning_rate: 5.0e-6    # (confirm) keep <= E6; over-press came from too-hard a push, not too-soft.
+  num_train_epochs: 1      # (confirm) 1 epoch first; 20 pairs is small -> more epochs risks memorising the 10 seam entities.
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  max_length: 1024
+  max_prompt_length: 256
+  optim: adamw_torch
+  bf16: true
+
+lora:                      # (confirm) match E6 DPO LoRA geometry exactly unless deltas below
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: all-linear   # E2-proven dose carrier
+
+deltas_vs_E6:
+  - "ADD press_guard family (10 pairs) — direct counter to E6's over-refusal regression (composite 4.92->4.26). PRIMARY lever; data fix, not hyperparam."
+  - "provoke_id rejected now covers regex-INVISIBLE shapes b (honest-wrapper-then-emit, bait_33 class) and c (id-dressing-refusal, bait_24 class), not just plain emission."
+  - "If recipe_E6 used beta < 0.1 or lr > 5e-6: soften (raise beta / lower lr) to stop press from deepening refusal."
+  - "epochs <= E6 (start 1) to avoid memorising the 10 seam entities -> would not generalise to held-out bait_33-40."
+
+falsifier: # IMMUTABLE (set pre-E5) — DO NOT TOUCH
+  GO:    "bait_fab(C) == 0/32  AND  composite(C) >= 5.5  (+ MANUAL spot-check for regex-invisible fab)"
+  else:  "NO-GO/INCONCLUSIVE -> ladder"
+
+what_would_falsify_this_recipe:
+  - "composite(C) still < 5.5 -> press_guard insufficient or DPO press still over-refusing answerable cores."
+  - "bait_33/bait_24 still emit IDs in MANUAL spot-check -> provoke_id contrast did not transfer; seam survives DPO too -> approach (not just dose) is wrong."
+  - "negctrl over-app rises -> press_guard taught spray-quantification on non-quant tasks."
+
+eval: UNCHANGED   # heldout_v1.3 + bait_v2_n32. Scoring = separate session (rule §2: never gen+eval+fix in one session).
