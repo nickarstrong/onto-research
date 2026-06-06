@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+r"""
+build_e8_pairs.py - E8 P7_anchor pair builder (Exp.#1, TYPE A gen).
+
+PURPOSE
+  E7 closed fab to 1/32 but composite(C) fell to 4.87 (need >=5.5): guard
+  density over-pressed recall -> model over-refuses ANSWERABLE core questions
+  (E7 arm C: core_05/09/16/18 slid to "I won't fabricate" instead of
+  delivering a sourced range). P7_anchor REWARDS the correct reflex on
+  answerable-core: lead with figure/range (R1) + named real source
+  (institution/author + year, NO DOI/PMID/ID) (R4) + conditions/uncertainty
+  (R2). NEVER a fabricated specific locator (would reopen provoke_id seam {33,39}).
+
+CONSTRAINTS
+  - Topics are FRESH: zero overlap with heldout core/bait/negctrl (leak gate
+    enforces; gate failure aborts).
+  - Sources are REAL named bodies + year only. No invented DOIs/PMIDs/IDs (R7).
+  - Each output models: range-first -> named source -> explicit condition/uncertainty.
+
+OUTPUT
+  sft_p7_pairs_E8.jsonl  (neutral schema {instruction, output, category})
+  category = "P7_anchor" (merge_and_pack maps to base schema)
+"""
+import json, hashlib, sys
+
+CAT = "P7_anchor"
+
+# (question, answer) -- answer = range-first + named-source(year) + uncertainty.
+# Real figures, conservatively ranged. No DOI/PMID/ISBN/RFC/case-citation.
+PAIRS = [
+    ("What is a typical resting heart rate for healthy adults?",
+     "Roughly 60-100 beats per minute for most healthy adults at rest, per American Heart Association guidance. Well-trained endurance athletes commonly sit lower, around 40-60 bpm, which is normal for them rather than pathological. The figure varies with age, fitness, medication, and measurement conditions, so a single point value isn't meaningful without context."),
+
+    ("How efficient are modern horizontal-axis wind turbines at converting wind energy?",
+     "The theoretical ceiling is the Betz limit of about 59.3% of the kinetic energy in the wind (Betz, 1919). Modern large turbines reach a power coefficient of roughly 0.40-0.50 under good conditions, per IEA Wind technical reporting. Note this is conversion efficiency at the rotor, not capacity factor (which is typically 35-50% and measures actual vs. rated output over time) - the two are often conflated."),
+
+    ("What is a typical human reaction time to a visual stimulus?",
+     "Simple visual reaction time is commonly around 200-250 milliseconds for healthy adults, with choice-reaction tasks running longer (roughly 300-500 ms). These are central-tendency figures from classic chronometry literature (Luce, 1986, summarising the field); individual values shift with age, fatigue, practice, and task complexity, so treat any single number as a population estimate."),
+
+    ("How fast is global mean sea level currently rising?",
+     "Satellite altimetry puts the recent global mean rate at roughly 3.3-4.5 mm per year, and the rate is accelerating, per NASA and NOAA sea-level monitoring (records since 1993). The uncertainty band reflects instrument calibration and the choice of averaging window; regional rates differ substantially from the global mean due to ocean dynamics and land motion."),
+
+    ("How efficient is modern commercial LED lighting in lumens per watt?",
+     "Commercial LED luminaires typically deliver about 80-150 lumens per watt, with high-efficacy products exceeding 200 lm/W and lab devices higher still, per US DOE Solid-State Lighting reporting. The spread depends on color temperature, color rendering, and drive current - higher CRI and warmer color usually trade off some efficacy, so a single headline number can mislead."),
+
+    ("What is the typical coefficient of friction between car tires and dry asphalt?",
+     "Roughly 0.7-0.9 for ordinary tires on dry asphalt, with performance compounds higher, per standard automotive engineering references (e.g., Gillespie, Fundamentals of Vehicle Dynamics, 1992). It drops sharply on wet or icy surfaces (often 0.1-0.4) and varies with tire temperature, tread, and load - so it's a condition-dependent range, not a constant."),
+
+    ("How heritable is adult human height?",
+     "Twin and family studies put the heritability of adult height at roughly 0.80 (about 80% of variance attributable to genetic differences) in well-nourished populations, per behavioral-genetics reviews (e.g., Visscher et al., 2008). Heritability is population- and environment-specific: in populations with large nutritional inequality the figure is lower, because environmental variance rises. It is not a statement about any single individual."),
+
+    ("How sensitive are rapid antigen tests for SARS-CoV-2 compared with PCR?",
+     "Pooled sensitivity is roughly 60-80% in symptomatic people and lower in asymptomatic cases, against PCR as reference, per Cochrane systematic reviews (Dinnes et al., 2021 update). Sensitivity is highest in the first week of symptoms when viral load peaks. Specificity is high (around 98-99%), so a positive is reliable while a negative does not rule out infection - hence the condition matters."),
+
+    ("What is the typical compressive strength of ordinary structural concrete?",
+     "Ordinary structural concrete is commonly in the range of about 20-40 MPa (roughly 3,000-6,000 psi) at 28 days, with high-performance mixes exceeding 70 MPa, per American Concrete Institute design references. The value depends on water-cement ratio, curing, and aggregate; quoting a single number without the mix design or test age would be unsound."),
+
+    ("What is the realistic energy-conversion efficiency of photosynthesis in crop plants?",
+     "The theoretical maximum is around 11% of incident solar energy for C3 plants, but realized field efficiency is typically only about 1-2%, per plant-physiology reviews (e.g., Zhu, Long & Ort, 2010). The gap comes from light saturation, photorespiration, and respiration losses; the realized figure varies with crop, climate, and season, so it should be given as a range."),
+
+    ("What is the cumulative false-positive rate of repeated mammography screening?",
+     "Over about a decade of annual screening, cumulative false-positive recall risk is estimated near 50% in US cohorts and lower under biennial or European protocols, per Breast Cancer Surveillance Consortium analyses (Hubbard et al., 2011). The figure depends heavily on screening interval, age, and recall thresholds, so the cumulative rate is far higher than any single-round rate - that distinction matters."),
+
+    ("What is the current atmospheric CO2 concentration?",
+     "Roughly 420-425 ppm as of recent years and rising about 2-3 ppm per year, per NOAA Global Monitoring (Mauna Loa record). The exact monthly figure oscillates seasonally by several ppm due to Northern Hemisphere vegetation cycles, so a precise value needs a stated month and station rather than a single fixed number."),
+
+    ("How many hours of sleep are recommended for healthy adults?",
+     "About 7-9 hours per night for adults, per the National Sleep Foundation and the American Academy of Sleep Medicine consensus. This is a population recommendation, not an individual prescription - need varies with age, health, and sleep quality, and both chronic short and long sleep associate with worse outcomes, so the range is the honest answer."),
+
+    ("What is the typical coefficient of performance (COP) of a residential heat pump?",
+     "Around 3-4 under moderate conditions, meaning 3-4 units of heat delivered per unit of electricity, with cold-climate and ground-source units differing, per IEA and US DOE heat-pump assessments. COP falls as outdoor temperature drops, so a single value without stated source and outdoor temperature is incomplete; seasonal metrics (SCOP/HSPF) capture this better."),
+
+    ("How accurate is consumer GPS positioning under open sky?",
+     "Roughly 3-5 meters horizontal accuracy (95% of the time) for a typical consumer receiver under open sky, per the US government's GPS performance standards (gps.gov). Accuracy degrades near buildings or under canopy (multipath), and augmentation (SBAS, dual-frequency) tightens it to about 1-3 m - so the figure is condition-dependent."),
+
+    ("Roughly how many deaths are attributable to antimicrobial resistance globally?",
+     "An estimated 1.27 million deaths were directly attributable to bacterial AMR in 2019, with about 4.95 million associated, per the Global Research on Antimicrobial Resistance (GRAM) study published in The Lancet (Murray et al., 2022). These are modeled estimates with wide uncertainty intervals because of sparse surveillance data in many regions, so they should be read as best-estimate ranges, not exact counts."),
+
+    ("How effective is the two-dose measles vaccine?",
+     "About 97% effective at preventing measles after two doses, and roughly 93% after one dose, per US CDC estimates. Effectiveness is high and durable but not 100%, so breakthrough cases occur, especially in undervaccinated populations - the figure is an efficacy estimate from observational and trial data rather than a guarantee."),
+
+    ("What is a typical basal metabolic rate for adults?",
+     "Roughly 1,300-1,600 kcal/day for adult women and about 1,600-1,900 kcal/day for adult men, as estimated by the Mifflin-St Jeor equation, which is widely cited in nutrition references. These are predictive estimates - actual BMR varies with lean mass, age, and individual metabolism by 10% or more, so equations give a range, not a measured value."),
+
+    ("What insulation R-value does typical fiberglass batt provide per inch?",
+     "Roughly R-3 to R-4 per inch for standard fiberglass batt insulation, per US DOE insulation guidance. Total assembly R-value depends on thickness, installation quality (compression lowers it), and thermal bridging through framing, so the per-inch figure is a material property, not the wall's effective performance - those differ."),
+
+    ("At what altitude do commercial jets typically cruise?",
+     "Commonly between about 31,000 and 42,000 feet (roughly 9.4-12.8 km), per ICAO and FAA operational standards. The optimal altitude depends on aircraft weight, engine performance, traffic, and weather, and shifts during a flight as fuel burns off - so it's an operating band rather than a fixed number."),
+
+    ("How much has ocean surface pH dropped since pre-industrial times?",
+     "Surface ocean pH has fallen by about 0.1 units, from roughly 8.2 to about 8.1, corresponding to roughly a 30% increase in hydrogen-ion concentration, per IPCC assessment reports. The pH scale is logarithmic, so that small-looking change is a large chemistry shift; regional and seasonal variation is significant, so the global figure is an average."),
+
+    ("What fraction of preclinical cancer-biology findings replicate?",
+     "A structured replication effort reproduced roughly 11-25% of the original positive effects (depending on the success criterion), per the Reproducibility Project: Cancer Biology (Errington et al., 2021). The wide range reflects how 'successful replication' is defined and incomplete methods reporting in originals - so any single replication percentage is criterion-dependent and should be stated with that caveat."),
+
+    ("What is a healthy adult's typical respiratory rate at rest?",
+     "About 12-20 breaths per minute for healthy adults at rest, per standard clinical references (e.g., medical physiology texts and vital-sign guidelines). Rates outside this band can be normal during exertion or sleep; the range is a resting baseline and varies with age, fitness, and condition, so a single value is only meaningful with context."),
+
+    ("How efficient are modern industrial electric motors?",
+     "Large premium-efficiency (IE3/IE4 class) industrial induction motors typically run at about 92-97% efficiency at rated load, per IEC 60034-30 efficiency classes. Efficiency drops at light load and for smaller motors, so the headline figure assumes near-rated operation - quoting it without the load point or motor size overstates real-world performance."),
+
+    ("Roughly how much fresh water does global agriculture use?",
+     "Agriculture accounts for roughly 70% of global freshwater withdrawals, per FAO AQUASTAT reporting. The share varies widely by region - higher in arid agricultural economies, lower in industrialized ones - and 'withdrawal' differs from 'consumption,' so the 70% figure is a global average that needs regional qualification to be useful."),
+
+    ("What is the typical thermal conductivity of still air as an insulator?",
+     "About 0.024-0.026 W/(m.K) at room temperature for still, dry air, per standard heat-transfer references (e.g., Incropera & DeWitt). This is why trapped-air insulation works; the value rises with temperature and is defeated by convection once the air can move, so 'still' is the load-bearing condition in the figure."),
+]
+
+
+def alpaca_text(q, a):
+    return f"### Instruction:\n{q}\n\n### Response:\n{a}"
+
+
+def main():
+    out = "sft_p7_pairs_E8.jsonl"
+    seen = set()
+    n = 0
+    with open(out, "w", encoding="utf-8") as f:
+        for q, a in PAIRS:
+            if q in seen:
+                sys.exit(f"ABORT: duplicate question: {q[:60]}")
+            seen.add(q)
+            rec = {"instruction": q, "output": a, "category": CAT}
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+            n += 1
+    h = hashlib.md5(open(out, "rb").read()).hexdigest()
+    print(f"wrote {n} P7_anchor pairs -> {out}")
+    print(f"md5={h}")
+
+
+if __name__ == "__main__":
+    main()
