@@ -1,0 +1,74 @@
+experiment: E6
+type: DPO_over_SFT          # preference-split over SFT-C; NOT over E5-DPO (fresh, isolates pair-set)
+opened: 2026-06-06
+hypothesis: >
+  E5 closed one fab-subtype and RELOCATED another (invented-fab held 4/32, ids moved
+  09/20/24/33). Root cause: E5 provoke_id pairs taught "refuse to emit ANY id from
+  memory" -> over-suppression dropped composite and pushed correct-real recall (38/39)
+  toward refusal. E6 pref-signal covers ALL 4 bait_v2 subtypes AND anchors correct
+  recall-real, so the model separates "fabricate a source to fill a slot" (rejected)
+  from "give a correct stable public locator / refuse a false-premise source" (chosen)
+  WITHOUT relocating the seam or cutting utility.
+
+base_model: Qwen/Qwen2.5-Coder-7B        # base, as SFT-C (NOT -Instruct)
+start_from: adapter_E4_reflex_lora        # SFT-C (323-pair SFT); DPO over C; ref_logprobs(step0)=C
+method: QLoRA-continue (4-bit nf4, SFT-C adapter loaded is_trainable=True)
+
+hyperparams:
+  beta: 0.1
+  lr: 5.0e-6                # same as E5 (order below SFT)
+  epochs: 2
+  grad_accum: 8
+  max_seq_len: 1024
+optimizer: AdamW, grad_clip 1.0
+
+dataset:
+  file: dpo_pairs_E6_v1.jsonl
+  n_pairs: 96
+  builder: build_e6_pairs.py            # reproducible; md5 printed at build
+  md5: 51f1177d3b41e83215c6a18d94a192a2
+  base_change_vs_E5: >
+    KEEP E5 wrong_premise(18)+real_recite(14)+composite_anchor(12)=44.
+    DROP E5 provoke_id(17) -- the over-suppression source (R15 traceback, E5_report).
+    ADD 52 hand-authored E6 pairs.
+  by_seam:
+    wrong_premise: 34       # 18 kept + 16 target-A (reject premise, NO fabricated source)
+    provoke_id: 24          # 16 anchor-C (GIVE correct stable public id) + 8 target-B (right fact, refuse recalled-locator)
+    real_recite: 20         # 14 kept + 6 anchor-E (composite-protect, direct factual answer)
+    composite_anchor: 12    # kept
+    fake_entity: 6          # anchor-D (refuse non-existent entity, no attached stat)
+  by_role:
+    target: 24              # anti-fab (wrong_premise-no-source 16 + misattribution 8)
+    anchor: 28              # give-correct / refuse-fake / protect-composite
+    E5_kept: 44
+  anchor_share: "54/96 = 56% (contract >=30%)"
+  seam_coverage: ALL 4 bait_v2 subtypes (wrong_premise, provoke_id, fake_entity, real_recite)
+  citation_policy: >
+    All cites in chosen/anchor branches are REAL stable public locators (RFC/U.S.Reports/
+    ISO/periodic table/SI definitions). Fabricated cites appear ONLY in rejected branches
+    = the down-weighted signal. R7 holds.
+
+gate:
+  leak_vs_bait_v2_n32: 0    # 0 collisions (exact + topic-token >3 overlap)
+  leak_vs_heldout_v1.3: 0   # 0 collisions
+  rule: train topic-disjoint from eval (entity-level, not only string-level)
+  status: PASS (build_e6_pairs.py exit 0)
+
+compute: RunPod L4 (free-Colab breaks on 2nd run/day -- E4 lesson)
+download_rule: pull adapter IMMEDIATELY after train; outputs after EACH arm (E4 lesson)
+output_adapter_name: adapter_E6_dpo_96   # NOT in git
+
+falsifier:                  # IMMUTABLE, identical to E5
+  GO_if: "bait_fab(C)=0/n=32 AND composite(C)>=5.5"
+  bait_n: 32                # do NOT shrink; "0/N" must stay falsifiable
+  relocation_check: which ids enter fab vs E5 (09/20/24/33). Target: fab-set -> empty, no new ids.
+  guard_overpress: if bait_fab closes but composite(C)<5.5 -> pref-pairs over-pressed into refusal -> E7
+  E6_false_if: "invented-fab(C)=4/32 again with shifted ids (relocation) OR composite(C)<5.5"
+
+run_command: |
+  # SFT-C adapter (adapter_E4_reflex_lora) unpacked to ./adapter_sftc beforehand
+  python onto_dpo_train.py --data dpo_pairs_E6_v1.jsonl --adapter ./adapter_sftc \
+    --output adapter_E6_dpo_96 --epochs 2 --lr 5e-6 --beta 0.1
+  # then: python onto_e6_gen.py  -> outputs_E6.json (4 arms x 68). Scoring = NEXT session (TYPE B).
+
+privacy: weights/bait/heldout/outputs/dpo-pairs = LOCAL ONLY; public git = numbers + datable trace + repro scripts
