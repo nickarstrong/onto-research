@@ -27,3 +27,5 @@ lab/dpo/gen_e4_data.py
 
 lab/dpo/data/outputs_*.json
 lab/dpo/gate_E11_recheck.log
+lab/dpo/_local/
+_local/
