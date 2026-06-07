@@ -26,3 +26,4 @@ lab/dpo/eval/gate_e4.py
 lab/dpo/gen_e4_data.py
 
 lab/dpo/data/outputs_*.json
+lab/dpo/gate_E11_recheck.log
