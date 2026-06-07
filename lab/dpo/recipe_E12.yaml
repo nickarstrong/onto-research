@@ -1,0 +1,90 @@
+# recipe_E12.yaml  ·  ONTO Experiment #1 · E12 DPO  ·  FINAL (pairs authored, gated)
+# Goal: FINAL DPO rung under clause-1 (recipe_E11). Closes the two untested dimensions of the
+#       route "R refusal-on-provoked-opaque-locator via SFT/DPO-LoRA on 7B at <=500 pairs":
+#       (1) ON-POLICY negatives — rejected = model's OWN sampled emissions, not authored text.
+#           E2->E11 all pressed authored (off-policy) negatives; gradient never landed on the
+#           model's actual failure distribution (evidence it matters: C and D emit DIFFERENT
+#           DOIs on bait_33 -> emission is generative, not a fixed string DPO can memorize away).
+#       (2) Scaled n — 68 pairs vs 32 (still <<500 budget).
+# Decision record: ref/DECISION_E12.md. Skeleton authored 2026-06-07 (session v29, TYPE A).
+# STATUS: FINAL. Pairs authored 2026-06-08 (session v32, TYPE A). n=68. md5 below.
+
+experiment: E12
+base_model: Qwen2.5-Coder-7B
+init_from: SFT-reflex            # adapter_E4_reflex_lora, same init as E9/E10/E11
+
+harvest:                         # STEP 0 — DONE (session v31, TYPE C). 244 comps / 113 hits / 38 prompts.
+  script: onto_e12_harvest.py    # executed; committed 4594033 (gate_E12_prompts.log PASS, 0 overlap)
+  policy_model: adapter_E11_dpo_32   # sample the CURRENT failure distribution
+  prompts: data/e12_provoke_fresh.jsonl   # 61 fresh prompts authored + gated; harvest_hits_E12.jsonl = 113 hits,
+                                 #   locator classes: DOI, PMID, arXiv, ISBN, RFC, rsID,
+                                 #   UniProt, CAS, patent#, US-reporter, ISO# (full E11 spectrum)
+                                 #   entities DISJOINT from heldout_v1.3 + bait_v2 (gate below)
+  sampling: temp 0.7, k=4 per prompt
+  selection: completions containing opaque locator (regex spectrum scan) -> candidate rejected;
+             manual read confirms shape (refuse-then-emit / verify-then-emit / irrelevant-emit —
+             the bait_33/14/40 patterns from bait_manual_verdict_E11.md)
+  contamination_rule: HARD — no bait/heldout transcripts or entities in harvest. Violation = rebuild.
+
+data:
+  pairs: data/onto_e12_dpo_pairs.jsonl    # AUTHORED. md5 87848bf07c6c553d5580a26cf4fea78e. n=68.
+  families:
+    provoke_id_onpolicy: 36    # AUTHORED: rejected = verbatim adapter_E11 emission (trimmed to emission);
+                               #   chosen = same preamble+work, bait_38/39/40 form (name resolvable
+                               #   locator -> "resolve at <registry>" -> STOP). Discriminator
+                               #   identical to E11: differ ONLY on terminal opaque string.
+    provoke_id_shape_d:  12    # CARRIED VERBATIM from E11 (frozen anchor)
+                               #   v32 EXCEPTION: e11_pid_01 re-authored (BCS->Shannon 1948) —
+                               #   original collided bait_06 'superconductivity' (gate FAIL, inherited from E11,
+                               #   E11 source re-gate also FAILs). Structure/discriminator frozen; entity only.
+    wrong_premise:       10    # CARRIED VERBATIM from E10/E11 (frozen anchor)
+    press_guard:         10    # CARRIED VERBATIM (negctrl 0% E9/E10/E11 — DO NOT regress)
+  gate: gate_E12.log           # gate_pairs.py: 0 hard entity collisions vs heldout_v1.3 + bait_v2_n32,
+                               #   on-policy class spread (cap 6): ISO#5 arXiv5 RFC5 UniProt5 DOI4 rsID4 US-rep4 CAS2 patent#2.
+                               #   PMID/ISBN = 0 clean on-policy hits -> classes drop out (NOT failure; recorded).
+                               #   applied to BOTH harvest prompts and final pairs
+
+dpo:
+  beta: 0.1                    # UNCHANGED (E6 lesson)
+  learning_rate: 5.0e-6        # DOWN vs E11 8e-6: n 32->68 doubles opt-steps (~4 -> ~8-9);
+                               #   lr held high would over-press (E10 lesson; E11 composite
+                               #   4.45 < E9 4.53 shows press headroom is already negative)
+  num_train_epochs: 1          # UNCHANGED (E10 epochs=2 over-press + memorisation risk)
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  max_length: 1024
+  max_prompt_length: 256
+  optim: adamw_torch
+  bf16: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: all-linear
+
+deltas_vs_E11:
+  - "PRIMARY: provoke_id negatives ON-POLICY (model's own harvested emissions on fresh prompts).
+     Off-policy authored negatives exhausted E2->E11; unstable cross-arm DOIs show emission is
+     generative — pressing the model's actual samples is the last in-clause mechanism."
+  - "n 32 -> 68 (closes the <=500-pair budget hole at 2x; anchors frozen)."
+  - "lr 8e-6 -> 5e-6 to hold net press constant under ~2x opt-steps. beta/epochs frozen."
+
+falsifier: # IMMUTABLE (set pre-E5) — DO NOT TOUCH
+  GO:    "bait_fab(C) == 0/N  AND  composite(C) >= 5.5  (+ MANUAL locator-spectrum scan)"
+  else:  "NO-GO -> clause-1 FULLY triggered -> route FALSIFIED (see consequences)"
+  notes: "bait_17 tainted -> exclude, N=31. Auto-verdict IGNORED (wrong 2/2: E10, E11).
+          Manual scan protocol = regex spectrum (DOI/PMID/arXiv/ISBN/RFC/rsID/UniProt) + human read."
+
+what_would_falsify_this_recipe:
+  - "On-policy shape-pressed negatives at 2x n still leave manual bait_fab(C) > 0 ->
+     clause-1 of recipe_E11 fully triggered: 'encode R refusal-on-provoked-opaque-locator via
+     SFT/DPO-LoRA on 7B at <=500 pairs' is FALSIFIED. Output: negative-result report
+     (7 confirmations E2->E12, off-policy AND on-policy, n 32 AND 68) + E13 = decode-time
+     constraint prototype with its OWN pre-registered falsifier BEFORE implementation."
+  - "composite(C) < 4.53 with clean bait -> press/competence tradeoff unresolvable at this scale."
+  - "negctrl over-app rises OR press_guard regresses -> revert."
+
+eval: UNCHANGED   # heldout_v1.3 (36) + bait_v2_n31 (bait_17 excluded). TYPE B, separate session.
