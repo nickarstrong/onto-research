@@ -24,3 +24,5 @@ lab/dpo/gate.log
 lab/dpo/gate_pairs.py
 lab/dpo/eval/gate_e4.py
 lab/dpo/gen_e4_data.py
+
+lab/dpo/data/outputs_*.json
