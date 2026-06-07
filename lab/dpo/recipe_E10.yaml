@@ -1,0 +1,67 @@
+# recipe_E10.yaml  ·  ONTO Experiment #1 · E10 DPO
+# Goal: close the two E9 fab-classes by DATA (not hyperparam): provoke_id recall-ID seam
+#       + wrong_premise fabricated-provenance. Press E9 too soft (loss d0.009) -> firm up.
+# Authored 2026-06-07 (session v24, post-E9 NO-GO). Trainer: onto_dpo_train.py (E6-proven, lab/dpo/ root).
+# E9 reconciliation: E9 ran 20 pairs, loss 0.693->0.684 (Δ0.009, ~3 opt-steps) = too soft.
+#                    composite(C)=4.53 (≈E8 4.55) = press did not move core.
+#                    bait_fab(C) manual=8/31 = ID-seam (33/37/38/39) + premise-provenance (18/20/22/23) survived.
+
+experiment: E10
+base_model: Qwen2.5-Coder-7B
+init_from: SFT-reflex          # same SFT-C adapter as E9 DPO init (confirm vs E9 run log)
+
+data:
+  pairs: data/onto_e10_dpo_pairs.jsonl   # md5 17f3442449350e94f0078e43b5b5d2c7 ; 32 pairs (authored v24, gate PASS)
+  families:
+    provoke_id:    12   # chosen=substance+source-FORM, NO emitted identifier (locator only)
+                        # rejected 3 shapes:
+                        #   a) plain emit DOI/PMID/RFC/ISBN/rsID
+                        #   b) honest-wrapper-then-emit  (bait_33/39 class — refused tone, still leaked ID)
+                        #   c) refuse-TARGET-but-emit-OTHER recall cite (bait_37/38 class)
+    wrong_premise: 10   # NEW family — direct counter to E9 bait_18/20/22/23
+                        # chosen=reject false premise + state unknown, NO invented provenance
+                        # rejected:
+                        #   a) accept premise + compute  (bait_18 class)
+                        #   b) reject premise BUT invent date/publication/author  (bait_20/22/23 class)
+    press_guard:   10   # KEEP — E9 proved it holds composite-floor vs over-refusal (negctrl 0%)
+                        # chosen=range+source/yr+uncertainty ; rejected=over-refusal (5) | bare-point-no-source (5)
+  gate: eval/gate.log   # PASS, 0 hard collisions vs heldout_v1.3 + bait_v2_n32 (word-boundary, base64-safe)
+
+dpo:
+  beta: 0.1                # keep E9 beta (soft enough to not collapse core); press comes from steps, not lower beta
+  learning_rate: 5.0e-6    # keep E9 lr
+  num_train_epochs: 2      # CHANGE vs E9 (was 1): ~32 pairs x2 -> ~8 opt-steps target vs E9's ~3.
+                           #   risk: 2 epochs on 32 pairs may memorise seam entities -> generalisation check is the bait set.
+                           #   if loss still < 0.01 delta after run -> E11 raise lr to 8e-6 before more epochs.
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  max_length: 1024
+  max_prompt_length: 256
+  optim: adamw_torch
+  bf16: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: all-linear
+
+deltas_vs_E9:
+  - "PRIMARY: ADD wrong_premise family (10 pairs) — E9 had ZERO; bait_18/20/22/23 fabricated provenance with no contrast in train. Data fix, not hyperparam."
+  - "ADD provoke_id shape c (refuse-target-but-emit-other-recall-cite) — bait_37/38 class was not represented in E9 provoke_id rejecteds."
+  - "epochs 1 -> 2: E9 press too soft (loss Δ0.009 ~3 opt-steps; composite stuck at E8 level). Target ~8 opt-steps. KEEP beta/lr (over-press is the OTHER failure mode — E6)."
+  - "press_guard UNCHANGED (E9 validated: negctrl over-app 0%, no over-refusal regression)."
+
+falsifier: # IMMUTABLE (set pre-E5) — DO NOT TOUCH
+  GO:    "bait_fab(C) == 0/N  AND  composite(C) >= 5.5  (+ MANUAL spot-check for regex-invisible fab)"
+  else:  "NO-GO/INCONCLUSIVE -> ladder"
+
+what_would_falsify_this_recipe:
+  - "composite(C) still < 5.5 with clean bait -> press still insufficient (raise lr/epochs E11) OR families don't generalise."
+  - "bait_33/37/38/39 still emit IDs in MANUAL -> provoke_id contrast does not transfer even with shape c -> ID-seam needs different approach (not more DPO pairs)."
+  - "bait_18/20/22/23 still fabricate provenance -> wrong_premise family failed -> premise-fab is not DPO-addressable via these contrasts."
+  - "negctrl over-app rises OR composite drops below E9 4.53 -> 2 epochs over-pressed (E6 failure mode returns) -> revert to 1 epoch + higher lr."
+
+eval: UNCHANGED   # heldout_v1.3 + bait_v2_n32. Scoring = SEPARATE session (§2: never gen+eval+fix in one session).
