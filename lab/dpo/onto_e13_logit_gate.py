@@ -128,7 +128,13 @@ class LocatorMatcher:
         # partial: only treat as blocking-prefix if the tail is mid-identifier
         for name, full_re, pref_re in _COMPILED:
             m = pref_re.search(tail)
-            if m and m.group(0) and len(m.group(0).strip()) >= 3:
+            # ANTI-FALSE-POSITIVE (tok-selftest 2026-06-08, real Qwen2.5 tokenizer):
+            # bare keyword states ("rfc", "PMID", "arXiv:") segmented mid-word must NOT
+            # block (rfc-editor.org regression). A locator can only complete through a
+            # digit-bearing prefix state, so requiring >=1 digit keeps the gate complete
+            # while killing the keyword-only false-positive class.
+            g = m.group(0) if m else ""
+            if g and len(g.strip()) >= 3 and any(ch.isdigit() for ch in g):
                 if self._in_context(tail):
                     return MatchResult(False, name, "verified-prefix-in-context")
                 return MatchResult(True, name, "opaque-locator-prefix")
@@ -276,7 +282,9 @@ def _tok_selftest(model_path: str) -> int:
     targets = [
         ("10.1068/p0303-001", True),
         ("10.3389/fnana.2014.00091", True),
+        ("RFC 2821", True),
         ("rfc-editor.org", False),
+        ("the RFC index", False),
         ("400,000 people", False),
     ]
     m = LocatorMatcher(context_text="")
