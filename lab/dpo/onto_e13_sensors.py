@@ -45,6 +45,26 @@ ADVISOR_GRID = {
     "kl_max": 1.5,
 }
 
+# Advisor band CEILINGS used as the degeneracy fallback for the DELTA metrics (E14 fix).
+# These are the TOP of the advisor band (0.15-0.20 -> 0.20; KL 1.5), promoted to a
+# deliberate, documented conservative acceptance ceiling -- NOT an empirical calibration.
+# See recipe_E14.sensors.calibration_reference: the PREFERRED reference is the empirical
+# acceptable-effect distribution (clean-pair variation / benign-perturbation KL); this
+# advisor ceiling is the guaranteed fallback when that reference is absent or degenerate.
+ADVISOR_CEILING = {
+    "distortion_max": 0.20,   # top of advisor band 0.15-0.20
+    "kl_max": 1.5,            # advisor off-target-damage band
+}
+
+# Below this, a DELTA-metric reference distribution carries no acceptable-effect signal.
+# The alpha=0 zero-effect baseline is exactly this case: corr = alpha*proj*v_hat = 0 ->
+# distortion_norm = 0; steered == base -> KL(base||base) = 0. Calibrating a delta abort
+# threshold off such a distribution gives quantile(all-zeros) = 0, and abort_decision uses
+# a strict ">" so EVERY working alpha (distortion>0, KL>0) aborts. This is the v39 E13
+# ALL-alpha ABORT (instrument bug, classification (a), confirmed v40). The guard below
+# catches it and falls back to the advisor ceiling instead of returning 0.
+DEGENERACY_EPS = 1e-6
+
 
 # ---------------------------------------------------------------------------
 # 1. REFUSAL-OPENING TOKEN SET  (extracted from REAL outputs_E12 arm C refusals)
@@ -162,25 +182,66 @@ def abort_decision(mean_refusal_lo: float, mean_distortion: float, mean_kl: floa
 # 4. CALIBRATION  (reads outputs_E12 distributions; writes LOCAL + prints YAML snippet)
 # ---------------------------------------------------------------------------
 
+def _calibrate_delta_threshold(name: str, reference: Sequence[float], q: float,
+                               advisor_ceiling: float) -> float:
+    """Abort threshold for a DELTA-from-baseline metric (distortion, KL).
+
+    The threshold is the q-quantile of an ACCEPTABLE-EFFECT reference distribution
+    (recipe_E14.sensors.calibration_reference), NEVER the zero-effect (alpha=0) baseline.
+    If the supplied reference is DEGENERATE -- q-quantile <= DEGENERACY_EPS, the signature
+    of a zero-effect distribution wrongly passed in -- fall back to the advisor band used
+    as a real ceiling and log loudly. That fallback is the v39 regression fix: a zero-effect
+    input can no longer collapse the threshold to 0 and abort every working alpha.
+    """
+    arr = np.abs(np.asarray(list(reference), dtype=np.float64))
+    qv = float(np.quantile(arr, q)) if arr.size else 0.0
+    if qv <= DEGENERACY_EPS:
+        print(f"[calibrate] {name}: reference DEGENERATE (q{q:.2f}={qv:.3e} "
+              f"<= {DEGENERACY_EPS:.0e}) -- zero-effect baseline passed? Falling back to "
+              f"advisor ceiling {advisor_ceiling:.4f} (NOT the zero quantile; that is the "
+              f"v39 abort-everything bug).")
+        return advisor_ceiling
+    print(f"[calibrate] {name}={qv:.4f} from acceptable-effect reference "
+          f"(advisor ceiling {advisor_ceiling:.4f}; "
+          f"{'BELOW' if qv < advisor_ceiling else 'ABOVE'} ceiling).")
+    return qv
+
+
 def calibrate_from_distributions(refusal_lo_clean: Sequence[float],
                                  distortion_clean: Sequence[float],
                                  kl_negctrl: Sequence[float],
                                  q: float = 0.95) -> SensorThresholds:
-    """Calibrate abort thresholds from OUR measured distributions, not advisor numbers.
-    Sets each threshold at the q-quantile of the appropriate clean/negctrl distribution
-    (with advisor grid as a sanity floor, logged if it binds)."""
+    """Calibrate ABORT thresholds. E14 fix for the v39 ALL-alpha ABORT (instrument bug (a)).
+
+    refusal_log_odds_min : ABSOLUTE-level metric. q-quantile of the base refusal mass is
+        correct -> UNCHANGED. (Quantile-of-baseline calibration is valid ONLY for absolute
+        sensors; never for delta metrics.)
+    distortion_max, kl_max : DELTA-from-baseline metrics (corr = alpha*proj*v_hat -> 0 at
+        alpha=0; KL(base||base) = 0). Their abort threshold MUST reference an acceptable-
+        effect distribution, NEVER the zero-effect baseline. See _calibrate_delta_threshold
+        + DEGENERACY_EPS guard.
+
+    Caller contract (recipe_E14.sensors.calibration_reference) for the TYPE C run:
+      distortion_clean : PREFERRED = intrinsic clean-prompt relative-variation
+          (||h_i - h_j|| / ||h_j|| over clean pairs) = natural variation the model already
+          exhibits; steering quieter than this is silent. Source: model-intrinsic, measured.
+      kl_negctrl       : PREFERRED = KL(base || benign perturbation) (clean paraphrase /
+          temperature jitter) = off-target drift we already accept. Source: measured null.
+      If either is absent or the alpha=0 baseline is passed (degenerate), the guard falls
+      back to ADVISOR_CEILING (a documented conservative ceiling), never to 0. The existing
+      sensor_pass caller still feeds the alpha=0 baseline; with this guard that no longer
+      aborts every alpha -- it cleanly degrades to the advisor ceiling.
+    """
     th = SensorThresholds(
-        refusal_log_odds_min=float(np.quantile(refusal_lo_clean, q)),
-        distortion_max=float(np.quantile(distortion_clean, q)),
-        kl_max=float(np.quantile(kl_negctrl, q)),
+        refusal_log_odds_min=float(np.quantile(refusal_lo_clean, q)),  # ABSOLUTE - unchanged
+        distortion_max=_calibrate_delta_threshold(
+            "distortion_max", distortion_clean, q, ADVISOR_CEILING["distortion_max"]),
+        kl_max=_calibrate_delta_threshold(
+            "kl_max", kl_negctrl, q, ADVISOR_CEILING["kl_max"]),
     )
-    for name, val, grid in [
-        ("refusal_log_odds_min", th.refusal_log_odds_min, ADVISOR_GRID["refusal_log_odds_min"]),
-        ("distortion_max", th.distortion_max, ADVISOR_GRID["distortion_max"]),
-        ("kl_max", th.kl_max, ADVISOR_GRID["kl_max"]),
-    ]:
-        print(f"[calibrate] {name}={val:.4f} (advisor grid point {grid:.4f}; "
-              f"{'BELOW' if val < grid else 'ABOVE'} grid)")
+    print(f"[calibrate] refusal_log_odds_min={th.refusal_log_odds_min:.4f} "
+          f"(ABSOLUTE metric; advisor grid point "
+          f"{ADVISOR_GRID['refusal_log_odds_min']:.4f}; unchanged method).")
     return th
 
 
@@ -265,13 +326,38 @@ def _selftest() -> int:
     if not (th2.distortion_max > 0 and th2.kl_max > 0):
         fails.append("calibration produced non-positive thresholds")
 
+    # v39 REGRESSION GUARD: a DELTA-metric reference that is the zero-effect (alpha=0)
+    # baseline -- distortion all-zeros, KL all-zeros -- must NOT yield a 0 threshold that
+    # aborts every working alpha (the E13 ALL-alpha ABORT, instrument bug (a)). The guard
+    # must fall back to the advisor ceiling instead.
+    th_deg = calibrate_from_distributions(
+        refusal_lo_clean=rng.normal(-2, 0.5, 100),   # absolute metric still well-defined
+        distortion_clean=np.zeros(68),               # alpha=0: corr=0 -> distortion=0
+        kl_negctrl=np.zeros(68),                     # alpha=0: KL(base||base)=0
+        q=0.95)
+    if th_deg.distortion_max != ADVISOR_CEILING["distortion_max"]:
+        fails.append(f"degenerate distortion ref must fall back to advisor ceiling "
+                     f"{ADVISOR_CEILING['distortion_max']}, got {th_deg.distortion_max}")
+    if th_deg.kl_max != ADVISOR_CEILING["kl_max"]:
+        fails.append(f"degenerate KL ref must fall back to advisor ceiling "
+                     f"{ADVISOR_CEILING['kl_max']}, got {th_deg.kl_max}")
+    if not (th_deg.distortion_max > 0 and th_deg.kl_max > 0):
+        fails.append("degenerate-ref fallback thresholds must be > 0 (else abort-everything)")
+    # a working alpha with effect BELOW the fallback ceiling must CONTINUE, proving the
+    # zero-effect baseline no longer aborts the whole grid. refusal_lo set well below the
+    # calibrated refusal threshold so this isolates the DELTA-metric (distortion, KL) path.
+    dec_deg, reasons_deg = abort_decision(-3.0, 0.05, 0.3, th_deg)
+    if dec_deg != "CONTINUE":
+        fails.append(f"under degenerate-ref fallback a working alpha must CONTINUE, "
+                     f"got {dec_deg}/{reasons_deg} (v39 abort-everything regression)")
+
     if fails:
         print(f"SELFTEST FAIL: {len(fails)} failures")
         for f in fails:
             print("  -", f)
         return 1
     print("SELFTEST PASS: refusal log-odds, distortion, KL, abort-decision (abort-only, "
-          "no GO/NO-GO), and calibration all green.")
+          "no GO/NO-GO), calibration, and v39 zero-effect-degeneracy regression guard all green.")
     return 0
 
 
