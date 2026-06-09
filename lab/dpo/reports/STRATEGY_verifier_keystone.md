@@ -81,3 +81,14 @@ deliverable (not operationally defined, not verifiable). Lab edge = the discipli
 - Lead to VERIFY before entering record: "CiteCheck - retrieval-grounded citation-hallucination
   detection" (arXiv 2025). Unverified IDs from the design chat (ACT 2406.00034, ITI 2306.03341,
   spectral-attention) are NOT in the record until checked.
+
+E22/E24 (no-train frozen probes, bart-large-mnli, SAME E20-B gate): the gate-2 reject organ is
+BIND-CORPUS-CONTENT-BOUND - not scale-bound, not architectural. Monotone false-accept drop with
+premise enrichment at iso-recall (B2=0.90): E21 topicality 0.467 (move 0.0003) -> E22 entailment/
+citation-string 0.333 (0.134) -> E24 entailment/37%-content 0.20 (0.267). Lever independent
+(rho 0.13-0.20, falsifier live, baseline reproduced byte-exact). Architectural wall would plateau;
+movement accelerated with content. Residual: T pinned ~0, gain is spoof-rejection (gold entailment
+barely lifts) -> full-content corpus MUST measure per-class entailment distribution + T lift-off.
+E23 VOID-by-construction (GoldStore drops `finding`; from_finding=0 = byte-identical to E22) - caught
+by the from_finding CONTENTS counter (md5/clean-run/verdict all passed, manipulation never occurred ->
+verify CONTENTS, not md5). NEXT (pre-register, SAME gate): GOLD as full-content bind-corpus, frozen NLI.
