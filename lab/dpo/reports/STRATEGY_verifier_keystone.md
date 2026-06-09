@@ -92,3 +92,6 @@ barely lifts) -> full-content corpus MUST measure per-class entailment distribut
 E23 VOID-by-construction (GoldStore drops `finding`; from_finding=0 = byte-identical to E22) - caught
 by the from_finding CONTENTS counter (md5/clean-run/verdict all passed, manipulation never occurred ->
 verify CONTENTS, not md5). NEXT (pre-register, SAME gate): GOLD as full-content bind-corpus, frozen NLI.
+
+## E25b readout (2026-06-10)
+with_finding 27->90 / from_finding 51->109, GATE fa PLATEAUED at 0.20 (movement 0.267, byte-identical E24/E25). Content-binding NECESSARY (0.467->0.333->0.20) but INSUFFICIENT: the pure-entailment reject organ has an architectural ceiling fa~0.20 > gate 0.10. Confound: added findings lowered gold-content median entailment (sep 0.084->0.008); the gate-fa plateau (max-based) is confound-immune and is the load-bearing signal. -> PIVOT to non-pure-entailment reject primitive (contradiction-veto first, then passage-NLI / separate organs). Supersedes the earlier 'NOT architectural' line for the pure-entailment organ; content-binding remains a real, necessary gain.
