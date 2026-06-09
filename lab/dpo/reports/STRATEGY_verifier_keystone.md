@@ -4,6 +4,23 @@ Provenance: derived from the E15 real harvest (31 outputs, frozen bait_class_map
 d1dbc7433d30f7034804dece2294b800). This file is the DURABLE architecture record; session packs
 only reference it. Committed to git so it survives independent of any session pack.
 
+## 0. NORTH STAR - the final construction (what every experiment is FOR)
+TARGET: a disciplined AUTONOMOUS entity on a FROZEN substrate + GOLD Core + R1-R18, where epistemic
+discipline is enforced EXTERNALLY (not baked into weights). Not a Q&A bot. End-state properties:
+  1. Tier-independent DISCIPLINE - every emission passes an external grounded verifier
+     (extract -> bind-or-demote); no fabrication survives, regardless of model tier.
+  2. SELF-LEARNING - verifier selects clean self-samples -> RFT cements weights around verified
+     outputs. Judge is grounded + external, never the model judging itself.
+  3. INITIATIVE / background - IGR detects a knowledge gap (H_max < K) -> retrieve -> verify ->
+     propose, unprompted.
+  4. KNOWLEDGE TIERING - claims meeting Central Law -> GOLD; else temporary / permanent memory.
+  5. Full autonomy WITHIN the R1-R18 contract.
+KEYSTONE: properties 1-4 are all FUNCTIONS OF ONE grounded verifier (sec 3). Build+prove the verifier
+-> the rest is incremental. Fake the judge -> a fluent hallucinating "Entity". The destination
+governs which experiment is worth running; the process is instrumental, never the point.
+LADDER POSITION (2026-06): reflex class (E9-E15) FALSIFIED. E16 grounded verifier = GO. E17 full-GOLD scale = NO-GO terminal (bindability-only cannot separate topical near-miss). E18 NLI claim-support layer above bind = NO-GO (B1=0.63 B2=0.786 on frozen heldout_E17): retrieve-then-entail is gameable - a false claim can be ENTAILED by a non-anchor authorized source; NLI CONTRADICTION-detection is reliable (B2_oracle=1.0) but ENTAILMENT-acceptance is fragile (recall ceiling ~0.74) AND corpus-permissive. NOT yet model-scale-terminal: NO-GO decomposes into bind-precision + premise-richness + held-out-v3 (addressable) plus a genuine recall component. E19 = contradiction-veto over top-K authorized bind + source-faithful premise enrichment + held-out v3; re-measure oracle B1 before any model-scale escalation.
+DESTINATION FALSIFIABILITY (R2/R6): if E19 fixes (bind+premise+held-out) and oracle B1 still <0.90, the cheap-Entity path is FALSE -> fabrication closure needs model scale. Honest terminal, not a reason to iterate blindly.
+
 ## 1. E15 symptom diagnosis (from the 31 real outputs, N=31, single greedy pass)
 - S1. Honesty reflex is keyed to the FORMAL-LOCATOR surface cue. Prose-narrative asks ("what did
   the study find") -> 0 / 12 abstentions, always produces, often fabricates. Formal-locator asks
