@@ -29,3 +29,6 @@ lab/dpo/data/outputs_*.json
 lab/dpo/gate_E11_recheck.log
 lab/dpo/_local/
 _local/
+__pycache__/
+*.bak.*
+lab/dpo/eval/_local/
