@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""gold_retrieve.py - GOLD retrieval STUB for the tier-spoof harness (E15).
+"""gold_retrieve.py - GOLD retrieval for the tier-spoof harness (E15/E16).
 
-STUB, not the real GOLD Core. Loads a small hard-coded GOLD slice from a LOCAL,
-gitignored fixture and exposes:
+STUB fixture loader (not the real GOLD Core). Loads a small hard-coded GOLD slice
+from a LOCAL, gitignored fixture and exposes:
 
     GOLD_retrieve(claim) -> [hit, ...]            # candidate hits, may be empty
     is_authorized(hit, manifest_files) -> bool    # sec-2 predicate component
@@ -11,17 +11,17 @@ A hit record is {source, locator, hash}. hash is computed at load by sha256 over
 the source string (genuine, tamper-evident). manifest_files (the Genesis-Hash
 analog) is the AUTHORIZATION set: a hit counts only if hash(hit.source) in it.
 
-Design contract (DESIGN_E15 sec 2/3):
-  - retrieval returns candidates; it does NOT decide authorization.
-  - authorization = hash in manifest.files  AND  locator != "".
-  - the adversarial fixture record is retrievable but its hash is absent from
-    manifest_files: retrieval finds it, is_authorized rejects it. This is the
-    point - membership is the runtime's hash event, not the model's assertion.
+Retrieval is SEMANTIC (E16, semantic_retrieve.py) - embedding cosine over
+claim_key+source, conservative similarity floor (a false hit HIDES a fabrication).
+Authorization is NOT decided by retrieval; the manifest hash-gate below is the
+only authorization predicate and is unchanged from E15.
 """
 import hashlib
 import json
 import os
 import re
+
+import semantic_retrieve as _sem  # E16 semantic backend
 
 # Fixture lives LOCAL-ONLY (eval/_local). Path resolved relative to this file's
 # expected on-disk home: lab/dpo/  with fixture at lab/dpo/eval/_local/ .
@@ -60,23 +60,15 @@ class GoldStore:
             })
 
     def retrieve(self, claim: str):
-        """Return candidate hits by token-overlap against claim_key. May be empty.
+        """Return candidate hits by SEMANTIC cosine against claim_key+source. May be empty.
 
-        Token-overlap is a STUB matcher; the real GOLD uses semantic retrieval.
-        Overlap threshold is intentionally strict to avoid false hits that would
-        mask a known-miss (a false hit would HIDE a fabrication, not cause one).
+        E16: token-overlap stub replaced by embedding retrieval (semantic_retrieve.py).
+        The similarity floor is conservative (precision over recall) because a false
+        hit would HIDE a fabrication, not cause one. Retrieval returns candidates only;
+        authorization is decided solely by is_authorized() (manifest hash-gate, unchanged).
+        Floor/top_k locked by instrument-sanity (semantic_retrieve.FLOOR/TOP_K).
         """
-        q = _normalize(claim)
-        hits = []
-        for rec in self.records:
-            inter = q & rec["key_tokens"]
-            if len(inter) >= 2 and len(inter) >= len(rec["key_tokens"]) - 1:
-                hits.append({
-                    "source": rec["source"],
-                    "locator": rec["locator"],
-                    "hash": rec["hash"],
-                })
-        return hits
+        return _sem.retrieve(claim, self.records)
 
     def is_authorized(self, hit: dict) -> bool:
         """sec-2 predicate: hash in manifest.files AND locator != ''."""
