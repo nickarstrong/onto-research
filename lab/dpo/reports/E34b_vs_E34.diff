@@ -1,0 +1,139 @@
+--- run_E34_probe.py	2026-06-10 20:04:54.000000000 +0000
++++ run_E34b_probe.py	2026-06-10 16:48:20.062274525 +0000
+@@ -31,9 +31,13 @@
+ #   (claim vs candidate premise) in [0,1]; B_floor=0 admits all candidates (gate off). scope stays 'any' over the
+ #   BOUND subset. The MODEL is UNCHANGED (inherited deberta below); the binding gate is the ONLY new variable, and B
+ #   conditions only on observable text (no held-out class label) -> oracle-clean.
+-#   ANCHOR REPURPOSE: bart 0.0667 = CROSS-MODEL comparison bar (NOT the running model). deberta scope=any 0.1667 =
+-#   the bar E34 must BEAT and the DEGENERACY anchor: at B_floor=0 the gate is off -> probe MUST reproduce 0.1667
+-#   (clean-superset check; else VOID_DEGENERACY). No REGRESSION verdict at E34 except that single anchor.
++#   ANCHOR REPURPOSE (E34b RE-ANCHOR, v74): bart 0.0667 = CROSS-MODEL comparison bar (NOT the running model).
++#   The E33 deberta op-point fa 0.1667 was NEVER bare scope=any -- its veto carried (con>=C AND cos<=K=0.5066235661506653)
++#   (report_E32.md:17-18, run_E32_probe.py:173). The cosine gate spared 2 of 3 gold-tail drivers -> 0.1667 is COSINE-
++#   CONTAMINATED. The honest COSINE-FREE bare scope=any baseline = 0.2333. Since the E34 lever is lexical binding B
++#   (cosine FALSIFIED at E28, NOT re-introduced here), the correct DEGENERACY + BEAT anchor is 0.2333: at B_floor=0 the
++#   binding gate is off -> probe MUST reproduce 0.2333 (clean-superset check; else VOID_DEGENERACY). No REGRESSION
++#   verdict at E34b except that single re-anchored point.
+ #   Frozen substrate (verify_E16, gold_retrieve, semantic_retrieve, run_E26/E27/E28, rho guard, S1 cosine diag,
+ #   ordering guard) untouched. cosine RETAINED for the rho VOID-guard + S1 diagnostics; B is a NEW parallel quantity.
+ CE_MODEL = os.environ.get("ONTO_CE_MODEL", "MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli")   # INHERITED from run_E32, UNCHANGED; override via env
+@@ -57,7 +61,7 @@
+ # --- E34 observable-conditioning: B_floor = binding gate (FROZEN pre-data, PRE_REGISTER_E34.md sec1-2) -------
+ #   veto fires iff (contradiction >= C AND B >= B_floor), B = lexical subject-overlap(claim, premise) in [0,1].
+ #   B_floor grid: [0.0, 1.0] step 0.05. B_floor=0 (B>=0 always True) DEGENERATES to deberta scope=any -> the
+-#   0.1667 degeneracy anchor (clean-superset check; sec2). The swept-axis variable replaces E28's cosine-K.
++#   0.2333 degeneracy anchor (clean-superset check; sec2). The swept-axis variable replaces E28's cosine-K.
+ B_FLOOR_GRID = sorted(set([round(0.0 + 0.05 * i, 2) for i in range(0, 21)]))  # 0.00 .. 1.00
+ S1_TAIL_CON = 0.95            # S1 driver isolation: gold-content items with contradiction >= this
+ 
+@@ -67,7 +71,7 @@
+ ANCHOR_SCOPE  = "any"        # == PRIMARY_SCOPE; anchor-compare prints fa_op vs the bars
+ MARGIN_GRID = [0.00, 0.02, 0.05, 0.10, 0.20]   # delta grid for the reported robustness arm (bound-neighborhood)
+ E28_OP_FA   = 0.0667         # bart CROSS-MODEL comparison bar (sec6 forks); NOT the running model, NOT reproduced
+-DEBERTA_ANCHOR_FA = 0.1667   # deberta scope=any (E33) = bar to BEAT + DEGENERACY anchor at B_floor=0 (sec2)
++DEBERTA_ANCHOR_FA = 0.2333   # E34b RE-ANCHOR: bare COSINE-FREE scope=any (v74) = bar to BEAT + DEGENERACY anchor at B_floor=0 (sec2). The E33 0.1667 op-point carried cos<=K=0.5066 (report_E32.md:17-18) -> cosine-CONTAMINATED, NOT a valid anchor for the cosine-free binding lever.
+ ANCHOR_TOL  = 0.02           # tolerance for the B_floor=0 degeneracy reproduce-assert vs DEBERTA_ANCHOR_FA
+ 
+ _ce_tok = _ce_model = _con_idx = None
+@@ -185,7 +189,7 @@
+ def item_label_at_C(resolutions, C, B_floor=0.0, scope=PRIMARY_SCOPE):
+     """E34 binding-gate veto. A candidate vetoes iff (contradiction >= C AND B >= B_floor); scope='any' fires if
+     ANY candidate in the BOUND subset (B>=B_floor) crosses. B_floor=0 admits all candidates (gate off) ->
+-    degenerates to plain scope=any (the deberta 0.1667 anchor). `scope` selects WHICH candidate(s) may veto:
++    degenerates to plain scope=any (the deberta 0.2333 anchor). `scope` selects WHICH candidate(s) may veto:
+        'any'             : any bound candidate (E34 PRIMARY).
+        'top1'            : only r[1][0] (highest-cosine bound support) -- reported arm (E31 falsified as the lever).
+        ('margin', delta) : bound candidates within cosine cos0-delta of the support -- reported arm.
+@@ -289,7 +293,7 @@
+     ap.add_argument("--heldout", default="eval/_local/heldout_E17.jsonl")
+     ap.add_argument("--fixture_md5", default="4a45f52883a802e8d8d1d5ff5d185bdb")
+     ap.add_argument("--heldout_md5", default="7e9fe030646d5671952e7a9fe9437e37")
+-    ap.add_argument("--out", default="reports/report_E34.md")   # NEVER a frozen-report path (no clobber E32/E30/E28/E27)
++    ap.add_argument("--out", default="reports/report_E34b.md")   # NEVER a frozen-report path (no clobber E32/E30/E28/E27)
+     a = ap.parse_args()
+ 
+     fm, hm = md5(a.fixture), md5(a.heldout)
+@@ -363,7 +367,7 @@
+         _b1, b2_, _b3, _ = metrics_at_C(items_pre, c_, bf_, scope)
+         return float(c_), float(bf_), float(b2_), float(min_fa)
+ 
+-    # E34 DEGENERACY ANCHOR (Z4): B_floor=0 (gate off) MUST reproduce deberta scope=any fa 0.1667 (clean superset).
++    # E34 DEGENERACY ANCHOR (Z4): B_floor=0 (gate off) MUST reproduce deberta scope=any fa 0.2333 (clean superset).
+     _degen_feas = []
+     for C in C_obs:
+         b1, b2, _b3, _ = metrics_at_C(items_pre, C, 0.0, "any")
+@@ -373,7 +377,7 @@
+     degen_ok = (not np.isnan(degen_fa)) and abs(degen_fa - DEBERTA_ANCHOR_FA) <= ANCHOR_TOL
+     print(f"[degeneracy B_floor=0 scope=any] fa={degen_fa} vs deberta anchor {DEBERTA_ANCHOR_FA} +/-{ANCHOR_TOL} -> ok={degen_ok}")
+ 
+-    # ANCHOR-COMPARE: primary scope='any'. fa_op read against bart 0.0667 (cross-model) + deberta 0.1667 (beat-bar).
++    # ANCHOR-COMPARE: primary scope='any'. fa_op read against bart 0.0667 (cross-model) + deberta 0.2333 (beat-bar).
+     anc_C, anc_Bf, anc_B2, anc_fa = select_op(ANCHOR_SCOPE)   # ANCHOR_SCOPE == PRIMARY_SCOPE == 'any'
+     anchor_below_bar = (anc_C is not None) and (not np.isnan(anc_fa)) and (anc_fa < E28_OP_FA)
+     print(f"[anchor-compare scope=any] C={anc_C} B_floor={anc_Bf} fa_op={anc_fa} "
+@@ -415,20 +419,20 @@
+                   dict(reject_share=float("nan"))
+             margin_rows.append((delta, mC, mBf, mfa, mB2, mband["robust"], ms3["reject_share"]))
+ 
+-    # ---- E34 verdict (PRE_REGISTER_E34.md sec5-6; reads scope=any fa_op vs deberta 0.1667 + GATE 0.10 + bf-band) -
++    # ---- E34 verdict (PRE_REGISTER_E34.md sec5-6; reads scope=any fa_op vs deberta 0.2333 + GATE 0.10 + bf-band) -
+     # VOID guards: baseline mismatch / degenerate rho / recall-unusable / degeneracy-anchor mismatch (B_floor=0
+-    # must reproduce 0.1667). The forks read fa_op (primary scope=any); B2>=0.90 guaranteed by select_op feasibility.
++    # must reproduce 0.2333). The forks read fa_op (primary scope=any); B2>=0.90 guaranteed by select_op feasibility.
+     # BINDING_IS_THE_LEVER additionally requires a NON-TRIVIAL bf-band (>= S2_BAND_MIN_POINTS clearing points).
+     s3rej = s3["reject_share"]
+     if not base_ok:                 verdict = "VOID_BASELINE_MISMATCH"   # noauth path broke (model-independent)
+     elif degenerate:                verdict = "VOID_RHO"                 # contradiction~cosine collinear (rho>=0.95)
+-    elif not degen_ok:              verdict = "VOID_DEGENERACY"          # B_floor=0 did NOT reproduce deberta 0.1667
++    elif not degen_ok:              verdict = "VOID_DEGENERACY"          # B_floor=0 did NOT reproduce deberta 0.2333
+     elif chosen_C is None:          verdict = "VOID_RECALL_UNUSABLE"     # no op-point holds B2>=0.90 -> fa unreadable
+     elif (fa <= GATE_FA) and bf_band_nontrivial:
+                                     verdict = "BINDING_IS_THE_LEVER"     # fa<=0.10 AND B2>=0.90 over a real bf-band
+     elif fa <= GATE_FA:             verdict = "BINDING_KNIFE_EDGE"       # clears gate but bf-band trivial (E27-class)
+-    elif fa < DEBERTA_ANCHOR_FA:    verdict = "BINDING_HELPS_PARTIAL"    # 0.10 < fa < 0.1667 (beats deberta, not gate)
+-    else:                           verdict = "BINDING_NOT_THE_LEVER"    # fa >= 0.1667 -> reframe fails, escalate organ
++    elif fa < DEBERTA_ANCHOR_FA:    verdict = "BINDING_HELPS_PARTIAL"    # 0.10 < fa < 0.2333 (beats deberta, not gate)
++    else:                           verdict = "BINDING_NOT_THE_LEVER"    # fa >= 0.2333 -> reframe fails, escalate organ
+ 
+     # ---- S1 per-class contradiction distribution (formalized E26 diag) ---------------------------------------
+     def _summ(vals):
+@@ -460,7 +464,7 @@
+ 
+     # ---- report --------------------------------------------------------------------------------------------
+     L = [
+-        "# report_E34 -- reframe reject task: binding-gate veto (scope=any over BOUND subset) vs deberta 0.1667 bar (S1/S2/S3)",
++        "# report_E34b -- reframe reject task: binding-gate veto (scope=any over BOUND subset) vs deberta 0.2333 bar (S1/S2/S3)",
+         "",
+         f"- pre-register   : PRE_REGISTER_E34.md (FROZEN md5 91ae26c51ee794fa6f5c94497d109be0) -- sec1/2/4/5/6 operative",
+         f"- lever          : BINDING GATE -- veto SCOPE=any over BOUND subset iff (P(CON)>=C AND B>=B_floor); B=lexical overlap(claim,premise); premise=source.FINDING / hyp=claim ; MODEL={CE_MODEL} (UNCHANGED)",
+@@ -476,7 +480,7 @@
+         f"- advisory: |rho| < {PREREG_RHO_ADVISORY} -> {rho_advisory_ok} (REPORTED ONLY; FROZEN substrate VOID-guard is {DEGENERATE_RHO}; see CONFLICT note)",
+         f"- contradiction_idx read from id2label (single, asserted) ; from_finding={n_find} asserted > 0",
+         "",
+-        "## op-point gate (scope=any; min fa s.t. B2>=0.90 over observed (C,B_floor)). bars: bart 0.0667 (cross-model) / deberta 0.1667 (beat)",
++        "## op-point gate (scope=any; min fa s.t. B2>=0.90 over observed (C,B_floor)). bars: bart 0.0667 (cross-model) / deberta 0.2333 (beat)",
+         f"- anchor-compare (scope=any): C={anc_C} B_floor={anc_Bf} fa_op={anc_fa} vs bart {E28_OP_FA} / deberta {DEBERTA_ANCHOR_FA} -> below_bart={anchor_below_bar}",
+         f"- chosen C = {chosen_C} | chosen B_floor (binding gate) = {chosen_Bf} | B2 at op-point = {chosen_B2}",
+         f"- B1 spoof-demotion = {B1}",
+@@ -546,17 +550,17 @@
+         "",
+         f"## VERDICT : {verdict}",
+         "",
+-        "decision (PRE_REGISTER_E34.md sec6, the operative forks -- read scope=any fa_op vs deberta bar 0.1667 + gate 0.10):",
++        "decision (PRE_REGISTER_E34.md sec6, the operative forks -- read scope=any fa_op vs deberta bar 0.2333 + gate 0.10):",
+         "  BINDING_IS_THE_LEVER (fa_op <= 0.10 AND B2>=0.90 AND bf-band nontrivial) -> the reject-task reframe WORKS;",
+         "    the binding gate fixes the E29 retrieval-misbinding defect -> proceed to robustness sweep + verifier-",
+         "    integration (rho 0.95-vs-0.50 reconcile, entailment-lift -> S3 three-way, full-GOLD scale). TOMMY GO REQUIRED.",
+         "  BINDING_KNIFE_EDGE (fa_op <= 0.10 but bf-band trivial) -> clears the gate on a single B_floor point (E27-class",
+         "    fragility) -> tighten the binding signal / widen the grid before claiming the lever.",
+-        "  BINDING_HELPS_PARTIAL (0.10 < fa_op < 0.1667) -> binding beats deberta-plain but does NOT clear the gate ->",
++        "  BINDING_HELPS_PARTIAL (0.10 < fa_op < 0.2333) -> binding beats deberta-plain but does NOT clear the gate ->",
+         "    directionally right, insufficient alone -> combine with a second organ (design, next).",
+-        "  BINDING_NOT_THE_LEVER (fa_op >= 0.1667) -> no gain over E33; the per-candidate contradiction-veto organ is",
++        "  BINDING_NOT_THE_LEVER (fa_op >= 0.2333) -> no gain over E33; the per-candidate contradiction-veto organ is",
+         "    EXHAUSTED even reframed -> escalate to a DIFFERENT reject/accept organ class (accept/entailment-lift three-way).",
+-        "  VOID_* -> trust gate failed (baseline mismatch / rho degenerate / recall unusable / B_floor=0 != 0.1667) -> reconcile, re-run.",
++        "  VOID_* -> trust gate failed (baseline mismatch / rho degenerate / recall unusable / B_floor=0 != 0.2333) -> reconcile, re-run.",
+         "",
+         "CONFLICT note (R15 / proto 3.10): advisory |rho|<0.50 vs REUSED frozen E26 VOID-guard rho>=0.95 (one-sided),",
+         "  spearman on (contradiction, cosine). The E34 lever is BINDING (lexical), NOT cosine -- cosine is retained ONLY",
