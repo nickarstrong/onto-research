@@ -98,3 +98,38 @@ with_finding 27->90 / from_finding 51->109, GATE fa PLATEAUED at 0.20 (movement 
 
 ## E26 readout (2026-06-10)
 contradiction-veto reject primitive PASS. Same premise (authorized finding), same frozen gate; signal switched P(entailment) -> P(contradiction). fa 0.467(no-veto) -> 0.0667 at B2 0.90 (movement 0.400), B3 0.000. Trust gates green: baseline fa 0.467 reproduced, rho(contradiction,cosine) -0.237 (not a relabel of bind), from_finding 109, contradiction_idx read from card. H1 confirmed: cue-stripped+entitied spoofs are CONTRADICTED by the real finding (spoof-content contradiction p50 0.991 vs gold 0.038) even where NOT entailed. Resolves the E25b architectural ceiling: the pure-ENTAILMENT organ plateaued at fa~0.20; the reject organ is contradiction-veto, not entailment. OPEN: op-point is tight (B2 at floor, C~0.995, 1/74 gold false-veto) -> E27 robustness sweep before verifier integration.
+
+## E27 readout (2026-06-10)
+full-gate + robustness sweep PASS_KNIFE_EDGE (c143eaa). Operating point reproduced E26: fa 0.0667 at
+B2 0.90, S3 reject_share 0.857 = the contradiction-veto OWNS the gain (S3 attribution: the reject
+organ, not baseline drift, drives the false-accept reduction). But the joint (C x B2) robustness band
+had ZERO width: a single C-point with B2 pinned to the floor - a passing op-point with no margin
+around it. Verdict: valid op-point exists but is not robust -> NOT graduated to verifier integration.
+Knife-edge later diagnosed (E28 design) as tail overlap between the gold-content and spoof-content
+contradiction distributions - a distribution problem, not an outlier. OPEN -> E28 observable-
+conditioned lever to try to open the band.
+
+## E28 readout (2026-06-10)
+observable-conditioned veto = contradiction x binding-cosine gate K (K=+inf degenerates to E27's
+scalar = regression anchor). Goal: open the E27 knife-edge band with a distribution-aware lever.
+Result PASS_KNIFE_EDGE (0101e7b); cosine-separability FALSIFIED - the gold-content contradiction tail
+sits at cosine 0.4855, BELOW spoof-content 0.5112, so no cosine gate K separates the two
+distributions and the band stays closed. Oracle-leak guard held: a per-class C lever was caught and
+rejected pre-data (it conditions on the held-out true class); the shipped lever conditions only on
+observable cosine / top-1 rank. CORRECTED (E29): E28's own conclusion "premise quality is the binding
+constraint" is SUPERSEDED - the cosine gate could not open the band NOT because of a premise-phrasing
+defect but because the gold false-accept tail is RETRIEVAL MISBINDING under an ANY-CANDIDATE veto
+(probe line 153), upstream of both phrasing and the cosine gate. The wrong mechanism was inferred
+from aggregate distributions without per-pair provenance -> lesson: per-pair causal claims REQUIRE
+per-pair bound-source logging (dump_E28_pairs pattern).
+
+## E29 readout (2026-06-10)
+re-author of the 8 S1 gold false-accept tail premises (TYPE A authoring) to test E28's "premise
+quality" hypothesis. Result REVERSAL (c2cf2f3): all 8 tail premises are FAITHFUL to their own source
+- 0/8 phrasing defects, 8/8 NULL-for-reauthor (R7: re-authoring a true premise would falsify a true
+finding; honest NULL > forced pass). Mechanism: each premise NLI-contradicts a claim about a
+DIFFERENT source the retriever CO-SURFACED (256 vs 473 genes; Price vs Akaike). The defect is
+therefore CANDIDATE-SET + ANY-VETO (veto fires on ANY authorized candidate, probe line 153) - NOT
+premise phrasing and NOT cosine-separability, both falsified. Fixture E25b byte-identical (0 edits).
+Fix = candidate-SCOPE: restrict the veto to the claim's BOUND support (top-1 cosine), upstream of
+phrasing and the cosine gate -> E30 binding-discipline probe DESIGN, E31 runs it.
