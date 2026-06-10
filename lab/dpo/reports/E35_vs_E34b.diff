@@ -1,0 +1,438 @@
+42a43,66
+> # ===== E35 ACCEPT ARM (SECOND ORGAN) -- entailment-lift rescue on top of the FROZEN E34b reject organ ========
+> #   E34b proved the per-candidate contradiction-veto REJECT organ caps at fa 0.1667 on this fixture: 5/30 spoofs
+> #   survive (residual false-accept the veto cannot reach) while recall is held ONLY by sparing the 3 gold-tail
+> #   drivers (ho_g05/g12/g08, con>=0.99) via low binding B. A pure-reject lever is EXHAUSTED at this ceiling; the
+> #   next gain must come from the ACCEPT side. E35 adds an entailment-lift organ:
+> #     - ent = P(entailment) of (premise=source.finding, hyp=claim) from the SAME deberta head (idx READ from
+> #       id2label, never hardcoded; oracle-clean -- no new model, no held-out label).
+> #     - per-candidate three-way: ACCEPT (bound AND ent>=A) / REJECT (bound AND con>=C, FROZEN from E34b) / ABSTAIN.
+> #     - CLAIM label = E34b reject UNLESS RESCUED: a claim that would be vetoed (some bound candidate con>=C) is
+> #       RESCUED to VERIFIED iff some bound candidate also entails it (ent>=A). Accept-protective in the contested
+> #       case -- that is the only precedence under which the accept arm lets C tighten without over-demoting gold.
+> #   MECHANISM (the asymmetry the lift exploits): a gold claim is ENTAILED by its correctly-bound authorized source
+> #   (high ent, high B); a spoof is CONTRADICTED by its bound source (high con, low ent). So lowering C catches the
+> #   5 surviving soft spoofs, while the gold claims that newly cross con>=C are rescued by their bound-source
+> #   entailment -- spoofs are NOT rescued (no bound entailment). Accept rescues gold; it never demotes.
+> #   DEGENERACY (regression anchor, A1/A2/A10): at A=+inf accept NEVER fires -> the three-way collapses to the
+> #   EXACT E34b binary reject -> op-point MUST reproduce E34b reject-only fa 0.1667 (E34B_REJECT_OP_FA, clean-
+> #   superset check). The inherited B_floor=0,A=+inf degeneracy still reproduces deberta bare scope=any 0.2333.
+> #   FROZEN (byte-identical from E34b, NOT touched by the accept arm): the reject predicate (con>=C AND B>=B_floor),
+> #   the binding lever B, the cosine rho VOID-guard + S1 cosine diagnostics, the from_finding counter, the ordering
+> #   guard, contradiction_idx-from-id2label, fixture/heldout loaders, the C=+inf baseline path, the 0.2333 anchor.
+> #   ORACLE-LEAK GATE (A, pre-data): A is a SINGLE scalar threshold on observable entailment text (claim + premise);
+> #   it NEVER reads the held-out class label or any per-class quantity. A swept over a FROZEN coarse grid; op-point
+> #   selection peeks ONLY recall feasibility (B2>=0.90), never fa -- same discipline that caught the E28 per-class leak.
+76a101,110
+> # --- E35 accept arm: entailment-lift threshold A (FROZEN pre-data) -------------------------------------------
+> #   accept fires per candidate iff (ent >= A AND B >= B_floor). A swept over a FROZEN COARSE grid (not observed
+> #   values) to bound the 3rd selection axis -> tractable run (|A_GRID| x |C_obs| x |B_obs|). A=+inf (accept off)
+> #   is the regression anchor -> reproduces E34b reject-only op fa 0.1667 (clean-superset; A10). ent direction is
+> #   premise=source.finding / hyp=claim (SAME as the contradiction scorer), entailment_idx READ from id2label.
+> A_GRID = sorted(set([round(0.0 + 0.05 * i, 2) for i in range(0, 21)]))   # 0.00 .. 1.00 (coarse; A=+inf added as anchor)
+> E34B_REJECT_OP_FA = 0.1667   # E35 REGRESSION anchor: at A=+inf the three-way == E34b reject-only -> op MUST reproduce this (report_E34b op-point)
+> ACCEPT_TOL  = 0.02           # tolerance for the A=+inf accept-off regression-assert vs E34B_REJECT_OP_FA
+> ENT_DIR_NOTE = "premise=source.finding ; hyp=claim ; P(entailment)"   # documented direction (mirrors ce_scores contradiction direction)
+> 
+77a112
+> _ent_idx = None   # E35 accept arm: entailment label index, READ from id2label (never hardcoded), located alongside _con_idx
+79c114
+<     global _ce_tok, _ce_model, _con_idx
+---
+>     global _ce_tok, _ce_model, _con_idx, _ent_idx
+89c124,128
+<         print(f"[ce] model={CE_MODEL} id2label={id2label} contradiction_idx={_con_idx}")
+---
+>         # E35 A3: locate the SINGLE entailment label the same way (oracle-clean, no new model).
+>         ent = [i for i, lbl in id2label.items() if "entail" in lbl]
+>         assert len(ent) == 1, f"cannot locate a single entailment label in id2label={id2label}"
+>         _ent_idx = ent[0]
+>         print(f"[ce] model={CE_MODEL} id2label={id2label} contradiction_idx={_con_idx} entailment_idx={_ent_idx}")
+103a143,156
+> def ce_entail(claim, sources):
+>     """E35 accept arm. NLI entailment, SAME direction/encoding as ce_scores (premise=source(finding),
+>     hypothesis=claim) -> P(entailment) per source in [0,1]. Reads _ent_idx (located in _ce_load from id2label,
+>     never hardcoded). Separate forward pass keeps ce_scores byte-identical (the proven contradiction scorer that
+>     the rho guard + S1 diag depend on). Oracle-clean: conditions only on observable (claim, premise) text."""
+>     if not sources: return []
+>     tok, model, _con_idx_unused = _ce_load()
+>     enc = tok(list(sources), [claim] * len(sources), padding=True, truncation=True,
+>               max_length=512, return_tensors="pt")   # arg0 = premise = source ; arg1 = hypothesis = claim
+>     with torch.no_grad():
+>         logits = model(**enc).logits                 # (n, num_labels)
+>     probs = torch.softmax(logits, dim=-1)[:, _ent_idx]
+>     return probs.cpu().numpy().astype(float).tolist()
+> 
+158c211,212
+<     BYTE-IDENTICAL to run_E26.precompute_item -- it is agnostic to ent/con; ce_scores returns contradiction."""
+---
+>     E35: also collects per-candidate entailment (accept arm). The contradiction path (ce_scores), the (cos,con)
+>     decorr collection, and the diag tuple are BYTE-IDENTICAL to run_E34b -- ent is an ADDITIVE 4th tuple slot."""
+180a235
+>         ents = ce_entail(query, prems)                     # E35 A5: observable entailment per candidate (accept arm; oracle-clean)
+185,186c240,242
+<         # E34: resolution carries (cos, contradiction, B) per authorized candidate (cos kept for diag; B = the gate)
+<         resolutions.append(("auth", [(float(c), float(s), float(b)) for c, s, b in zip(coss, scs, bnds)]))
+---
+>         # E35: resolution carries (cos, contradiction, ENTAILMENT, B) per authorized candidate (cos kept for diag;
+>         # con+B = the frozen reject gate; ent = the accept arm). con/B reject predicate is UNCHANGED -- ent is additive.
+>         resolutions.append(("auth", [(float(c), float(s), float(e), float(b)) for c, s, e, b in zip(coss, scs, ents, bnds)]))
+189,193c245,254
+< def item_label_at_C(resolutions, C, B_floor=0.0, scope=PRIMARY_SCOPE):
+<     """E34 binding-gate veto. A candidate vetoes iff (contradiction >= C AND B >= B_floor); scope='any' fires if
+<     ANY candidate in the BOUND subset (B>=B_floor) crosses. B_floor=0 admits all candidates (gate off) ->
+<     degenerates to plain scope=any (the deberta 0.2333 anchor). `scope` selects WHICH candidate(s) may veto:
+<        'any'             : any bound candidate (E34 PRIMARY).
+---
+> def item_label_at_C(resolutions, C, B_floor=0.0, scope=PRIMARY_SCOPE, A=float("inf")):
+>     """E35 three-way (ACCEPT/REJECT/ABSTAIN) over the bound subset, layered on the FROZEN E34b reject gate.
+>     Per bound candidate (B>=B_floor): REJECT iff contradiction>=C ; ACCEPT iff entailment>=A.
+>     A candidate's reject is RESCUED at the CLAIM level iff some bound candidate (same scope) ACCEPTs ->
+>     effective veto = (a bound candidate rejects) AND (no bound candidate accepts). The reject predicate
+>     (con>=C AND B>=B_floor) is UNCHANGED from E34b; the accept arm only rescues.
+>     DEGENERACY: A=+inf => ent>=A never true => accept never fires => effective veto == E34b reject -> the
+>     three-way collapses to the EXACT E34b binary (regression anchor; A10).
+>     `scope` selects WHICH candidate(s) participate (reject AND accept use the same scope filter):
+>        'any'             : any bound candidate (E35 PRIMARY).
+196,198c257,259
+<     Baseline C=+inf => nothing crosses under ANY scope/B_floor => only noauth demotes => no-veto fa 0.467
+<     (scope/B_floor-independent, model-independent). Rollup identical to run_E26/E27/E28 (UNVERIFIABLE -> DEMOTE).
+<     r[1] is ordered top-1-cosine-first (asserted in main); r[1][0] is the bound support. Tuples = (cos, contradiction, B)."""
+---
+>     Baseline C=+inf => no candidate rejects under ANY scope/B_floor/A => only noauth demotes => no-veto fa 0.467
+>     (scope/B_floor/A-independent, model-independent). Rollup identical to run_E26/E27/E28 (UNVERIFIABLE -> DEMOTE).
+>     r[1] top-1-cosine-first (asserted in main); r[1][0] = bound support. Tuples = (cos, contradiction, entailment, B)."""
+204c265
+<             cands = r[1]                                   # [(cos, contradiction, B), ...] top-1 cosine first
+---
+>             cands = r[1]                                   # [(cos, contradiction, entailment, B), ...] top-1 cosine first
+206,207c267,269
+<                 cos0, sc0, b0 = cands[0]
+<                 veto = (sc0 >= C and b0 >= B_floor)
+---
+>                 cos0, sc0, en0, b0 = cands[0]
+>                 reject = (sc0 >= C and b0 >= B_floor)
+>                 accept = (en0 >= A and b0 >= B_floor)
+209c271,272
+<                 veto = any((sc >= C and b >= B_floor) for (cos, sc, b) in cands)
+---
+>                 reject = any((sc >= C and b >= B_floor) for (cos, sc, en, b) in cands)
+>                 accept = any((en >= A and b >= B_floor) for (cos, sc, en, b) in cands)
+212c275,276
+<                 veto = any((sc >= C and b >= B_floor and cos >= cos0 - delta) for (cos, sc, b) in cands)
+---
+>                 reject = any((sc >= C and b >= B_floor and cos >= cos0 - delta) for (cos, sc, en, b) in cands)
+>                 accept = any((en >= A and b >= B_floor and cos >= cos0 - delta) for (cos, sc, en, b) in cands)
+214a279
+>             veto = reject and not accept                   # E35 accept-protective rescue (A=+inf => accept False => == E34b)
+221,222c286,287
+< def metrics_at_C(items_pre, C, B_floor=0.0, scope=PRIMARY_SCOPE):
+<     res = [(it, item_label_at_C(r, C, B_floor, scope)) for (it, r) in items_pre]
+---
+> def metrics_at_C(items_pre, C, B_floor=0.0, scope=PRIMARY_SCOPE, A=float("inf")):
+>     res = [(it, item_label_at_C(r, C, B_floor, scope, A)) for (it, r) in items_pre]
+233c298
+< def s2_band_at_bfloor(items_pre, B_floor, scope=PRIMARY_SCOPE):
+---
+> def s2_band_at_bfloor(items_pre, B_floor, scope=PRIMARY_SCOPE, A=float("inf")):
+235c300,301
+<     B2>=0.90) band. Returns (rows, band). The robustness verdict is read at the OP-POINT's selected B_floor."""
+---
+>     B2>=0.90) band. Returns (rows, band). The robustness verdict is read at the OP-POINT's selected B_floor.
+>     E35: read at the op-point's selected accept threshold A (A=+inf reproduces the E34b band)."""
+238c304
+<         B1, B2, _B3, _ = metrics_at_C(items_pre, float(C), B_floor, scope)
+---
+>         B1, B2, _B3, _ = metrics_at_C(items_pre, float(C), B_floor, scope, A)
+255c321
+< def s2_perBfloor_summary(items_pre, scope=PRIMARY_SCOPE):
+---
+> def s2_perBfloor_summary(items_pre, scope=PRIMARY_SCOPE, A=float("inf")):
+257c323,324
+<     count of B_floor points whose min-fa (over C, at B2>=0.90) clears GATE_FA -- read in main for the verdict."""
+---
+>     count of B_floor points whose min-fa (over C, at B2>=0.90) clears GATE_FA -- read in main for the verdict.
+>     E35: evaluated at the op-point's accept threshold A (A=+inf reproduces the E34b summary)."""
+260c327
+<         rows, band = s2_band_at_bfloor(items_pre, float(B_floor), scope)
+---
+>         rows, band = s2_band_at_bfloor(items_pre, float(B_floor), scope, A)
+266,267c333,334
+< def s3_attribution(items_pre, op_C, op_B_floor, fa_base, fa_op, scope=PRIMARY_SCOPE):
+<     """S3 -- decompose B1-class (spoof) demotions at the op-point (op_C, op_B_floor, scope) into:
+---
+> def s3_attribution(items_pre, op_C, op_B_floor, fa_base, fa_op, scope=PRIMARY_SCOPE, A=float("inf")):
+>     """S3 -- decompose B1-class (spoof) demotions at the op-point (op_C, op_B_floor, scope, A) into:
+269,272c336,342
+<        (b) contradiction-veto reject organ : demotes at (op_C,op_B_floor,scope) but NOT at C=+inf (a candidate in
+<                                              the BOUND subset crossed: contradiction>=op_C AND B>=op_B_floor),
+<        (c) accept/entailment-lift organ    : NOT wired in this standalone probe -> structurally 0.
+<     reject_share = (fa_base - fa_op)/fa_base. Bar (carried): > 0.50."""
+---
+>        (b) contradiction-veto reject organ : demoted at op (a bound candidate crossed con>=op_C AND B>=op_B_floor)
+>                                              and NOT noauth -- i.e. the FROZEN reject organ, accept not rescuing,
+>        (c) accept/entailment-lift organ    : E35 WIRED. n_by_entailment = GOLD (B2) items the accept arm RESCUES
+>            from the reject-only verdict at this op-point (label flips DEMOTE->not-DEMOTE when accept is ON vs OFF).
+>            n_spoof_rescued = SPOOF (B1) items the accept WRONGLY rescues (the false-accept the accept arm can
+>            introduce) -- the critical leak guard (high => accept hurts; reported, feeds the verdict).
+>     reject_share = (fa_base - fa_op)/fa_base. Bar (carried): > 0.50. accept OFF == A=+inf (reject-only)."""
+273a344
+>     golds  = [r for (it, r) in items_pre if it["class"] == B2_CLASS and it["id"] not in B2_EXCLUDE]
+277,278c348,349
+<         base = item_label_at_C(r, float("inf"), 0.0, scope)            # gate off (B_floor=0) == no-veto baseline
+<         op = item_label_at_C(r, float(op_C), float(op_B_floor), scope)
+---
+>         base = item_label_at_C(r, float("inf"), 0.0, scope)                       # gate off (B_floor=0) == no-veto baseline
+>         op = item_label_at_C(r, float(op_C), float(op_B_floor), scope, A)         # three-way at op (accept may rescue)
+284a356,365
+>     # (c) accept organ ACTION isolated by toggling A at the FROZEN op (C, B_floor): reject-only (A=+inf) vs op-A.
+>     n_by_entailment = n_spoof_rescued = 0
+>     for r in golds:
+>         rej_only = item_label_at_C(r, float(op_C), float(op_B_floor), scope, float("inf"))
+>         with_acc = item_label_at_C(r, float(op_C), float(op_B_floor), scope, A)
+>         if rej_only == "DEMOTE" and with_acc != "DEMOTE": n_by_entailment += 1   # gold rescued (organ working)
+>     for r in spoofs:
+>         rej_only = item_label_at_C(r, float(op_C), float(op_B_floor), scope, float("inf"))
+>         with_acc = item_label_at_C(r, float(op_C), float(op_B_floor), scope, A)
+>         if rej_only == "DEMOTE" and with_acc != "DEMOTE": n_spoof_rescued += 1   # spoof WRONGLY rescued (leak)
+287c368,369
+<                 n_by_veto=n_by_veto, n_survive=n_survive, n_by_entailment=0,
+---
+>                 n_by_veto=n_by_veto, n_survive=n_survive, n_by_entailment=n_by_entailment,
+>                 n_spoof_rescued=n_spoof_rescued,
+296c378
+<     ap.add_argument("--out", default="reports/report_E34b.md")   # NEVER a frozen-report path (no clobber E32/E30/E28/E27)
+---
+>     ap.add_argument("--out", default="reports/report_E35.md")   # NEVER a frozen-report path (no clobber E34b/E32/E30/E28/E27)
+328c410
+<                 cs = [c for (c, _s, _b) in x[1]]
+---
+>                 cs = [c for (c, _s, _e, _b) in x[1]]
+346,352c428,438
+<     # observed grids (selection over OBSERVED values only; no post-hoc fishing). tuples are (cos, sc, B).
+<     C_obs = sorted({sc for (_it, r) in items_pre for x in r if isinstance(x, tuple) for (cos, sc, b) in x[1]})
+<     B_obs = sorted({b for (_it, r) in items_pre for x in r if isinstance(x, tuple) for (cos, sc, b) in x[1]})
+< 
+<     # ---- op-point selector (FROZEN selection; B_floor replaces the cosine-K axis) ----------------------------
+<     # over OBSERVED (C, B_floor): MIN false-accept subject to B2>=0.90. Tie-break (frozen): widest joint C-band at
+<     # that B_floor -> lowest C -> highest B_floor. selection peeks ONLY recall feasibility (no fishing on fa).
+---
+>     # observed grids (selection over OBSERVED values only; no post-hoc fishing). tuples are (cos, sc, ent, B).
+>     C_obs = sorted({sc for (_it, r) in items_pre for x in r if isinstance(x, tuple) for (cos, sc, en, b) in x[1]})
+>     B_obs = sorted({b for (_it, r) in items_pre for x in r if isinstance(x, tuple) for (cos, sc, en, b) in x[1]})
+>     # E35 accept axis A swept over the FROZEN coarse A_GRID (bounds the 3rd selection axis -> tractable run).
+>     A_sweep = list(A_GRID)
+> 
+>     # ---- op-point selector (FROZEN selection; E35 adds the accept axis A) ------------------------------------
+>     # over (A_GRID x OBSERVED B_floor x OBSERVED C): MIN false-accept subject to B2>=0.90. Tie-break (frozen):
+>     # widest joint C-band at that (A,B_floor) -> lowest C -> highest B_floor -> HIGHEST A (safest accept: fewest
+>     # spoof rescues among equal-fa points). selection peeks ONLY recall feasibility (B2>=0.90), never fa, never A
+>     # per-class -> oracle-clean (sec4). A=+inf is NOT in the sweep (it is the regression anchor below).
+355,359c441,446
+<         for Bf in B_obs:
+<             for C in C_obs:
+<                 b1, b2, _b3, _ = metrics_at_C(items_pre, C, Bf, scope)
+<                 if not np.isnan(b2) and b2 >= RECALL_FLOOR:
+<                     feasible.append((1.0 - b1, float(C), float(Bf)))
+---
+>         for A in A_sweep:
+>             for Bf in B_obs:
+>                 for C in C_obs:
+>                     b1, b2, _b3, _ = metrics_at_C(items_pre, C, Bf, scope, float(A))
+>                     if not np.isnan(b2) and b2 >= RECALL_FLOOR:
+>                         feasible.append((1.0 - b1, float(C), float(Bf), float(A)))
+361,368c448,455
+<             return None, None, None, float("nan")
+<         min_fa = min(f for f, _c, _bf in feasible)
+<         cand = [(c, bf) for (f, c, bf) in feasible if abs(f - min_fa) < 1e-12]
+<         _bw = {bf: s2_band_at_bfloor(items_pre, bf, scope)[1]["width"] for (_c, bf) in cand}
+<         cand.sort(key=lambda cb: (-_bw[cb[1]], cb[0], -cb[1]))
+<         c_, bf_ = cand[0]
+<         _b1, b2_, _b3, _ = metrics_at_C(items_pre, c_, bf_, scope)
+<         return float(c_), float(bf_), float(b2_), float(min_fa)
+---
+>             return None, None, None, None, float("nan")
+>         min_fa = min(f for f, _c, _bf, _a in feasible)
+>         cand = [(c, bf, a) for (f, c, bf, a) in feasible if abs(f - min_fa) < 1e-12]
+>         _bw = {(bf, a): s2_band_at_bfloor(items_pre, bf, scope, a)[1]["width"] for (_c, bf, a) in cand}
+>         cand.sort(key=lambda cba: (-_bw[(cba[1], cba[2])], cba[0], -cba[1], -cba[2]))
+>         c_, bf_, a_ = cand[0]
+>         _b1, b2_, _b3, _ = metrics_at_C(items_pre, c_, bf_, scope, a_)
+>         return float(a_), float(c_), float(bf_), float(b2_), float(min_fa)
+370c457,458
+<     # E34 DEGENERACY ANCHOR (Z4): B_floor=0 (gate off) MUST reproduce deberta scope=any fa 0.2333 (clean superset).
+---
+>     # E34 DEGENERACY ANCHOR (Z4, INHERITED byte-identical): B_floor=0 (gate off), A=+inf (accept off) MUST
+>     # reproduce deberta scope=any fa 0.2333 (clean superset). metrics_at_C default A=+inf -> accept never fires.
+380,381c468,482
+<     # ANCHOR-COMPARE: primary scope='any'. fa_op read against bart 0.0667 (cross-model) + deberta 0.2333 (beat-bar).
+<     anc_C, anc_Bf, anc_B2, anc_fa = select_op(ANCHOR_SCOPE)   # ANCHOR_SCOPE == PRIMARY_SCOPE == 'any'
+---
+>     # E35 ACCEPT-OFF REGRESSION ANCHOR (A10): at A=+inf (accept never fires) the three-way == E34b reject-only ->
+>     # the op-point over (C_obs, B_obs) MUST reproduce the E34b reject-only op fa 0.1667 (clean-superset for the
+>     # accept arm). This is the accept analog of E28's K=+inf->E27 regression. min-fa s.t. B2>=0.90 at A=+inf.
+>     _rejonly_feas = []
+>     for Bf in B_obs:
+>         for C in C_obs:
+>             b1, b2, _b3, _ = metrics_at_C(items_pre, C, Bf, "any", float("inf"))
+>             if not np.isnan(b2) and b2 >= RECALL_FLOOR:
+>                 _rejonly_feas.append(1.0 - b1)
+>     rejonly_fa = min(_rejonly_feas) if _rejonly_feas else float("nan")
+>     rejonly_ok = (not np.isnan(rejonly_fa)) and abs(rejonly_fa - E34B_REJECT_OP_FA) <= ACCEPT_TOL
+>     print(f"[accept-off regression A=+inf] reject-only op fa={rejonly_fa} vs E34b op {E34B_REJECT_OP_FA} +/-{ACCEPT_TOL} -> ok={rejonly_ok}")
+> 
+>     # ANCHOR-COMPARE: primary scope='any'. fa_op read against bart 0.0667 (cross-model) + deberta 0.2333 + GATE 0.10.
+>     anc_A, anc_C, anc_Bf, anc_B2, anc_fa = select_op(ANCHOR_SCOPE)   # ANCHOR_SCOPE == PRIMARY_SCOPE == 'any'
+383c484
+<     print(f"[anchor-compare scope=any] C={anc_C} B_floor={anc_Bf} fa_op={anc_fa} "
+---
+>     print(f"[anchor-compare scope=any] A={anc_A} C={anc_C} B_floor={anc_Bf} fa_op={anc_fa} "
+386,387c487,488
+<     # E34 PRIMARY op-point: scope='any' over the BOUND subset (B>=B_floor).
+<     chosen_C, chosen_Bf, chosen_B2, _min_fa = select_op(PRIMARY_SCOPE)
+---
+>     # E35 PRIMARY op-point: scope='any' over the BOUND subset (B>=B_floor), accept threshold A from the sweep.
+>     chosen_A, chosen_C, chosen_Bf, chosen_B2, _min_fa = select_op(PRIMARY_SCOPE)
+391c492
+<         B1, B2, B3, _ = metrics_at_C(items_pre, chosen_C, chosen_Bf, PRIMARY_SCOPE)
+---
+>         B1, B2, B3, _ = metrics_at_C(items_pre, chosen_C, chosen_Bf, PRIMARY_SCOPE, chosen_A)
+397a499
+>     # E35: S2 read at the op-point accept threshold chosen_A (A=+inf reproduces the E34b band).
+399,400c501,503
+<     s2_rows, band = s2_band_at_bfloor(items_pre, float(Bf_for_band), PRIMARY_SCOPE)
+<     s2_perBf = s2_perBfloor_summary(items_pre, PRIMARY_SCOPE)
+---
+>     A_for_band = chosen_A if chosen_A is not None else float("inf")
+>     s2_rows, band = s2_band_at_bfloor(items_pre, float(Bf_for_band), PRIMARY_SCOPE, A_for_band)
+>     s2_perBf = s2_perBfloor_summary(items_pre, PRIMARY_SCOPE, A_for_band)
+405c508
+<         s3 = s3_attribution(items_pre, chosen_C, chosen_Bf, fa_base, fa, PRIMARY_SCOPE)
+---
+>         s3 = s3_attribution(items_pre, chosen_C, chosen_Bf, fa_base, fa, PRIMARY_SCOPE, chosen_A)
+408c511
+<                   reject_share=float("nan"), bar_met=False)
+---
+>                   n_spoof_rescued=0, reject_share=float("nan"), bar_met=False)
+413c516
+<         mC, mBf, mB2, mfa = select_op(("margin", float(delta)))
+---
+>         mA, mC, mBf, mB2, mfa = select_op(("margin", float(delta)))
+417,418c520,521
+<             _r, mband = s2_band_at_bfloor(items_pre, float(mBf), ("margin", float(delta)))
+<             ms3 = s3_attribution(items_pre, mC, mBf, fa_base, mfa, ("margin", float(delta))) if base_ok else \
+---
+>             _r, mband = s2_band_at_bfloor(items_pre, float(mBf), ("margin", float(delta)), mA)
+>             ms3 = s3_attribution(items_pre, mC, mBf, fa_base, mfa, ("margin", float(delta)), mA) if base_ok else \
+422,425c525,530
+<     # ---- E34 verdict (PRE_REGISTER_E34.md sec5-6; reads scope=any fa_op vs deberta 0.2333 + GATE 0.10 + bf-band) -
+<     # VOID guards: baseline mismatch / degenerate rho / recall-unusable / degeneracy-anchor mismatch (B_floor=0
+<     # must reproduce 0.2333). The forks read fa_op (primary scope=any); B2>=0.90 guaranteed by select_op feasibility.
+<     # BINDING_IS_THE_LEVER additionally requires a NON-TRIVIAL bf-band (>= S2_BAND_MIN_POINTS clearing points).
+---
+>     # ---- E35 verdict (PRE_REGISTER_E35.md sec5-6; reads scope=any fa_op vs GATE 0.10 + reject-only 0.1667 + bf-band) -
+>     # VOID guards INHERIT E34b: baseline mismatch / degenerate rho / B_floor=0 degeneracy (0.2333) / recall-unusable.
+>     # E35 ADDS: accept-off regression (A=+inf MUST reproduce E34b reject-only 0.1667) -> else VOID_ACCEPT_REGRESSION.
+>     # The forks read fa_op (primary scope=any, accept on); TWO_ORGAN_LEVER additionally requires a NON-TRIVIAL bf-band.
+>     # n_spoof_rescued (accept leak) reported; a TWO_ORGAN_LEVER that clears the gate ONLY via spoof rescues is caught
+>     # by fa itself (rescued spoofs ARE false-accepts -> raise fa) -- the metric is leak-honest by construction.
+426a532
+>     n_spoof_rescued = s3.get("n_spoof_rescued", 0)
+429c535,536
+<     elif not degen_ok:              verdict = "VOID_DEGENERACY"          # B_floor=0 did NOT reproduce deberta 0.2333
+---
+>     elif not degen_ok:              verdict = "VOID_DEGENERACY"          # B_floor=0,A=+inf did NOT reproduce 0.2333
+>     elif not rejonly_ok:            verdict = "VOID_ACCEPT_REGRESSION"   # A=+inf did NOT reproduce E34b reject-only 0.1667
+432,435c539,542
+<                                     verdict = "BINDING_IS_THE_LEVER"     # fa<=0.10 AND B2>=0.90 over a real bf-band
+<     elif fa <= GATE_FA:             verdict = "BINDING_KNIFE_EDGE"       # clears gate but bf-band trivial (E27-class)
+<     elif fa < DEBERTA_ANCHOR_FA:    verdict = "BINDING_HELPS_PARTIAL"    # 0.10 < fa < 0.2333 (beats deberta, not gate)
+<     else:                           verdict = "BINDING_NOT_THE_LEVER"    # fa >= 0.2333 -> reframe fails, escalate organ
+---
+>                                     verdict = "TWO_ORGAN_LEVER"          # combined organ clears fa<=0.10, B2>=0.90, real bf-band
+>     elif fa <= GATE_FA:             verdict = "TWO_ORGAN_KNIFE_EDGE"     # clears gate but bf-band trivial (E27-class)
+>     elif fa < E34B_REJECT_OP_FA:    verdict = "ACCEPT_HELPS_PARTIAL"     # 0.10 < fa < 0.1667 (beats reject-only, not gate)
+>     else:                           verdict = "ENTAILMENT_LIFT_EXHAUSTED" # fa >= 0.1667 -> no gain over reject-only -> pivot
+465a573,574
+>     _prereg_path = os.path.join(os.path.dirname(a.out), "PRE_REGISTER_E35.md")
+>     _prereg_md5 = md5(_prereg_path) if os.path.exists(_prereg_path) else "NOT-ON-DISK"
+467c576
+<         "# report_E34b -- reframe reject task: binding-gate veto (scope=any over BOUND subset) vs deberta 0.2333 bar (S1/S2/S3)",
+---
+>         "# report_E35 -- second organ: entailment-lift ACCEPT rescue + FROZEN binding-veto REJECT (three-way) vs reject-only 0.1667 (S1/S2/S3)",
+469,470c578,580
+<         f"- pre-register   : PRE_REGISTER_E34.md (FROZEN md5 91ae26c51ee794fa6f5c94497d109be0) -- sec1/2/4/5/6 operative",
+<         f"- lever          : BINDING GATE -- veto SCOPE=any over BOUND subset iff (P(CON)>=C AND B>=B_floor); B=lexical overlap(claim,premise); premise=source.FINDING / hyp=claim ; MODEL={CE_MODEL} (UNCHANGED)",
+---
+>         f"- pre-register   : PRE_REGISTER_E35.md (FROZEN md5 {_prereg_md5}) -- sec1/2/4/5/6 operative ; reject path inherits PRE_REGISTER_E34 (91ae26c51ee794fa6f5c94497d109be0)",
+>         f"- lever          : THREE-WAY -- REJECT (FROZEN: con>=C AND B>=B_floor) RESCUED by ACCEPT (ent>=A AND B>=B_floor) over BOUND subset; B=lexical overlap(claim,premise); premise=source.FINDING / hyp=claim ; MODEL={CE_MODEL} (UNCHANGED)",
+>         f"- accept arm     : ent direction {ENT_DIR_NOTE} ; entailment_idx READ from id2label (single, asserted) ; A swept over FROZEN A_GRID [0..1 step 0.05]; A=+inf = accept-off regression anchor",
+478c588,589
+<         f"- degeneracy (B_floor=0 scope=any) fa={degen_fa} vs deberta anchor {DEBERTA_ANCHOR_FA} +/-{ANCHOR_TOL} -> ok={degen_ok} (clean-superset check)",
+---
+>         f"- degeneracy (B_floor=0,A=+inf scope=any) fa={degen_fa} vs deberta anchor {DEBERTA_ANCHOR_FA} +/-{ANCHOR_TOL} -> ok={degen_ok} (inherited clean-superset)",
+>         f"- accept-off regression (A=+inf reject-only op) fa={rejonly_fa} vs E34b op {E34B_REJECT_OP_FA} +/-{ACCEPT_TOL} -> ok={rejonly_ok} (clean-superset for the accept arm)",
+481c592
+<         f"- contradiction_idx read from id2label (single, asserted) ; from_finding={n_find} asserted > 0",
+---
+>         f"- contradiction_idx + entailment_idx read from id2label (single each, asserted) ; from_finding={n_find} asserted > 0",
+483,485c594,596
+<         "## op-point gate (scope=any; min fa s.t. B2>=0.90 over observed (C,B_floor)). bars: bart 0.0667 (cross-model) / deberta 0.2333 (beat)",
+<         f"- anchor-compare (scope=any): C={anc_C} B_floor={anc_Bf} fa_op={anc_fa} vs bart {E28_OP_FA} / deberta {DEBERTA_ANCHOR_FA} -> below_bart={anchor_below_bar}",
+<         f"- chosen C = {chosen_C} | chosen B_floor (binding gate) = {chosen_Bf} | B2 at op-point = {chosen_B2}",
+---
+>         "## op-point gate (scope=any; min fa s.t. B2>=0.90 over (A_GRID, observed C, B_floor)). bars: reject-only 0.1667 (beat) / GATE 0.10",
+>         f"- anchor-compare (scope=any): A={anc_A} C={anc_C} B_floor={anc_Bf} fa_op={anc_fa} vs bart {E28_OP_FA} / deberta {DEBERTA_ANCHOR_FA} / reject-only {E34B_REJECT_OP_FA} -> below_bart={anchor_below_bar}",
+>         f"- chosen A (accept) = {chosen_A} | chosen C = {chosen_C} | chosen B_floor (binding gate) = {chosen_Bf} | B2 at op-point = {chosen_B2}",
+516c627
+<         "## S3 -- reject-vs-lift demotion attribution (B1 spoof demotions at conditioned op-point)",
+---
+>         "## S3 -- reject-vs-lift demotion attribution (B1 spoof demotions + accept-arm action at conditioned op-point)",
+519,520c630,632
+<         f"- (b) contradiction-veto reject organ           = {s3['n_by_veto']}  (demoted ONLY because veto fired)",
+<         f"- (c) accept/entailment-lift organ              = {s3['n_by_entailment']}  (NOT wired in standalone probe; verifier-integration step)",
+---
+>         f"- (b) contradiction-veto reject organ           = {s3['n_by_veto']}  (demoted because veto fired, accept not rescuing)",
+>         f"- (c) accept/entailment-lift organ              = {s3['n_by_entailment']}  (GOLD items RESCUED from reject by accept; A toggled +inf->op_A)",
+>         f"- (c-leak) spoofs WRONGLY rescued by accept      = {s3.get('n_spoof_rescued', 0)}  (false-accepts the accept arm introduces; already counted in fa)",
+522c634
+<         f"- S3 bar: reject_share > {S3_REJECT_SHARE_BAR} -> {s3['bar_met']}  (== veto, not coverage, owns the fa-reduction)",
+---
+>         f"- S3 bar: reject_share > {S3_REJECT_SHARE_BAR} -> {s3['bar_met']}  (== organ, not coverage, owns the fa-reduction)",
+530,531c642,643
+<         "- S1 expectation (diagnostic): cosine is RETAINED only for the rho guard + this diagnostic; the E34 lever is",
+<         "  lexical binding B, not cosine (E28 cosine-separability FALSIFIED). gold/spoof cos shown for continuity.",
+---
+>         "- S1 expectation (diagnostic): cosine is RETAINED only for the rho guard + this diagnostic; the E35 levers are",
+>         "  lexical binding B + entailment lift, not cosine (E28 cosine-separability FALSIFIED). gold/spoof cos shown for continuity.",
+553,563c665,674
+<         "decision (PRE_REGISTER_E34.md sec6, the operative forks -- read scope=any fa_op vs deberta bar 0.2333 + gate 0.10):",
+<         "  BINDING_IS_THE_LEVER (fa_op <= 0.10 AND B2>=0.90 AND bf-band nontrivial) -> the reject-task reframe WORKS;",
+<         "    the binding gate fixes the E29 retrieval-misbinding defect -> proceed to robustness sweep + verifier-",
+<         "    integration (rho 0.95-vs-0.50 reconcile, entailment-lift -> S3 three-way, full-GOLD scale). TOMMY GO REQUIRED.",
+<         "  BINDING_KNIFE_EDGE (fa_op <= 0.10 but bf-band trivial) -> clears the gate on a single B_floor point (E27-class",
+<         "    fragility) -> tighten the binding signal / widen the grid before claiming the lever.",
+<         "  BINDING_HELPS_PARTIAL (0.10 < fa_op < 0.2333) -> binding beats deberta-plain but does NOT clear the gate ->",
+<         "    directionally right, insufficient alone -> combine with a second organ (design, next).",
+<         "  BINDING_NOT_THE_LEVER (fa_op >= 0.2333) -> no gain over E33; the per-candidate contradiction-veto organ is",
+<         "    EXHAUSTED even reframed -> escalate to a DIFFERENT reject/accept organ class (accept/entailment-lift three-way).",
+<         "  VOID_* -> trust gate failed (baseline mismatch / rho degenerate / recall unusable / B_floor=0 != 0.2333) -> reconcile, re-run.",
+---
+>         "decision (PRE_REGISTER_E35.md sec6, the operative forks -- read scope=any fa_op (accept ON) vs reject-only 0.1667 + gate 0.10 + bf-band):",
+>         "  TWO_ORGAN_LEVER (fa_op <= 0.10 AND B2>=0.90 AND bf-band nontrivial) -> the combined accept+reject organ clears",
+>         "    the gate -> proceed to robustness sweep + verifier-integration (rho 0.95-vs-0.50 reconcile, full-GOLD scale). TOMMY GO REQUIRED.",
+>         "  TWO_ORGAN_KNIFE_EDGE (fa_op <= 0.10 but bf-band trivial) -> clears on a single B_floor point (E27-class fragility)",
+>         "    -> tighten the binding/accept signal or widen the grid before claiming the lever.",
+>         "  ACCEPT_HELPS_PARTIAL (0.10 < fa_op < 0.1667) -> the accept arm beats reject-only but does NOT clear the gate ->",
+>         "    directionally right, insufficient -> a third signal or a different binding observable (design, next).",
+>         "  ENTAILMENT_LIFT_EXHAUSTED (fa_op >= 0.1667) -> no gain over the reject-only ceiling; the per-candidate accept/reject",
+>         "    organ class is DONE -> pivot to a structurally different verifier (cross-source consistency over the candidate SET).",
+>         "  VOID_* -> trust gate failed (baseline / rho / B_floor=0!=0.2333 / A=+inf!=0.1667 reject-only / recall) -> reconcile, re-run.",
+566,568c677,679
+<         "  spearman on (contradiction, cosine). The E34 lever is BINDING (lexical), NOT cosine -- cosine is retained ONLY",
+<         "  for this rho guard + S1 diagnostics. Both pass at observed rho. This file keeps the FROZEN 0.95 as the VOID",
+<         "  trigger and reports the 0.50 advisory separately. Reconcile into ONE bar at verifier-integration.",
+---
+>         "  spearman on (contradiction, cosine). The E35 levers are BINDING (lexical) + ENTAILMENT, NOT cosine -- cosine is",
+>         "  retained ONLY for this rho guard + S1 diagnostics. Both pass at observed rho. This file keeps the FROZEN 0.95 as",
+>         "  the VOID trigger and reports the 0.50 advisory separately. Reconcile into ONE bar at verifier-integration.",
