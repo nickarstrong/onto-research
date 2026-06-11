@@ -161,3 +161,29 @@ ASYMMETRIC -- mis-routing serious-as-casual is catastrophic (an unchecked claim 
 casual-as-serious is cheap (mild pedantry); default bias = treat-as-serious. BUILD ORDER: only AFTER the
 reject-organ is stable (grounded verifier), never before -- cart before horse. E39/E40 is the grounded piece the
 router will stand on.
+
+## INTEGRATION READOUT v91 (2026-06-11 ; fork B INTEGRATE+CAP ; commit 4bb389b)
+
+E40 GRADUATION. The cross-source net-consensus statistic D_lambda = (n_con - lambda*n_ent)/|S|
+graduates as a stable, WIDE spoof-reject organ: feasible region |R| = 86 (wide/stable), operating
+false-accept fa_op = 0.0333, fragility FALSIFIED (the E39 knife-edge was a coarse-grid artifact, not
+data fragility). This is the verifier's first graduated reject organ. The per-candidate organ class
+(cosine E28, binding E36, con_share E37) is EXHAUSTED -- cleared the fa-gate, none lifted the bf-band;
+do NOT re-attempt any per-candidate lever.
+
+RECALL CAP 0.90 (SEPARATE-ORGAN DEBT). heldout recall is structurally floor-pinned at 27/30 = 0.9000 by
+3 golds D_lambda CANNOT touch: 2 noauth (pre_demoted -> upstream unconditional reject; the readout carries
+the bool, not WHY) + 1 pure-consensus (ho_g12: n_ent=0 -> D=1.0 = high-consensus spoof). Recovery needs a
+source-identity / provenance signal ABSENT from the 6-field readout = a DIFFERENT organ class (E42), NOT a
+tweak to D_lambda. Gated on the cap persisting at full-GOLD scale (v92). Integration INHERITS this cap
+explicitly + documented, not silently.
+
+CEILING-IS-UPPER-BOUND (E40 V1 defect). A structural ceiling VOIDs only on EXCEEDING; below-ceiling is
+valid information. Never gate equality on a quantity the experiment measures. (E40 V1 gated D=1.0 equality
+across all lambda -> never accepted -> defect, corrected before the FLOOR_BOUND run.)
+
+RHO POSTURE (decision; full readout reports/RHO_RECONCILE.md @ 4bb389b). The parked rho 0.95-vs-0.50
+conflict is RESOLVED to a SINGLE enforced independence bar: one-sided rho >= 0.95 VOID, axis re-targeted
+from the now-retired cosine to (D_lambda reject-signal, upstream bind score), value MEASURED at v92;
+advisory |rho| < 0.50 RETIRED (two-sided shape invalid for an enforced bar). Falsifier F1: that spearman
+>= 0.95 at scale -> D_lambda is a retrieval relabel -> graduation contaminated -> re-open.
