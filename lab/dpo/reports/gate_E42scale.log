@@ -1,0 +1,16 @@
+[device] cuda
+[md5] fixture 4a45f52883a802e8d8d1d5ff5d185bdb OK | heldout 7e9fe030646d5671952e7a9fe9437e37 OK
+[classes] {'gold_backed': 30, 'spoof_cuestripped_entitied': 30, 'negctrl_common': 15} | heldout items=75
+[ce] model=MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli id2label={0: 'entailment', 1: 'neutral', 2: 'contradiction'} contradiction_idx=2 entailment_idx=0
+[premise] from_finding=109/139
+[emit] records=60 (gold 30 / spoof 30)
+[sec6 reconcile] PASS (30 spoof items)
+[sec4 anchor] spoofs=30 reject=29 fa_op=0.0333 (expect 0.0333) | auth-only fa=0.0714 (expect 0.0714)
+[sec4 anchor] PASS
+[contents] spoofs=30 golds=30 | upstream_bind non-null where S>0: OK
+[apply] D_lambda(1.0)>=0.67 : spoof reject=29/30 -> fa_op=0.0333
+[F1] spearman(D_lambda, upstream_bind)=-0.5481 n=37 (bar one-sided >=0.95) -> INDEPENDENT
+[F2] recall=27/30=0.9000 (cap bar >=0.90) -> CAP_HOLDS
+[FORK] CAP_HOLDS
+[write] E42scale_readout.json (60 records, 7-field) -- gitignored, LOCAL only
+[write] E42scale_region.json (region verdict)

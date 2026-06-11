@@ -1,0 +1,32 @@
+{
+  "fixture_md5": "4a45f52883a802e8d8d1d5ff5d185bdb",
+  "heldout_md5": "7e9fe030646d5671952e7a9fe9437e37",
+  "op": {
+    "lambda": 1.0,
+    "tau": 0.67
+  },
+  "fa_op": 0.0333,
+  "anchor": {
+    "fa": 0.0333,
+    "auth_only": 0.0714,
+    "reproduced": true
+  },
+  "F1": {
+    "spearman": -0.5481,
+    "n": 37,
+    "bar_one_sided": 0.95,
+    "reopen": false
+  },
+  "F2": {
+    "recall": 0.9,
+    "accepted": 27,
+    "total": 30,
+    "cap_bar": 0.9,
+    "cap_holds": true
+  },
+  "fork": "CAP_HOLDS",
+  "counts": {
+    "spoof": 30,
+    "gold": 30
+  }
+}
