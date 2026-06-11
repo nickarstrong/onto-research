@@ -133,3 +133,31 @@ therefore CANDIDATE-SET + ANY-VETO (veto fires on ANY authorized candidate, prob
 premise phrasing and NOT cosine-separability, both falsified. Fixture E25b byte-identical (0 edits).
 Fix = candidate-SCOPE: restrict the veto to the claim's BOUND support (top-1 cosine), upstream of
 phrasing and the cosine gate -> E30 binding-discipline probe DESIGN, E31 runs it.
+---
+## READOUT LOG -- E39 (2026-06-11, commit c0d1989)
+
+VERDICT: STATISTIC_LIFTS (narrow). Cross-source net-consensus statistic D_lambda = (n_con - lambda*n_ent)/|S|
+LIFTS the bf-band on the auth subset. best_op lambda=1.0, tau=0.67 -> fa_op 0.0333 (<< 0.10 ceiling),
+B2 0.9000 (ON the 0.90 recall floor). band 2 pts / 2 lambda -- clears the anti-knife-edge guard (>=2 lambda,
+not a single C-point like E27), at MINIMUM width. anchor lambda=0 reproduces E37 fa 0.0333 byte-exact.
+Mechanism: subtracting n_ent recovers entailer-rescued golds (con_share>=0.67 AND n_ent>=1) that con_share
+alone rejects; spoofs (n_ent~0) stay rejected. The cross-source-statistic CLASS graduates; robustness
+(region vs sliver) deferred to E40.
+
+CEILING (structural): 2 golds resolve noauth -> unconditional reject -> max B2 on heldout_E17 = 28/30 = 0.9333.
+That recall gap is owned by the NOAUTH channel, NOT the cross-source statistic.
+
+PRINCIPLE -- RECONCILE DISCIPLINE (from the E39 v2/v3 contract defects): a reconcile gate must assert ONLY what
+the experiment's premise requires. v2 imposed a shape the scorer does not hold (empty-S VERIFIED golds VOIDed);
+v3 demanded the new statistic reproduce the very decision axis it exists to DIVERGE from. Minimal faithful
+reconcile = substrate md5 + structural identity (D_0 == con_share) + the spoof-side fa anchor. RULE: do not gate
+on what you intend to move. (reports/E39_V2_DEFECT.md, reports/E39_V3_DEFECT.md)
+
+HORIZON (NORTH STAR, the layer ABOVE the verifier): the autonomous entity needs a register/stakes ROUTER upstream
+of the discipline engine -- it must classify what is being discussed (pleasant chatter vs a responsible high-stakes
+cluster, e.g. a treatment protocol) and apply R-discipline PROPORTIONALLY. IGR is already the stakes dial
+(K vs H_max); the missing input is domain/register detection. HARD CONSTRAINT: the router's errors must be
+ASYMMETRIC -- mis-routing serious-as-casual is catastrophic (an unchecked claim passes silently), mis-routing
+casual-as-serious is cheap (mild pedantry); default bias = treat-as-serious. BUILD ORDER: only AFTER the
+reject-organ is stable (grounded verifier), never before -- cart before horse. E39/E40 is the grounded piece the
+router will stand on.
