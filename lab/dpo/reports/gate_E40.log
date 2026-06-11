@@ -1,0 +1,12 @@
+E40 gate
+G1 rows           : 60 (expect 60) -> PASS
+G2 split          : gold 30 / spoof 30 (expect 30/30) -> PASS
+G3 schema         : load_records enforced 6 fields (item_id,n_con,n_ent,S_size,true_class,pre_demoted) -> PASS
+G4 spoof anchor   : lambda=0 tau=0.67 fa_op=0.0333 (expect 0.0333) -> PASS
+V3 noauth ceiling : max_B2_grid=0.9000 (ceiling 0.9333, strict-upper) -> PASS
+V2 best_op anchor : lambda=1.0 tau=0.67 fa_op=0.0333 B2=0.9000 (expect 0.0333/0.9000) -> PASS
+region |R|        : 86 (K=12)
+bbox lambda       : [0.6 .. 1.5] span_steps=9 (min 2)
+bbox tau          : [0.67 .. 0.75] span_steps=8 (min 2)
+B2 in R           : [0.9000 .. 0.9000]
+VERDICT           : FLOOR_BOUND
