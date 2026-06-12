@@ -46,11 +46,18 @@ _NUM = re.compile(r'(?:\bn\s*=\s*\d+|\d+(?:\.\d+)?\s?%|\b\d+(?:\.\d+)?\b)')
 # An EMPIRICAL-result cue: PROVEN attribution OR "<num>% of <human/sample noun>".
 _EMP_PCT = re.compile(r'\d+(?:\.\d+)?\s?%\s+of\s+(?:people|patients|participants|adults|children|'
                       r'cases|respondents|users|women|men|individuals|subjects|the population)\b', re.I)
-# Overconfidence (R2). NOTE (R3 limitation): "always/never" can FP in non-assertive use;
-# kept gating because the gate==PASS-COMMON co-condition curbs it. Measured next session.
+# Overconfidence (R2). always/never REMOVED 2026-06-12 (c_adv_a2_2 "I will always be grateful"):
+# they are unbounded universals -> A5 advisory, not epistemic overconfidence; the conflation FP'd a clean.
 _OVERCONF = re.compile(r'\b(definitively|definitely|conclusively|undeniabl\w*|indisputabl\w*|'
                        r'irrefutabl\w*|unquestionabl\w*|proven|guarantee\w*|certainly|'
-                       r'without\s+(?:a\s+)?doubt|always|never)\b', re.I)
+                       r'without\s+(?:a\s+)?doubt)\b', re.I)
+# A2 attribution exemption (c_adv_a2_1 finding, Founder 2026-06-12): overconfidence is NOT a
+# calibration fault when the claim attributes the proof to a NAMED source/domain ("definitively
+# proven in Euclid's Elements"). Discriminator: claim + source-of-proof = clean ; claim + nothing
+# = dirty. Requires a proof verb AND a preposition followed by a Capitalized source token.
+_PROOF_VERB = re.compile(r'\b(prov\w*|establish\w*|demonstrat\w*|deriv\w*|shown)\b', re.I)
+_ATTRIB_SRC = re.compile(r'\b(?:in|by|via|through|from)\s+(?:the\s+|a\s+)?'
+                         r'(?:proof\s+in\s+(?:the\s+)?)?[A-Z][A-Za-z]')   # case-sensitive: Named source
 # Vague quantifiers (R1) and the empirical nouns they must modify.
 _VAGUE = re.compile(r'\b(many|most|numerous|several|substantial(?:ly)?|significant(?:ly)?|'
                     r'countless|various|multiple|majority|a\s+lot\s+of|lots\s+of|plenty\s+of)\b', re.I)
@@ -94,8 +101,9 @@ def acheck_claim(claim, claim_type, gate_label):
     if empirical_number and ungrounded and not is_abstain:
         gating.append('A1_NUMBER_NO_SOURCE')
 
-    # A2 OVERCONFIDENT_UNGROUNDED
-    if _OVERCONF.search(claim) and ungrounded and not is_abstain:
+    # A2 OVERCONFIDENT_UNGROUNDED -- exempt when overconfidence attributes proof to a NAMED source.
+    attributed_proof = bool(_PROOF_VERB.search(claim) and _ATTRIB_SRC.search(claim))
+    if _OVERCONF.search(claim) and ungrounded and not is_abstain and not attributed_proof:
         gating.append('A2_OVERCONFIDENT_UNGROUNDED')
 
     # A3 VAGUE_QUANT_NO_NUMBER
