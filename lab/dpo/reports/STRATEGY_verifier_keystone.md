@@ -227,3 +227,13 @@ or mis-attribution is untested. L2 = crossmark retraction (RWD gap OWNED as ceil
 
 NORTH STAR LINK: this is the grounded verifier the autonomous-entity properties hang off (sec0/sec3). The
 register/stakes ROUTER (E39 HORIZON) stands ON this gated pipe -- build order holds: organ stable first.
+
+## DECISION 2026-06-12 (v100) -- blocker order: E39 net-consensus FIRST
+Hit order: #1 E39 net-consensus (D_lambda reconcile, OPEN) ; #2 behavioral DPO E9 (gated on CPT v2 re-run).
+D1 discipline externalized -> verifier is spine; substrate DPO secondary.
+D2 E39 gates L5 PART II -> TIER-0 (SPEC_L5 GATE-b).
+D3 E39 organ net-consensus == L5 PART II aggregation: one problem two levels; solve once, unlock both.
+D4 E39 zero external dep (frozen NLI); DPO needs CPT v2 re-run first.
+D5 PART I + E39 = two gates to PART II; PART I on Founder truth-set, E39 parallel-drivable.
+Falsifier: if reconcile proves D_lambda shape itself unfixable (not just defective) -> PART II needs a
+different statistic, this order wrong -> revert + re-rank.
