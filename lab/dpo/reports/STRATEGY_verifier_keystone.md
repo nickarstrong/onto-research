@@ -187,3 +187,43 @@ conflict is RESOLVED to a SINGLE enforced independence bar: one-sided rho >= 0.9
 from the now-retired cosine to (D_lambda reject-signal, upstream bind score), value MEASURED at v92;
 advisory |rho| < 0.50 RETIRED (two-sided shape invalid for an enforced bar). Falsifier F1: that spearman
 >= 0.95 at scale -> D_lambda is a retrieval relabel -> graduation contaminated -> re-open.
+
+## E16 KEYSTONE READOUT (2026-06-12 ; live-bind + turnstile shipped ; commits 30295af / f1d545e / 9dab243)
+
+E16 verifier went from frozen-fixture organ to a LIVE, gated, mis-attribution-proof pipe over the real
+GOLD literature corpus (34 files -> 366 recs). Four crystallisations, all falsifiable and shipped:
+
+SHIP PATTERN (5ddaa43 / 30295af). A batch-scored organ is wired into the live path INLINE (import-only),
+guarded by BYTE-IDENTITY: the inline verdict must reproduce the frozen batch verdict (n_con/n_ent/S_size/
+pre_demoted) on the FROZEN anchor before any live corpus is trusted. Organ md5 (544c9a7b) asserted unchanged
+every session -- the verifier is a CALLED frozen substrate, never edited to fit a harness. Drift caught by
+hash, not by reading.
+
+LIVE-BIND FIELD-MAP (af8ee2e). Operationalises the sec4 BINDABILITY primitive against heterogeneous GOLD
+JSON (6 source-shapes): finding = leaf text (quote|claim|finding|admission|statement|insight, >=4 words) ;
+locator = f"{extraction_id}::{json_path}" -- the JSON path IS the verifiable, deterministic, tamper-evident
+locator (corpus carries ~no page fields; satisfies G2 non-empty WITHOUT fabrication) ; source =
+f"{paper_cite} #{json_path}" (1:1) ; claim_key = finding text. paper_cite by priority chain (source.id->
+doi->reference->RU author+year->extraction_id); source-MISSING -> extraction_id fallback, EXCLUDED-with-log
+if zero findings (never faked). LIVE-BIND != E25b: separate config; E25b + fa 0.0333 stay the FROZEN drift
+sentinel, re-deriving E25b from live GOLD is forbidden.
+
+ORGAN INPUT DOMAIN (30295af). verify_item consumes ONLY item["text"]+item["class"]; binding = semantic
+retrieve of the claim TEXT -- "binds"/"anchor" are trace metadata, NOT inputs. A claim must classify
+CHECKABLE (prose_provenance, "research reports that X") to enter; a bare assertion -> noncheckable ->
+PASS-COMMON -> NEVER tested. Even a contra-claim must first reach L3=VERIFIED (bound) before L4 flips it to
+CONTRADICTED. CONSEQUENCE: smoke/eval items as bald assertions test NOTHING -- must be provenance-register
+claims with a class field. (Cost: v96 smoke draft was noncheckable; reshaped, then 4/4 -- contra->
+CONTRADICTED, clean->VERIFIED, all L3, falsifiers silent.)
+
+MIS-ATTRIBUTION LEAK / L1-MATCH NOT OPTIONAL (f1d545e / 9dab243). A deterministic provenance turnstile sits
+UPSTREAM of L4 (gate-before-model: organ runs ONLY on PASS-TO-L4, lazy import -- a rejected DOI never reaches
+torch; VOID-by-construction). KEY FINDING: resolve-only L1 LEAKS -- a DOI resolving to a REAL OTHER paper
+(10.1073/pnas.0811124106 cited-as-cheetah resolves to "Sleep, arousal, and rhythms in flies", live-verified)
+passes wrongly. Closed by L1 metadata-MATCH: cited_title vs live Crossref title, token-Jaccard >=
+MATCH_TAU=0.5 -- mis-attrib 0.08 -> REJECT-L1, title-match 1.00 -> PASS-TO-L4 (wide margin, tau untouched).
+Metadata-match is LOAD-BEARING for the mis-attribution genre, not a nicety; cited_title REQUIRED in schema
+or mis-attribution is untested. L2 = crossmark retraction (RWD gap OWNED as ceiling, not claimed complete).
+
+NORTH STAR LINK: this is the grounded verifier the autonomous-entity properties hang off (sec0/sec3). The
+register/stakes ROUTER (E39 HORIZON) stands ON this gated pipe -- build order holds: organ stable first.
