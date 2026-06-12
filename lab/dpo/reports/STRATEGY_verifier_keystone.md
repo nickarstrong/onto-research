@@ -237,3 +237,17 @@ D4 E39 zero external dep (frozen NLI); DPO needs CPT v2 re-run first.
 D5 PART I + E39 = two gates to PART II; PART I on Founder truth-set, E39 parallel-drivable.
 Falsifier: if reconcile proves D_lambda shape itself unfixable (not just defective) -> PART II needs a
 different statistic, this order wrong -> revert + re-rank.
+
+## RECONCILE 2026-06-12 (v100) -- ladder E37->E42 + verifier-v1 build position
+Memory was stale (~14 rungs). Real disk state:
+  E37 op-point -> E38 scalar falsified -> E39 D_lambda STATISTIC_LIFTS (floor-bound) ->
+  E40 FLOOR_BOUND (region robust, B2 pinned 0.90) ->
+  E42scale PASS/CAP_HOLDS: F1 independence (rho -0.5481), F2 recall 27/30 structural cap
+  (3 golds unrescuable by construction) -> D_lambda GRADUATED. verifier-v1 freeze path OPEN.
+Provenance SPEC v1 (b62aad2f) = FOLDED+FROZEN: AUDIT a602c41 D1-D6 resolved (D1/D2/D4/D5/D6 by
+  spec-edit; D3 deferred to sec9 step3 = L5 independence). Founder fold DONE.
+OBSOLETE: prior "E39-first / knife-edge hardening" decision -- E39 already graduated; superseded.
+Build (frozen sec9): step0 oracle DONE | step1 L1/L2 adapter DONE (this commit, Fixture A 5/5 live,
+  Crossref+match + RWD 59011-DOI; oracle fix pnas.0811124106=mismatch; clean control added) |
+  step2 wire L4 frozen D_lambda = NEXT | step3 L5 independence == SPEC_L5 PART I (validator built,
+  gated on Founder truth-set) | step4 tiering + G-floor (D2). Ceiling = T1 until step3.
