@@ -6,12 +6,23 @@
 # Loading + wrapper + decoding mirror onto_e5_gen.py arm A VERBATIM (4-bit nf4, greedy, ### wrapper)
 # so outputs are comparable to the lab's established base-eval path.
 #
+# fix(b) step4a (2026-06-14): OPTIONAL --adapter load added. PeftModel is layered OVER the frozen
+#   base (NO merge -> base/organ NOT mutated, adapter stays separable). Base load, wrapper
+#   (format_example), bad_words, decode params, greedy are BYTE-IDENTICAL to the no-adapter path,
+#   so the DPO arm is comparable to the base arm produced by this same harness (md5 8b6366b1).
+#   --adapter ABSENT  -> base arm (no adapter), as before.
+#   --adapter <dir>   -> DPO arm (frozen base + fix(b) LoRA).
+#
 # Output ordinary_window.jsonl: one obj/line, "id" = prompt id (provenance kept), "text" = base output.
 # This is exactly the {id,text} shape verify_disp_audit.py --audit ingests.
 #
 # Run (pod, GPU mandatory):
+#   # base arm (no adapter):
 #   python run_ordinary_window.py --prompts /workspace/ordinary_prompts.jsonl \
 #       --out /workspace/ordinary_window.jsonl
+#   # DPO arm (fix(b) adapter layered over frozen base, no merge):
+#   python run_ordinary_window.py --prompts /workspace/ordinary_prompts_v6.jsonl \
+#       --adapter /workspace/adapter_fixb_dpo_v1 --out /workspace/ordinary_window_v6_dpo_raw.jsonl
 #
 # Dry-run (CPU, no model, mock - validates wiring + output shape only):
 #   python run_ordinary_window.py --prompts ordinary_prompts.jsonl --dry-run
@@ -42,8 +53,9 @@ def format_example(instruction):
     return f"### Instruction:\n{instruction}\n\n### Response:\n"
 
 
-def build_model():
-    """Load FROZEN base, no adapter. Lazy import so --dry-run needs no torch."""
+def build_model(adapter=None):
+    """Load FROZEN base. If adapter is given, layer a PeftModel OVER it (no merge -> base not mutated,
+    adapter separable). Lazy import so --dry-run needs no torch."""
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
@@ -61,8 +73,25 @@ def build_model():
     model = AutoModelForCausalLM.from_pretrained(
         BASE_MODEL, quantization_config=bnb, device_map="auto",
         trust_remote_code=True, torch_dtype=torch.float16)
-    model.eval()
-    print("Frozen base loaded (no adapter, no GOLD prompt).", file=sys.stderr)
+
+    if adapter:
+        # Layer the LoRA over the frozen base. NO merge_and_unload -> base weights untouched,
+        # adapter remains a separable delta (the DPO arm). Inference only (is_trainable=False).
+        from peft import PeftModel
+        ap = Path(adapter)
+        assert ap.is_dir(), f"STOP: --adapter dir not found: {adapter}"
+        assert (ap / "adapter_config.json").is_file(), \
+            f"STOP: no adapter_config.json in {adapter} (not a PEFT adapter dir)"
+        model = PeftModel.from_pretrained(model, str(ap), is_trainable=False)
+        model.eval()
+        # Hard guard: confirm a LoRA delta is actually attached (arm must NOT silently fall back to base).
+        active = getattr(model, "active_adapters", None)
+        active = active() if callable(active) else getattr(model, "active_adapter", None)
+        assert active, "STOP: adapter loaded but no active LoRA adapter -> would silently be base arm"
+        print(f"DPO arm: frozen base + adapter '{adapter}' (active={active}, NO merge).", file=sys.stderr)
+    else:
+        model.eval()
+        print("Base arm: frozen base loaded (no adapter, no GOLD prompt).", file=sys.stderr)
     return tok, model
 
 
@@ -105,6 +134,9 @@ def main():
     ap = argparse.ArgumentParser(description="phase-3 step2: frozen base on ordinary prompts")
     ap.add_argument("--prompts", required=True, help="ordinary_prompts.jsonl (id/family/prompt)")
     ap.add_argument("--out", default="/workspace/ordinary_window.jsonl")
+    ap.add_argument("--adapter", default=None,
+                    help="OPTIONAL PEFT adapter dir -> layer over frozen base (DPO arm). "
+                         "Absent = base arm (no adapter).")
     ap.add_argument("--dry-run", action="store_true",
                     help="CPU mock: no model, validates wiring + output shape")
     args = ap.parse_args()
@@ -117,10 +149,11 @@ def main():
         print("[dry-run] mock generation, no model loaded", file=sys.stderr)
         gen_fn = lambda q: mock_generate(q)
     else:
-        tok, model = build_model()
+        tok, model = build_model(adapter=args.adapter)
         bad = build_bad_words_ids(tok)
         gen_fn = lambda q: generate(tok, model, q, bad)
 
+    arm = "dpo" if args.adapter else "base"
     n = 0
     with open(args.out, "w", encoding="utf-8") as fo:
         for i, row in enumerate(prompts, 1):
@@ -131,8 +164,9 @@ def main():
             if i % 6 == 0:
                 print(f"  [{i}/{len(prompts)}]", file=sys.stderr)
 
-    print(f"[done] wrote {n} outputs -> {args.out}", file=sys.stderr)
-    print("=== WINDOW DONE === download ordinary_window.jsonl, then --audit it", file=sys.stderr)
+    print(f"[done] arm={arm} wrote {n} outputs -> {args.out}", file=sys.stderr)
+    print("=== WINDOW DONE === download it, then trim (trim_window.py) -> verify -> measure (step4b)",
+          file=sys.stderr)
 
 
 if __name__ == "__main__":
