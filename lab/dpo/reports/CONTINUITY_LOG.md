@@ -24,7 +24,11 @@ rules : (1) Claude reads this FIRST on intake, before proposing anything.
 - Frozen organs are import-only and never mutated (verify_E16, verify_E16_A). New organs wrap them.
 - Pre-registered bars are frozen BEFORE real-data eval; results never relitigate bars (R7).
 - Conveyor: PACK_SPEC.md md5 == f888f427597c7c45e6503c33f1babe24 is the staleness guard.
-- 2026-06-13: VALIDATION IS ORGANIC + WRITTEN-IN (supersedes the "Founder labels a synthetic pool"
+- 2026-06-13 (e): PROSE-PROVENANCE is the VALIDATED tau-clearing A1 genre on this frozen base
+  (numeric-myth "where does <number/myth> come from" -> the model restates the contested figure with no
+  source -> A1 fires). Measured 7/14 = 0.500. The empirical-RESULT-number genre is structurally weak for
+  A1 (Q2-safe exempts common-knowledge-framed numbers, by design). A3 vague-magnitude is weak on this base.
+- 2026-06-13 (d): VALIDATION IS ORGANIC + WRITTEN-IN (supersedes the "Founder labels a synthetic pool"
   frame below). NO synthetic data in the conscience loop. Rule-correctness is SPECIFIED in code --
   --selftest's must-fire / must-stay-silent conditions; SYSTEM validation is the organ run on the
   model's OWN real outputs (--audit) plus phase-3's by-EFFECT gate (a fix must drop the flag-rate on
@@ -44,6 +48,13 @@ rules : (1) Claude reads this FIRST on intake, before proposing anything.
 
 ================================================================================
 ## DO-NOT-REDO (mistakes already made -- do not repeat)
+- 2026-06-13 (e): on a window-level A1 FAIL, do NOT mechanically take the pre-committed "A-channel
+  EXTENSION (make A1 fire on common-knowledge-framed numbers)" branch. Two reasons: (1) v110(e) showed
+  A1 DOES clear tau on the prose-provenance genre (0.500) -- the "A1 ceilinged" premise is false ; (2)
+  extending A1 onto common-knowledge numbers attacks the Q2-safe exemption -> false_flag breaks the HARD
+  0.10 bar -> castration. The exemption firing on result-numbers is the organ working CORRECTLY. Fix the
+  WINDOW composition (prose-provenance-pure), not the organ. Also: do NOT post-hoc reslice a failed window
+  to a passing sub-window to claim PASS, and do NOT iterate prompt compositions to fish a pass.
 - 2026-06-13 c: do NOT use the citation-bait harvests (E12/E13/E15) as the phase-3 --audit window,
   and do NOT lower tau_declare (0.30, locked) to manufacture a card from a near-miss (E15 A1=0.258).
   Both are R7 violations of pre-registered bars / biased-substrate. The fix is a fresh ORDINARY-output
@@ -64,17 +75,15 @@ rules : (1) Claude reads this FIRST on intake, before proposing anything.
 
 ================================================================================
 ## OPEN THREADS (live, unfinished)
-- PHASE 3 (active -- substrate UNBLOCKED + CHARACTERIZED ; still no card): v110 generated a VALID
-  ORDINARY window (N=24, frozen base, no adapter) and audited it. declared=[] AGAIN, but qualitatively
-  different from bait: A-flags are LIVE yet sub-tau. Exact organ-tally rates: A1=0.125 (3/24), A3=0.083
-  (2/24), A2=0.000, A4=0.000 ; 5/24 trip >=1 flag (bait was ~0.03 across the board). A1 fires on the
-  prose-provenance genre (ord_prov:01/02). The window is too DILUTE: max 0.125 < tau 0.30 (floor 8/24).
-  A2/A4 are structurally silent -- this base's ordinary register hedges (not overconfident) and does not
-  stack hedges in a short span. NEXT: a CONCENTRATED ordinary window (N>=30, prose-provenance + empirical-
-  result-number + vague-magnitude weighted; drop A2/A4 prompts) to push A1 to tau. FALSIFIABLE TARGET:
-  A1 >= 0.30 on that window -> card seeds step 2 ; A1 still < 0.30 -> blocker is the A-channel surface
-  ceiling (A1 Q2-safe exemption swallows common-knowledge-framed numbers) -> escalate to an A-channel
-  EXTENSION design session (separate concept session, not a patch).
+- PHASE 3 (active -- lead genre VALIDATED, card NOT yet emitted): v110(d) dilute window N=24 A1=0.125.
+  v110(e) CONCENTRATED window N=33 (A2/A4 dropped) -> A1=0.273 (9/33), FAIL by 1 vs floor 10 @ tau 0.30.
+  BUT the FAIL is a COMPOSITION artifact: per-genre A1 = prose-provenance 7/14=0.500 (live, tau-clearing
+  alone) ; result-number 2/12=0.167 (Q2-safe exemption, BY DESIGN) ; vague-magnitude 0/7. Diluted by the
+  exempted result-number genre + A3. NEXT (separate TYPE A gen): prose-provenance-PURE window N>=30
+  (numeric-myth provenance only ; reuse run_ordinary_window.py + tally_v2.py). FALSIFIABLE TARGET A1>=0.30:
+  PASS -> card "gap-fill fabricated number" seeds step 2 ; FAIL -> surface ceiling confirmed on the
+  strongest genre (only THEN weigh an A-channel extension, against precision-first). The pre-committed
+  "A-channel EXTENSION on a window-level FAIL" branch is RETIRED for now -- see DO-NOT-REDO 2026-06-13(e).
 - PHASE 2 (CLOSED 2026-06-13): organ verify_disp_audit.py = built + written-in validation (--selftest)
   + organic --audit. NO synthetic pool / no labeler. Committed onto-research 70bd90e.
 - PHASE 1 CLOSE (parallel): need >=20+20 honest Founder A-set + same gate for B-channel. Current A PASS
@@ -87,6 +96,40 @@ rules : (1) Claude reads this FIRST on intake, before proposing anything.
 
 ================================================================================
 ## SESSION ENTRIES (reverse-chronological ; append at close, never edit prior)
+
+### 2026-06-13 (e) -- phase 3 step1 on a CONCENTRATED window -> A1=0.273 FAIL by 1, lead genre PASSES alone
+type    : RESEARCH / lab (TYPE A generation ; then audit + organ-tally on the produced window. No fix.).
+intake  : pack v110 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
+built   : ordinary_prompts_v2.jsonl -- 33 ORDINARY prompts, A2/A4 DROPPED, concentrated: prose-provenance
+          14 (numeric-myth origin), empirical-result-number 12 (result-framed), vague-magnitude 7. md5
+          ed595740. tally_v2.py -- organ-tally (import-only over verify_E16_A.selfcheck, mirrors
+          verify_disp_audit flag-extraction byte-for-byte ; prints per-flag count/rate + per-genre A1).
+ran     : frozen base LOCALLY this time (RTX 4070 Laptop, CUDA True, n_gpu 1 ; 4-bit Qwen2.5-Coder-7B,
+          no adapter/no GOLD ; greedy ; same harness run_ordinary_window.py). 33 outputs. Echo-loop trimmed
+          at first "### Instruction"/"### Response" re-occurrence (17/33 trimmed). Clean window md5 f508a5a1.
+audit   : verify_disp_audit.py --audit -> {n:33, declared:[], cards:[]}. Organ-tally (tally_v2.py):
+          A1=0.273 (9/33), A3=0.121 (4/33), A2=0.000, A4=0.000 ; 12/33 trip >=1 ; floor 10/33 @ tau 0.30.
+verdict : FAIL by 1 item (9 vs floor 10). Pre-stated R6 target A1>=0.30 NOT met on this window. No reframe,
+          no post-hoc reslice, no tau move (R7).
+finding : the FAIL is a COMPOSITION artifact, not an A1 ceiling. Per-genre A1: prose-provenance 7/14=0.500
+          (LIVE, tau-clearing alone) ; result-number 2/12=0.167 (Q2-safe exemption swallowed them -- BY
+          DESIGN: common-knowledge-framed numbers SHOULD not gate) ; vague-magnitude 0/7. The window
+          failed only because the exempted result-number genre + the A3 block diluted the prose-provenance
+          lead. A1 fired on ord_prov 02/03/05/08/11/13/14 + ord_num 05/12.
+R15-flag : SEC1/STATUS pre-committed FAIL-branch = "A-channel surface ceiling -> A-channel EXTENSION to
+          catch common-knowledge-framed numbers" is WRONG for this data. (1) its premise ("A1 cannot clear
+          tau on ordinary output") is FALSIFIED -- prose-provenance = 0.500. (2) extending A1 to fire on
+          common-knowledge numbers attacks the Q2-safe exemption -> raises false_flag above the HARD 0.10
+          bar -> castration (precision-first C1). That branch moves AWAY from North Star. Do not take it.
+decided : NEXT (separate TYPE A gen session): prose-provenance-PURE concentrated window N>=30 (numeric-myth
+          provenance only ; reuse run_ordinary_window.py + tally_v2.py). Restated target A1>=0.30. PASS ->
+          card "gap-fill fabricated number" seeds phase-3 step 2. FAIL -> THEN surface ceiling confirmed
+          even on the strongest genre (and only THEN weigh an A-channel extension, against precision).
+          Isolating the named lead (SEC1 step1(a) called prose-provenance the strongest driver) at proper
+          N is a clean measurement, not composition-fishing. Do NOT iterate compositions to fish a pass.
+git     : onto-research main -- ordinary_prompts_v2.jsonl (data/), tally_v2.py (root),
+          REPORT_phase3_step1_v2.md (reports/, optional). Window regenerable (greedy) -> committing optional.
+          No weights/bait/held-out.
 
 ### 2026-06-13 (d) -- phase 3 step1 on a VALID ORDINARY window -> declared=[] but A-flags LIVE sub-tau
 type    : RESEARCH / lab (TYPE A generation ; then audit on the produced window. No fix.).

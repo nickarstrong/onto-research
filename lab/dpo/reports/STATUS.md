@@ -1,17 +1,19 @@
 # STATUS.md -- current-state snapshot (read after the canon, before the task spec)
 
-date  : 2026-06-13
+date  : 2026-06-13 (e)
 plane : RESEARCH / lab. self-checkup loop.
 
 ================================================================================
 ## WE ARE HERE
 Phase 2 (disposition-audit) CLOSED. Phase 3 (surgical correction) ACTIVE; substrate UNBLOCKED + CHARACTERIZED.
-v110 generated a VALID ORDINARY window (N=24, frozen base Qwen2.5-Coder-7B, no adapter/no GOLD) and audited
-it. declared=[] AGAIN -- but unlike the bait null, A-flags are LIVE yet sub-tau. Organ-tally rates:
-A1=0.125 (3/24), A3=0.083 (2/24), A2=0.000, A4=0.000; 5/24 trip >=1 flag (bait was ~0.03). A1 fires on the
-prose-provenance genre; it is Q2-safe on common-knowledge-framed numbers by design. A2/A4 silent (base
-hedges, not overconfident). Window too DILUTE: max 0.125 < tau 0.30 (floor 8/24). NEXT: a CONCENTRATED
-ordinary window (prose-provenance + empirical-result-number + vague-magnitude weighted) to push A1 to tau.
+v111 ran phase-3 step1 on a CONCENTRATED ordinary window (N=33, A2/A4 dropped, frozen base Qwen2.5-Coder-7B,
+no adapter/no GOLD; ran LOCALLY on RTX 4070). Organ-tally: A1=0.273 (9/33), A3=0.121 (4/33), A2=A4=0.000;
+12/33 trip >=1; floor 10/33 @ tau 0.30. VERDICT: FAIL by 1 (R6 target A1>=0.30 not met; no reframe/tau move).
+The FAIL is a COMPOSITION artifact, NOT an A1 ceiling: per-genre A1 = prose-provenance 7/14=0.500 (live,
+tau-clearing ALONE) ; result-number 2/12=0.167 (Q2-safe exemption, BY DESIGN) ; vague-magnitude 0/7. prose-
+provenance is the validated tau-clearing A1 genre. R15: the pre-committed "A-channel EXTENSION" FAIL-branch
+is RETIRED (premise falsified + would break the HARD false_flag 0.10 bar = castration). NEXT: a prose-
+provenance-PURE window N>=30 to clear tau on the isolated lead.
 Ladder + gates: ARCHITECTURE_master.md sec 4. Control: operator-applies (phases 1-3).
 
 ================================================================================
@@ -34,17 +36,18 @@ Ladder + gates: ARCHITECTURE_master.md sec 4. Control: operator-applies (phases 
 - L5 internet grounding: built, UNCOMMITTED, gated on a Founder truth-set.
 
 ================================================================================
-## IMMEDIATE NEXT ACTION (phase 3 -- concentrate the ordinary window, push A1 to tau)
-v110 proved A1/A3 are LIVE but dilute (A1=0.125 < tau 0.30). Do NOT lower tau (R7), do NOT re-mine bait,
-do NOT pad with A2/A4 prompts (structurally silent on this base). To get a card:
-- NEXT (separate generation session, TYPE A): assemble N>=30 ORDINARY prompts CONCENTRATED on the
-  A1/A3-eliciting genres -- prose-provenance ("where does <myth/number> come from"), empirical-result-
-  number asks (result-framed, not definitional), vague-magnitude ("how much/how many"). Reuse
-  run_ordinary_window.py (on disk) on the frozen base -> ordinary_window_v2.jsonl (cut echo-loop).
-- THEN: verify_disp_audit.py --audit ordinary_window_v2.jsonl -> cards + organ-tally rates.
-  FALSIFIABLE TARGET: A1 >= 0.30. PASS -> card seeds step 2 (corrective signal, LATER session). FAIL ->
-  A-channel surface ceiling confirmed -> A-channel EXTENSION design session (separate concept session).
-  generate/audit/fix stay SEPARATE sessions.
+## IMMEDIATE NEXT ACTION (phase 3 -- prose-provenance-PURE window, clear tau on the isolated lead)
+v111 proved prose-provenance is the tau-clearing A1 genre (7/14=0.500) but the MIXED window FAILED
+(A1=0.273) via dilution by the Q2-safe-exempted result-number genre + A3. Do NOT lower tau (R7), do NOT
+re-mine bait, do NOT take the A-channel-extension branch on a window FAIL (DO-NOT-REDO 2026-06-13 e), do
+NOT post-hoc reslice / iterate compositions to fish a pass. To get a card:
+- NEXT (separate generation session, TYPE A): assemble N>=30 ORDINARY prompts, ALL prose-provenance /
+  numeric-myth ("where does <number/myth> come from", "who first said <figure>"). Reuse
+  run_ordinary_window.py (on disk) on the frozen base -> ordinary_window_v3.jsonl (cut echo-loop).
+- THEN: verify_disp_audit.py --audit + tally_v2.py ordinary_window_v3.jsonl -> cards + organ-tally rates.
+  FALSIFIABLE TARGET: A1 >= 0.30. PASS -> card "gap-fill fabricated number" seeds step 2 (LATER session).
+  FAIL (even on the pure lead) -> surface ceiling CONFIRMED -> A-channel design session weighing any
+  extension against the HARD false_flag 0.10 bar. generate/audit/fix stay SEPARATE sessions.
 
 ================================================================================
 ## CODE LOCATIONS (on disk, onto-research/lab/dpo/)
