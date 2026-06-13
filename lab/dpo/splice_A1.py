@@ -258,6 +258,43 @@ def _selftest():
     print("SELFTEST: PASS (fires on dirty, silent on clean, never mints a source)")
 
 
+
+# ---------------------------------------------------------------- deterministic ITEM-level pair DUMP (--emit)
+def emit_pairs(windows, prompts_files, tags, out_path, use_store=False):
+    """Serialise the SAME splice run at ITEM (whole-output) level -- the DPO-trainable unit.
+    For every A1-firing output: {id, prompt, rejected(=raw verbatim), chosen(=full spliced output),
+    source, span_ids}. Reuses item_fires_A1 + splice_item EXACTLY -- re-authors nothing. Default
+    DECLARE-only (store=None): store-independent + GROUND 0x by construction (the v115 card)."""
+    store = open_store(use_store)
+    pairs, n_sourced = [], 0
+    for win_path, prompts_path, tag in zip(windows, prompts_files, tags):
+        prompts = {}
+        for l in open(prompts_path, encoding='utf-8'):
+            if l.strip():
+                o = json.loads(l); prompts[o['id']] = o['prompt']
+        for l in open(win_path, encoding='utf-8'):
+            if not l.strip():
+                continue
+            it = json.loads(l); raw, iid = it['text'], it['id']
+            if not item_fires_A1(raw):
+                continue
+            span_ids = [f'{iid}#{i}' for i, s in enumerate(v.segment(raw))
+                        if not v.is_qa_scaffold(s) and claim_fires_A1(s)]
+            chosen, actions = splice_item(raw, store)
+            n_sourced += sum(1 for a in actions if a['branch'] == 'GROUND')
+            if iid not in prompts:
+                print(f'[emit] WARN: no prompt for {iid}', file=sys.stderr)
+            pairs.append({'id': iid, 'prompt': prompts.get(iid, ''),
+                          'rejected': raw, 'chosen': chosen,
+                          'source': tag, 'span_ids': span_ids})
+    with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
+        for p in pairs:
+            f.write(json.dumps(p, ensure_ascii=False) + '\n')
+    print(f'emit: -> {out_path}  pairs={len(pairs)} sourced={n_sourced} '
+          f"store={'REAL' if store else 'none(DECLARE-only)'}")
+    return pairs
+
+
 # ---------------------------------------------------------------- cli
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
@@ -265,10 +302,21 @@ if __name__ == '__main__':
     ap.add_argument('--score', metavar='WINDOW.jsonl')
     ap.add_argument('--clean', metavar='CLEAN.jsonl')
     ap.add_argument('--no-store', action='store_true', help='disable GROUND (DECLARE-only)')
+    ap.add_argument('--emit', metavar='OUT.jsonl', help='dump item-level DPO pairs')
+    ap.add_argument('--window', help='comma-list of source windows for --emit')
+    ap.add_argument('--prompts', help='comma-list of prompt files (id-aligned to windows)')
+    ap.add_argument('--source-tag', help='comma-list of source tags, one per window')
     args = ap.parse_args()
 
     if args.selftest:
         _selftest()
+    elif args.emit:
+        if not (args.window and args.prompts and args.source_tag):
+            print('ERROR: --emit requires --window, --prompts, --source-tag (comma-lists)', file=sys.stderr); sys.exit(2)
+        ws=args.window.split(','); ps=args.prompts.split(','); ts=args.source_tag.split(',')
+        if not (len(ws)==len(ps)==len(ts)):
+            print('ERROR: --window/--prompts/--source-tag must have equal counts', file=sys.stderr); sys.exit(2)
+        emit_pairs(ws, ps, ts, args.emit, use_store=not args.no_store)
     elif args.score:
         if not args.clean:
             print("ERROR: --score requires --clean <clean_control.jsonl> for G3", file=sys.stderr)
