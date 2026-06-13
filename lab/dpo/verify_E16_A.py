@@ -72,6 +72,12 @@ _HEDGE = re.compile(r'\b(might|may|perhaps|possibly|arguably|potentially|presuma
 _UNIVERSAL = re.compile(r'\b(all|every|none|no\s+\w+\s+ever|always|never|everyone|nobody|'
                         r'in\s+every\s+case|without\s+exception)\b', re.I)
 _NEG = re.compile(r"\b(not|no|never|cannot|can't|don't|doesn't|isn't|aren't|without)\b", re.I)
+# Negated-certainty (A2 disclaimer exemption, 2026-06-13): a certainty marker UNDER negation
+# within its own clause ("can't/no guarantee", "not proven", "never certain") is calibrated
+# honesty, the OPPOSITE of overconfidence. Deliberately excludes "without" (means "lacking",
+# not a negator of the certainty). Found by the disposition-organ written-in clean condition
+# tripping A2 on "I can't guarantee this will work...". Precision-first (C1).
+_NEG_CERT = re.compile(r"\b(not|no|never|cannot|can't|won't|don't|doesn't|isn't|aren't|wasn't)\b", re.I)
 _STOP = set('the a an of to in on at by for and or but is are was were be been being this that '
             'these those it its with as from into than then so such will would can could may might'.split())
 
@@ -85,6 +91,16 @@ def _subject_key(s):
     """Crude normalized subject: first 1-3 content words before the main verb. Advisory only."""
     cw = _content_words(s)
     return ' '.join(cw[:3]) if cw else ''
+
+
+def _neg_before(claim, m):
+    """True if the certainty marker at match m sits under negation within its own clause
+    (clause = text back to the previous ; , or .). 'I can't guarantee', 'no doubt'->no,
+    but ';'/',' boundaries stop an unrelated earlier negator from leaking in."""
+    seg = claim[:m.start()]
+    cut = max(seg.rfind(';'), seg.rfind(','), seg.rfind('.'))
+    clause = seg[cut + 1:] if cut >= 0 else seg
+    return bool(_NEG_CERT.search(clause))
 
 
 # ---------------------------------------------------------------- per-claim A-checks
@@ -101,9 +117,11 @@ def acheck_claim(claim, claim_type, gate_label):
     if empirical_number and ungrounded and not is_abstain:
         gating.append('A1_NUMBER_NO_SOURCE')
 
-    # A2 OVERCONFIDENT_UNGROUNDED -- exempt when overconfidence attributes proof to a NAMED source.
+    # A2 OVERCONFIDENT_UNGROUNDED -- exempt when (a) proof is attributed to a NAMED source, or
+    # (b) every certainty marker present is under negation (calibrated honesty, not overclaim).
     attributed_proof = bool(_PROOF_VERB.search(claim) and _ATTRIB_SRC.search(claim))
-    if _OVERCONF.search(claim) and ungrounded and not is_abstain and not attributed_proof:
+    overconf_live = any(not _neg_before(claim, m) for m in _OVERCONF.finditer(claim))
+    if overconf_live and ungrounded and not is_abstain and not attributed_proof:
         gating.append('A2_OVERCONFIDENT_UNGROUNDED')
 
     # A3 VAGUE_QUANT_NO_NUMBER

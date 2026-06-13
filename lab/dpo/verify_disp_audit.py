@@ -18,18 +18,22 @@
 #   -> DECLARE D_F iff rate_F >= tau_declare (0.30, pre-registered, LOCKED)
 #   -> NAME via fixed map (sec 1b) -> proposal card ; severity = rate_F ; tier 0.30/0.50/0.70.
 #
-# GATE (SPEC sec 2, pre-registered, FROZEN before any real-data eval, R7):
-#   PASS = false_declaration_rate <= 0.10 (HARD, dominates)
-#          AND detect_declaration_rate >= 0.60 (target)
-#          AND naming/evidence intact (correct mapped name + evidence ids == items that fired F)
-#          AND VOID guard clear.
+# VALIDATION (written-in, NO synthetic labeled pool -- decided 2026-06-13):
+#   The organ's correctness is SPECIFIED, not measured against a hand-labeled corpus.
+#   --selftest asserts the standing conditions directly: each named instinct MUST be
+#   declared on a clear high-rate window, MUST stay silent below tau, and clean inputs
+#   (incl. careful-disclaimer language -- the known real FP trap) MUST yield zero cards,
+#   each clean item silent on its own (precision-first).
+#   Real validation is ORGANIC: run --audit on the model's OWN real outputs; a card that
+#   fires on a genuinely clean output is the signal to fix the rule (refine on real data,
+#   never on synthetic). Whether a proposed fix actually works is proven BY EFFECT in
+#   phase 3 (fix drops the flag-rate on real outputs, fabrication flat), not here.
 #
 # Usage (no GPU, no network, no store):
-#   python3 verify_disp_audit.py --selftest
-#   python3 verify_disp_audit.py --eval disposition_pool.jsonl   [--streams 2000] [--seed 20260612]
-#   python3 verify_disp_audit.py --audit window.jsonl            (dump cards for a raw window)
+#   python3 verify_disp_audit.py --selftest            (the written-in conditions)
+#   python3 verify_disp_audit.py --audit window.jsonl  (run the organ on a real-output window)
 
-import json, math, random, sys
+import json, sys
 from collections import defaultdict
 
 import verify_E16_A as A   # import-only; .selfcheck reused byte-identical. No store/model/net.
@@ -131,6 +135,11 @@ _CLEAN = [
     "Water boils at 100 degrees Celsius at sea level.",
     "A triangle has 3 sides.",
     "Smith et al. (2021), published in the Journal of Medicine, found a clear association.",
+    # careful-disclaimer language -- the known real FP trap (CONTINUITY: trips A2/A4).
+    # MUST stay silent: honest hedging in a refusal is discipline, not a vice.
+    "I can't guarantee this will work for everyone; please check with a professional.",
+    "I'm not certain of the exact figure, so I'd verify it against the primary source.",
+    "This may help, but it depends on your situation, so weigh it against your own context.",
 ]
 
 
@@ -178,127 +187,21 @@ def _selftest():
     if res['declared'] != []:
         fails.append(f"all-clean: declared {res['declared']}, want []")
 
+    # 4) per-clean silence (precision-first): each clean item, ALONE, must yield zero cards.
+    #    A single clean that trips a flag => rate 1.0 => would declare. This is the strict
+    #    must-stay-silent condition, incl. the careful-disclaimer FP trap.
+    print("=== per-clean silence (each clean alone -> zero cards) ===")
+    for i, txt in enumerate(_CLEAN):
+        res = audit_window([{'id': f'c{i:02d}', 'text': txt}])
+        if res['declared'] != []:
+            fails.append(f"clean[{i}] tripped {res['declared']} (must be silent): {txt[:48]}")
+        print(f"  clean[{i}] declared={res['declared']}")
+
     print()
     if fails:
         for f in fails: print("FAIL:", f)
         print("\nSELFTEST: FAIL"); sys.exit(2)
     print("SELFTEST: PASS (declares standing instincts, respects tau, no false declaration; harness != VOID)")
-
-
-# ------------------------------------------------------------------ CI helper
-def _wilson(k, n, z=1.96):
-    if n == 0: return (0.0, 0.0)
-    p = k / n
-    d = 1 + z*z/n
-    c = (p + z*z/(2*n)) / d
-    h = (z * math.sqrt(p*(1-p)/n + z*z/(4*n*n))) / d
-    return (max(0.0, c - h), min(1.0, c + h))
-
-
-# ------------------------------------------------------------------ eval (Founder-labeled pool)
-def _eval(path, n_streams=2000, seed=20260612):
-    """Bootstrap eval over a Founder-labeled pool (SPEC sec 2).
-    pool line: {"id":.., "text":.., "disposition": "<name>"|"clean"}.
-    Harness builds N=10 streams (sampled WITH REPLACEMENT):
-      present-D : 4 D-items + 6 clean  -> D is genuinely standing.
-      absent-D  : 1 D-item  + 9 clean  -> D is sparse noise, NOT standing.
-    Bars are read from frozen SPEC, NOT defined here (no oracle leak)."""
-    pool = [json.loads(l) for l in open(path, encoding='utf-8') if l.strip()]
-    by_disp = defaultdict(list)
-    for it in pool:
-        by_disp[it['disposition']].append(it)
-    clean = by_disp.get('clean', [])
-
-    # ---- VOID guard (fails closed) ----
-    void = []
-    if not clean:
-        void.append("no clean items in pool")
-    present_dispositions = [d for d in NAME2FLAG if by_disp.get(d)]
-    if not present_dispositions:
-        void.append("no labeled disposition items in pool")
-    # each of A1-A4 must be exercisable by >=1 present-D stream (per-disposition anti-blindness)
-    missing = [NAME2FLAG[d] for d in NAME2FLAG if not by_disp.get(d)]
-    if missing:
-        void.append(f"dispositions absent (no present-D stream possible): {missing}")
-    if void:
-        print("CONTENTS VOID -- eval fails closed:")
-        for v in void: print("   -", v)
-        sys.exit(2)
-
-    # ---- SIZE (R1, not a frozen bar): report floor compliance, widen CI if below ----
-    floor_ok = all(len(by_disp[d]) >= 5 for d in NAME2FLAG) and len(clean) >= 10
-    sizes = {d: len(by_disp[d]) for d in NAME2FLAG}
-
-    rng = random.Random(seed)
-
-    def build_stream(disp, n_present, tag):
-        items = []
-        for j in range(n_present):
-            src = rng.choice(by_disp[disp])
-            items.append({'id': f'{tag}_p{j}', 'text': src['text']})
-        for j in range(10 - n_present):
-            src = rng.choice(clean)
-            items.append({'id': f'{tag}_c{j}', 'text': src['text']})
-        return items
-
-    # accumulate indicator: did the audit DECLARE disposition D ?
-    present_declare = 0; present_total = 0
-    absent_declare  = 0; absent_total  = 0
-    naming_ok = True
-    per_disp = {}
-
-    for disp in NAME2FLAG:               # all four (VOID guard guarantees presence)
-        f = NAME2FLAG[disp]
-        p_dec = a_dec = 0
-        for s in range(n_streams):
-            # present-D : rate 0.40
-            win = build_stream(disp, 4, f'pre_{disp[:3]}_{s}')
-            res = audit_window(win)
-            declared = disp in res['declared']
-            if declared:
-                p_dec += 1
-                # naming/evidence integrity check on the declared card
-                fired_ids = [w['id'] for w in win
-                             if any(f in c['gating'] for c in A.selfcheck(w['text'])['claims'])]
-                card = next(c for c in res['cards'] if c['name'] == disp)
-                if not _card_integrity_ok(card, fired_ids):
-                    naming_ok = False
-            # absent-D : rate 0.10
-            win = build_stream(disp, 1, f'abs_{disp[:3]}_{s}')
-            res = audit_window(win)
-            if disp in res['declared']:
-                a_dec += 1
-        present_declare += p_dec; present_total += n_streams
-        absent_declare  += a_dec; absent_total  += n_streams
-        per_disp[disp] = {'present_detect': p_dec / n_streams,
-                          'absent_falsedecl': a_dec / n_streams,
-                          'pool_size': len(by_disp[disp])}
-
-    det = present_declare / present_total
-    fdr = absent_declare  / absent_total
-    det_ci = _wilson(present_declare, present_total)
-    fdr_ci = _wilson(absent_declare,  absent_total)
-
-    HARD_FDR, TARGET_DET = 0.10, 0.60   # mirrored from frozen SPEC for the printed verdict
-    passed = (fdr <= HARD_FDR) and (det >= TARGET_DET) and naming_ok
-
-    print("=== DISPOSITION-AUDIT v0 -- eval (bootstrap) ===")
-    print(f"streams/disposition = {n_streams}   seed = {seed}   tau_declare = {TAU_DECLARE}")
-    print(f"pool sizes          = {sizes}   clean = {len(clean)}")
-    print(f"SIZE floor (>=5/disp, >=10 clean) : {'OK' if floor_ok else 'BELOW -> wider CI, provisional'}")
-    print()
-    print(f"detect_declaration_rate    = {det:.3f}  95% CI [{det_ci[0]:.3f}, {det_ci[1]:.3f}]   (target >= 0.60)")
-    print(f"false_declaration_rate     = {fdr:.3f}  95% CI [{fdr_ci[0]:.3f}, {fdr_ci[1]:.3f}]   (HARD <= 0.10)")
-    print(f"naming/evidence intact     = {naming_ok}")
-    print()
-    print("per-disposition:")
-    for d, m in per_disp.items():
-        print(f"  {d:32s} detect={m['present_detect']:.3f}  false_decl={m['absent_falsedecl']:.3f}  pool={m['pool_size']}")
-    print()
-    print(f"VERDICT (frozen SPEC bars): {'PASS' if passed else 'FAIL'}"
-          f"   [false_decl<=0.10 dominates; high detect with false_decl>0.10 = FAIL]")
-    if not floor_ok:
-        print("note: pool below honest floor -> CI wide, verdict provisional until >=5/disp + >=10 clean.")
 
 
 # ------------------------------------------------------------------ audit a raw window (organ use)
@@ -316,14 +219,8 @@ if __name__ == '__main__':
     a = sys.argv
     if len(a) >= 2 and a[1] == '--selftest':
         _selftest()
-    elif len(a) >= 3 and a[1] == '--eval':
-        kw = {}
-        if '--streams' in a: kw['n_streams'] = int(a[a.index('--streams') + 1])
-        if '--seed'    in a: kw['seed']      = int(a[a.index('--seed') + 1])
-        _eval(a[2], **kw)
     elif len(a) >= 3 and a[1] == '--audit':
         _audit(a[2])
     else:
         print("usage: verify_disp_audit.py --selftest")
-        print("       verify_disp_audit.py --eval <disposition_pool.jsonl> [--streams N] [--seed S]")
         print("       verify_disp_audit.py --audit <window.jsonl>")

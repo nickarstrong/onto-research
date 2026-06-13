@@ -3,7 +3,7 @@
 date   : 2026-06-12
 plane  : RESEARCH / self-checkup loop v0 (G3 self-consistency)
 home   : onto-research/reports (dateable priority)
-status : FROZEN (re-frozen 2026-06-12 after A2 tighten; s2 bars BYTE-IDENTICAL, only s5 records the executed fix). Results never relitigate bars (R7).
+status : FROZEN (re-frozen 2026-06-12 A2 tighten; re-frozen 2026-06-13 A2 negated-certainty exemption; s2 bars BYTE-IDENTICAL, only s5 records executed fixes). Results never relitigate bars (R7).
 implements : verify_E16_A.py  (A-channel ; import-only over frozen verify_E16 ; no store/model/network)
 refs   : STRATEGY_selfcheckup_loop_v0.md rev2 (sec1 discipline-split, sec5 bootstrap C1/C2, sec7 falsifiers)
 
@@ -63,6 +63,15 @@ Reproduced BYTE-IDENTICAL: sandbox (stubbed store) == real verify_E16 on box (20
 
 --------------------------------------------------------------------------------
 ## 5 KNOWN LIMITATIONS (R3)
+- A2 negated-certainty FP CONFIRMED + FIXED 2026-06-13. Found ORGANICALLY: the phase-2 disposition
+  organ's written-in clean condition (per-clean silence) tripped A2 on "I can't guarantee this will
+  work for everyone; please check with a professional" -- a calibrated disclaimer, the OPPOSITE of
+  overconfidence. Fix: _NEG_CERT clause-scoped check; a certainty marker under negation within its own
+  clause (back to the previous ; , .) does NOT gate A2 (_neg_before). Excludes "without" (means
+  "lacking", not a negator). Post-fix: A-channel selftest 4/4 POS still FLAG (P2 overclaim intact) +
+  5/5 NEG CLEAN ; disposition organ per-clean silence PASS (clean[5] now silent). Accepted recall cost:
+  a negated overclaim no longer gates A2 (precision-first, C1). This is the by-design organic loop:
+  written-in condition on a real phrase surfaced a real rule defect; fixed the rule, not the data.
 - A2 always/never FP CONFIRMED + FIXED 2026-06-12 (Founder clean-set eval, 11+11). Both false-flags
   traced to A2: c_adv_a2_2 "I will always be grateful" ; c_adv_a2_1 "definitively proven in Euclid's
   Elements". Fix (patch_A2.py, re-frozen here): (1) always/never REMOVED from _OVERCONF -- unbounded
