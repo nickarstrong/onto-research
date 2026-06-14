@@ -1,77 +1,41 @@
-# STATUS.md -- current-state snapshot (read after the canon, before the task spec)
+# STATUS.md -- ONTO lab current-state snapshot (pack v138)
 
-date  : 2026-06-13 (e)
-plane : RESEARCH / lab. self-checkup loop.
+PHASES   : phase 1 (band-A TRUST) CLOSED ; phase 2 (disposition-audit) CLOSED ; phase 3 (surgical correction)
+           CLOSED (fix(a) RULE A1_GROUND_OR_DECLARE standing). fix(b) bounded-DPO leg CLOSED = GATE FAIL =
+           honest NO-MIGRATION (HARD bars held ; adapter rolled back ; conscience EXTERNAL, RULE fix(a) stands).
+CONSCIENCE: EXTERNAL (A-channel self-consistency + B-channel grounded L1-L4 GOLD + L5 internet). Frozen organs
+           import-only, never mutated. Precision-first: false_flag <= 0.10 HARD dominates detect.
 
-================================================================================
-## WE ARE HERE
-Phase 2 (disposition-audit) CLOSED. Phase 3 (surgical correction) ACTIVE; substrate UNBLOCKED + CHARACTERIZED.
-v111 ran phase-3 step1 on a CONCENTRATED ordinary window (N=33, A2/A4 dropped, frozen base Qwen2.5-Coder-7B,
-no adapter/no GOLD; ran LOCALLY on RTX 4070). Organ-tally: A1=0.273 (9/33), A3=0.121 (4/33), A2=A4=0.000;
-12/33 trip >=1; floor 10/33 @ tau 0.30. VERDICT: FAIL by 1 (R6 target A1>=0.30 not met; no reframe/tau move).
-The FAIL is a COMPOSITION artifact, NOT an A1 ceiling: per-genre A1 = prose-provenance 7/14=0.500 (live,
-tau-clearing ALONE) ; result-number 2/12=0.167 (Q2-safe exemption, BY DESIGN) ; vague-magnitude 0/7. prose-
-provenance is the validated tau-clearing A1 genre. R15: the pre-committed "A-channel EXTENSION" FAIL-branch
-is RETIRED (premise falsified + would break the HARD false_flag 0.10 bar = castration). NEXT: a prose-
-provenance-PURE window N>=30 to clear tau on the isolated lead.
-Ladder + gates: ARCHITECTURE_master.md sec 4. Control: operator-applies (phases 1-3).
+ACTIVE PLANE : L5 internet grounding (PART I independence predicate) -> predicate FIX. DISPOSITION CLOSED + GATE FROZEN.
+  - predicate + validator = FROZEN (run_L5_partI_validate.py md5 b1f4aae4 ; AST anchors snapshotted in SPEC_L5_fixgate_v1
+    sec1 ; NOT touched since (z) commit 6b06e61).
+  - P4-edge disposition CLOSED (dd), 4/4, each pair's OWN reference list read from primary source (LOCAL-ONLY
+    eval/_local/l5_C014_C015_P4_disposition.md):
+      C015 S3xS4 Yan/Kirchdoerfer = CITATION-EXEMPLAR (Yan cites Kirchdoerfer 2018 ; relabel independent->citation).
+      C015 S1xS2 Wrapp/Walls = DEFECT . C015 S1xS3 Wrapp/Yan = DEFECT . C014 S1xS2 Wu/Zhou = DEFECT (no direct cite).
+    1 exemplar + 3 P4-over-couple defect. No relabel-to-pass (R7).
+  - R16 ground for v1.1: P4 reads refs_all = Crossref `reference` UNION OpenCitations `cited` ; real cites are in
+    Crossref `reference`, the 3 DEFECT edges enter via the OC union -> discriminator = Crossref-reference-only P4
+    + P3 positive-signal (DESIGN HYPOTHESIS ; gate-agnostic).
+  - FIX-GATE FROZEN (dd): eval/_local/SPEC_L5_fixgate_v1.md md5 c7c67593. G1 HARD P4-suppress 3 DEFECT ; G2 HARD
+    P4-preserve (exemplar S3xS4 + Walls->Kirchdoerfer S2xS4 + Wrapp/Kirchdoerfer author S1xS4) ; G3 HARD P3-resolve ;
+    G4 HARD no-castration (recall 1.0 + leak 0) ; G5 headline (over_prune<=0.10, bal_acc>=0.85). HARD G1-G4 dominate.
 
-================================================================================
-## BUILT + VERIFIED (in git, commit hashes)
-- A-channel  (verify_E16_A.py): false_flag 0.000, detect 0.818 on an 11+11 Founder set
-  (SMALL -> wide CI, provisional). A2 weakness found by real eval + fixed (patch_A2.py),
-  SPEC re-frozen. commit f445390 (eval+A2) ; build cdd3072 ; A2 negated-certainty exemption 70bd90e.
-- B-channel grounding: L1-L3 (verify_E16.py) + L4 GOLD contradiction-veto (verify_E16_L4.py,
-  fa 0.0333) + live intake (run_step2b_intake.py, gate-before-model). commit c7b242b + earlier.
-- Canon: reports/canon/ARCHITECTURE_master.md. commit c973757.
-- Phase-2 spec FROZEN: reports/SPEC_disposition_audit.md. commit 117dd9a.
-- Phase-2 ORGAN (verify_disp_audit.py): synthetic labeled-pool eval REMOVED; validation = --selftest
-  (written-in must-fire/must-stay-silent, +per-clean silence incl. disclaimer FP trap) + --audit on real
-  windows. md5 8cc9f424f9863edc56535f16d1cf6b75. commit 70bd90e.
+NEXT     : predicate FIX (SEPARATE TYPE B ; eval != source). PREREQ relabel C015 S3xS4->citation (SOURCE act, LOCAL).
+           THEN snapshot AST -> apply predicate v1.1 (provenance_edge P4 source + pair_predict P3 positive-signal ;
+           ONLY those + refs_all assembly may move ; scorer/verdict/clustering/contents/readout AST-identical) ->
+           re-hash -> build->contents->net-precheck->--run on the accession-bearing set -> read G1-G5 (gate sec4) ->
+           sec5 FAIL-semantics. Predicate FROZEN until the AST-snapshot step. Trigger "LABA, L5 FIX".
+           After fix: sourcing increment 2 (institution + scale to 5).
 
-================================================================================
-## PARTIAL / PENDING
-- phase-1 gate NOT fully closed: need >=20+20 honest A-set (Founder) + the SAME gate run for the
-  B-channel. Current A PASS is on 11+11 only.
-- L5 internet grounding: built, UNCOMMITTED, gated on a Founder truth-set.
+HONEST GAPS (R7, no fabrication to hit counts):
+  - INSTITUTION class still 1 (P3-masquerade C008) -- needs same-institution/different-author/distinct-accession.
+  - author/citation each at 2 ; need +3 real-accession pairs each toward >=5 ; independents toward >=20.
 
-================================================================================
-## IMMEDIATE NEXT ACTION (phase 3 -- prose-provenance-PURE window, clear tau on the isolated lead)
-v111 proved prose-provenance is the tau-clearing A1 genre (7/14=0.500) but the MIXED window FAILED
-(A1=0.273) via dilution by the Q2-safe-exempted result-number genre + A3. Do NOT lower tau (R7), do NOT
-re-mine bait, do NOT take the A-channel-extension branch on a window FAIL (DO-NOT-REDO 2026-06-13 e), do
-NOT post-hoc reslice / iterate compositions to fish a pass. To get a card:
-- NEXT (separate generation session, TYPE A): assemble N>=30 ORDINARY prompts, ALL prose-provenance /
-  numeric-myth ("where does <number/myth> come from", "who first said <figure>"). Reuse
-  run_ordinary_window.py (on disk) on the frozen base -> ordinary_window_v3.jsonl (cut echo-loop).
-- THEN: verify_disp_audit.py --audit + tally_v2.py ordinary_window_v3.jsonl -> cards + organ-tally rates.
-  FALSIFIABLE TARGET: A1 >= 0.30. PASS -> card "gap-fill fabricated number" seeds step 2 (LATER session).
-  FAIL (even on the pure lead) -> surface ceiling CONFIRMED -> A-channel design session weighing any
-  extension against the HARD false_flag 0.10 bar. generate/audit/fix stay SEPARATE sessions.
+INFRA    : conveyor PACK_SPEC.md md5 == f888f427 (staleness guard). Tree-hygiene remainder = COSMETIC, deferred
+           EXCEPT per-pair emit id-collision (claim-qualify ids) -> LOAD-BEARING, now USED in the frozen gate (G1/G2).
 
-================================================================================
-## CODE LOCATIONS (on disk, onto-research/lab/dpo/)
-- verify_E16_A.py    -- the A-channel ; disposition-audit imports its selfcheck().
-- verify_E16.py      -- base (segment/classify/gate/_norm/PROVEN/ABSTAIN); imports gold_retrieve at load.
-- verify_E16_L4.py   -- L4 GOLD contradiction-veto (B-channel).
-- gold_retrieve.py   -- GOLD store accessor (needed only so `import verify_E16` resolves; A/disposition path never calls it).
-- run_step2b_intake.py -- live intake.
-- verify_disp_audit.py -- phase-2 organ (--selftest / --audit).
-- specs: reports/SPEC_disposition_audit.md (task) ; reports/SPEC_selfcheck_A.md (A-channel).
-- canon: reports/canon/ARCHITECTURE_master.md.
-- real outputs on disk: data/harvest_hits_E12.jsonl (completion) ; eval/_local/harvest_E13.jsonl
-  (completion) ; eval/_local/harvest_E15.jsonl (raw_output). ALL bait -> not a valid audit window.
-
-================================================================================
-## CONTROL POSITION
-phases 1-3 = operator APPLIES (we are here). 4-5 supervise. 6-8 review. 9 system, within locks.
-immutable + constitutional layers touched at NO phase.
-
-================================================================================
-## CARRY (not blocking; tidy later, NOT now)
-- build_pack.ps1 bug: pack v108 + v109 hand-assembled until fixed.
-- loose/untracked: E34 (run_E34_probe.py, report_E34.md, E34_vs_E32.diff), L5 (build_l5_truth.py,
-  run_L5_partI_validate.py, SCHEMA_l5_coupling_truth.md), STRATEGY rev2 uncommitted.
-- dead synthetic-pool remnants in lab/dpo root (disposition_pool.jsonl, _TEMPLATE.jsonl, build_seed_pool.py) -> remove.
-- tree hygiene: 60+ E5-E42 ladder scripts sit flat in lab/dpo/ (they import each other -- do NOT
-  move; an 00_INDEX.md map is the safe way to make it legible). Cleanup is a separate later task.
+GIT      : onto-research (public) holds reproducibility + dateable priority only. NEVER public: weights, bait-sets,
+           held-out, GOLD/corpora, AND all L5 truth-set artifacts -- incl. l5_C014_C015_P4_disposition.md +
+           SPEC_L5_fixgate_v1.md (carry truth-set pair identities). This session (dd): NOTHING committed (CONCEPT ;
+           disposition + gate = LOCAL-ONLY).
