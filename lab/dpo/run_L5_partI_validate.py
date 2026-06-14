@@ -222,6 +222,50 @@ def verdict(sc):
     bars = {"recovery>=0.85": a, "discount_leak==0(HARD)": b, "over_prune<=0.10": c}
     return all([a, b, c]), bars
 
+# ---------------------------------------------------------------- per-pair readout (READ-ONLY)
+
+def per_pair_readout(rows, meta_for):
+    """READ-ONLY reporting. Re-apply the FROZEN pair_predict to every labeled pair to surface
+    per-pair verdicts the aggregate scorer does not expose. Does NOT gate, does NOT mutate
+    pair_predict / score_dataset / verdict. Same frozen function + same meta -> verdicts are
+    byte-identical to what score_dataset saw.
+
+    Also splits the `independent` class into two sub-populations the gate FIX rides on:
+      - indep_accession_bearing : BOTH sources carry a data_id (P3 not fail-closed -> a real test)
+      - indep_accession_less    : >=1 source has data_id None (P3 fail-closed -> the over-prune)
+    """
+    pairs = []
+    sub = {"indep_accession_bearing": {"n": 0, "false_coupled": 0, "ids": []},
+           "indep_accession_less":    {"n": 0, "false_coupled": 0, "ids": []}}
+    for row in rows:
+        cid = row["claim_id"]
+        meta = meta_for(row)
+        if meta is None:
+            continue
+        for s in row["sources"]:
+            s["sid"] = s["sid"]  # parity with score_dataset (idempotent)
+        truth = {frozenset((t["a"], t["b"])): t["label"] for t in row["coupling_truth"]}
+        for si, sj in itertools.combinations(row["sources"], 2):
+            key = frozenset((si["sid"], sj["sid"]))
+            lbl = truth.get(key)
+            if lbl is None:
+                continue
+            coupled_pred, legs, m_coup, cit_pred = pair_predict(si, sj, meta)
+            fired = sorted(k for k, v in legs.items() if v is True or v == "fail_closed")
+            verd = "coupled" if coupled_pred else "independent"
+            rec = {"claim": cid, "pair": f'{si["sid"]}x{sj["sid"]}',
+                   "declared": lbl, "verdict": verd, "legs": fired,
+                   "data_id": [si.get("data_id"), sj.get("data_id")]}
+            pairs.append(rec)
+            if lbl == "independent":
+                both_acc = si.get("data_id") is not None and sj.get("data_id") is not None
+                k = "indep_accession_bearing" if both_acc else "indep_accession_less"
+                sub[k]["n"] += 1
+                sub[k]["ids"].append(rec["pair"])
+                if coupled_pred:
+                    sub[k]["false_coupled"] += 1
+    return pairs, sub
+
 # ---------------------------------------------------------------- contents guard
 
 def contents_check(rows):
@@ -329,7 +373,7 @@ def live_run(path, report_path):
     if empty:
         print("CONTENTS VOID -- empty classes:", empty); sys.exit(2)
     cache = {}
-    def meta_for(row):
+    def fetch_meta(row):
         m = {}
         for s in row["sources"]:
             doi = s["doi"]
@@ -341,13 +385,26 @@ def live_run(path, report_path):
             m[s["sid"]] = {"authors": cr["authors"], "affils": cr["affils"],
                            "refs_all": cr["refs"] | oc, "doi": doi}
         return m
+    # fetch each claim's meta ONCE (shared by the frozen scorer AND the read-only readout ->
+    # no double network/sleep, and the readout sees byte-identical meta to the scorer)
+    meta_cache = {row["claim_id"]: fetch_meta(row) for row in rows}
+    def meta_for(row): return meta_cache.get(row["claim_id"])
     sc = score_dataset(rows, meta_for)
+    pairs, sub = per_pair_readout(rows, meta_for)
     ok, bars = verdict(sc)
-    emit_report(report_path, sc, bars, ok, cls)
+    emit_report(report_path, sc, bars, ok, cls, pairs, sub)
     print(json.dumps(sc, indent=2)); print("VERDICT:", "PASS" if ok else "FAIL", bars)
+    print("\n## per-pair readout (READ-ONLY ; predicate not gated by this)")
+    print(f"{'claim':<6} {'pair':<10} {'declared':<12} {'verdict':<12} legs")
+    for r in pairs:
+        print(f"{r['claim']:<6} {r['pair']:<10} {r['declared']:<12} {r['verdict']:<12} {','.join(r['legs']) or '-'}")
+    ab, al = sub["indep_accession_bearing"], sub["indep_accession_less"]
+    print("\n## independent sub-group split (the gate the predicate-FIX rides on)")
+    print(f"  accession-bearing : {ab['false_coupled']}/{ab['n']} false-coupled  ids={ab['ids']}")
+    print(f"  accession-less    : {al['false_coupled']}/{al['n']} false-coupled  ids={al['ids']}")
     sys.exit(0 if ok else 1)
 
-def emit_report(p, sc, bars, ok, cls):
+def emit_report(p, sc, bars, ok, cls, pairs=None, sub=None):
     L = []
     L.append("# report_L5_partI -- PART I independence predicate validation")
     L.append("")
@@ -365,6 +422,20 @@ def emit_report(p, sc, bars, ok, cls):
     L.append(f"- per_class_n : {sc['per_class_n']}")
     L.append(f"- method leg (ADVISORY, kappa N/A single-annotator) agree_rate : {sc['method_advisory_agree_rate']}")
     L.append(f"- excluded : {sc['excluded']}")
+    if pairs is not None:
+        L.append("")
+        L.append("## per-pair readout (READ-ONLY ; re-applies frozen pair_predict, does NOT gate)")
+        L.append("| claim | pair | declared | verdict | legs | data_id |")
+        L.append("|---|---|---|---|---|---|")
+        for r in pairs:
+            L.append(f"| {r['claim']} | {r['pair']} | {r['declared']} | {r['verdict']} "
+                     f"| {','.join(r['legs']) or '-'} | {r['data_id']} |")
+    if sub is not None:
+        ab, al = sub["indep_accession_bearing"], sub["indep_accession_less"]
+        L.append("")
+        L.append("## independent sub-group split (gate substrate for the predicate FIX)")
+        L.append(f"- accession-bearing : {ab['false_coupled']}/{ab['n']} false-coupled ; ids {ab['ids']}")
+        L.append(f"- accession-less    : {al['false_coupled']}/{al['n']} false-coupled ; ids {al['ids']}")
     L.append("")
     L.append("## WATCH (frozen-predicate interactions, reported not edited)")
     L.append("- P3 fail-closed on missing DAS can inflate over-prune on real no-DAS independents -> if")
