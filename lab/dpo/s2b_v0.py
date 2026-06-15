@@ -50,6 +50,28 @@ def strip_accents(s):
     return "".join(c for c in unicodedata.normalize("NFKD", s or "") if not unicodedata.combining(c))
 
 # ---------- Step A : retrieval (MIRRORED getter) ----------
+def _reconstruct_inverted_index(inv):
+    # OpenAlex stores abstracts as {word: [positions...]} ; rebuild linear text.
+    if not inv:
+        return ""
+    pairs = []
+    for word, idxs in inv.items():
+        for i in idxs:
+            pairs.append((i, word))
+    pairs.sort(key=lambda p: p[0])
+    return " ".join(w for _, w in pairs)
+
+def fetch_openalex_abstract(doi, mailto=MAILTO, timeout=25):
+    # Abstract-only fallback from a VERIFIED third-party source (not model self-report).
+    url = "https://api.openalex.org/works/doi:" + urllib.parse.quote(doi, safe="/.") + "?mailto=" + mailto
+    req = urllib.request.Request(url, headers={"User-Agent": "onto-s2b/0.0 (mailto:%s)" % mailto})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            body = json.load(r)
+    except (urllib.error.HTTPError, urllib.error.URLError, ValueError, KeyError):
+        return ""
+    return _reconstruct_inverted_index(body.get("abstract_inverted_index"))
+
 def fetch_crossref(doi, mailto=MAILTO, timeout=25):
     url = "https://api.crossref.org/works/" + urllib.parse.quote(doi, safe="/.") + "?mailto=" + mailto
     req = urllib.request.Request(url, headers={"User-Agent": "onto-s2b/0.0 (mailto:%s)" % mailto})
@@ -60,13 +82,18 @@ def fetch_crossref(doi, mailto=MAILTO, timeout=25):
     year = issued[0][0] if issued and issued[0] else None
     authors = [a.get("family", "") for a in (m.get("author") or []) if a.get("family")]
     cont = m.get("container-title") or [""]
+    abstract = strip_jats(m.get("abstract", ""))
+    if not abstract:
+        # Crossref empty -> OpenAlex abstract fallback. Crossref STAYS primary for
+        # title/venue/year/authors/retraction ; OpenAlex supplies abstract ONLY.
+        abstract = strip_jats(fetch_openalex_abstract(doi, mailto=mailto, timeout=timeout))
     return {
         "doi": doi,
         "title": (m.get("title") or [""])[0],
         "venue": cont[0] if cont else "",
         "year": year,
         "author_surnames": authors,
-        "abstract": strip_jats(m.get("abstract", "")),
+        "abstract": abstract,
     }
 
 # ---------- B1 : binding (deterministic, grounded) ----------
