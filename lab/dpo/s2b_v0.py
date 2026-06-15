@@ -234,10 +234,50 @@ def select_b2(backend, model_id):
         return b2_local_factory(model_id)
     raise ValueError("unknown b2 backend: %s" % backend)
 
+# ---------- B2 off-topic predicate (GATE_s2b_offtopic_v0 sec 1 ; deterministic, no LLM) ----------
+# OFF-TOPIC(claim, fetched) := TRUE iff BOTH
+#   (a) the claim's subject token-set has ZERO overlap with title+abstract ; AND
+#   (b) title+abstract carry their own non-thin subject (>= OFFTOPIC_ABS_MIN_TOKENS content tokens).
+# NO synonym/hypernym expansion (none in-repo ; a hardcoded map keyed to the known J5 would be
+# tuning-to-pass, R7). Raw token-set overlap is the CONSERVATIVE proxy: it can only FALSE-FIRE
+# more, never less, so G5 (0/CC -> NOT) is the honest approach-falsifier. Precision-first:
+# under-catch (off-topic missed) -> honest UNCLEAR ; over-catch (correct cite -> NOT) -> castration.
+OFFTOPIC_ABS_MIN_TOKENS = 8
+
+# Fixed, DOMAIN-AGNOSTIC English function-word set (articles/conjunctions/prepositions/auxiliaries/
+# pronouns). NOT derived from any J5 term -- never extend with content words (that is tuning, R7).
+# Gate sec 1 keys (a) on the claim's PRIMARY SUBJECT tokens ("defining entity / measured quantity /
+# named mechanism") -- function words are never subject ; counting them as overlap under-implements sec 1.
+STOPWORDS = frozenset((
+    "the and but for with from that this these those they them their there here whom whose which what "
+    "when where how than then also into via within during after before over under above below between "
+    "among such been being are was were has have had not can will may might must should would could "
+    "its his her our your you its it is be of to in on at by as or an a no nor so yet do does did done "
+    "using used based both each more most some any all only other another about against both because "
+    "while whether either neither per via due across along around upon onto off out up down very much"
+).split())
+
+def subj_tokens(s):
+    return tokens(s) - STOPWORDS                      # gate sec 1: subject tokens, function words removed
+
+def off_topic(claim_text, meta):
+    ctoks = subj_tokens(claim_text)
+    if not ctoks:
+        return False                                  # no claim subject to test -> not off-topic
+    abs_toks = subj_tokens(meta.get("abstract", ""))
+    surface = abs_toks | subj_tokens(meta.get("title", ""))
+    if ctoks & surface:
+        return False                                  # (a) fails: shared subject token -> on-topic surface
+    if len(abs_toks) < OFFTOPIC_ABS_MIN_TOKENS:
+        return False                                  # (b) fails: thin abstract, no own subject -> protect CC-terse
+    return True                                       # (a) & (b) hold -> off-topic
+
 def b2_supports(claim_text, meta, model, b2_fn):
     abstract = (meta.get("abstract") or "").strip()
     if not abstract:
         return "UNCLEAR", "no_abstract", None         # deterministic honesty short-circuit (G4)
+    if off_topic(claim_text, meta):
+        return "NOT", "off_topic", None               # GATE sec 1 ; deterministic, before model verdict
     raw = b2_fn(claim_text, meta.get("title", ""), abstract, model)
     if "SUPPORTS" in raw:
         return "SUPPORTS", "b2_supports", raw
@@ -293,6 +333,61 @@ def check_bars(items, records):
         if c == "J4" and v != "UNCLEAR":  fails.append(("G4", it["id"], "J4 returned %s" % v))
     return fails
 
+# ---------- G5 : off-topic no-castration bar (GATE sec 3 ; deterministic, no model/network) ----------
+# G5 (HARD, tol 0): ZERO CC correct-cites may yield off_topic -> NOT (castration).
+# J5 recall = DIAGNOSTIC readout, never a bar. Tests ONLY the predicate the policy ADDED
+# (off_topic), via fake getter -- no model verdict, no live fetch (R7: results never move the bar).
+def run_g5(cc_path, j5_path, ground_path):
+    getter = make_fake_getter(ground_path)
+    cc = load_falsifier(cc_path)
+    j5 = load_falsifier(j5_path)
+    g5_fails, b1_on_cc, cc_rows = [], [], []
+    for it in cc:
+        meta = getter(it["doi"])
+        ct = it.get("claim_text", "")
+        v1, r1, _ = b1_binding(ct, it.get("star_quote"), meta)
+        if v1 == "NOT":
+            b1_on_cc.append((it["id"], r1))            # CC bound-wrong = labeling/B1 flag, not the policy
+        ot = off_topic(ct, meta)
+        if ot:
+            g5_fails.append(it["id"])                  # correct cite -> off_topic NOT = castration
+        cc_rows.append((it["id"], it.get("class", ""), "OFF_TOPIC->NOT" if ot else "ok"))
+    j5_caught, j5_rows = [], []
+    for it in j5:
+        meta = getter(it["doi"])
+        ot = off_topic(it.get("claim_text", ""), meta)
+        if ot:
+            j5_caught.append(it["id"])
+        j5_rows.append((it["id"], it.get("class", ""), "caught(NOT)" if ot else "missed(UNCLEAR)"))
+    return {"g5_fails": g5_fails, "b1_on_cc": b1_on_cc, "cc_rows": cc_rows,
+            "j5_caught": j5_caught, "j5_rows": j5_rows, "n_cc": len(cc), "n_j5": len(j5)}
+
+def _emit_g5(args):
+    # Runs the G5 block if the CC/J5/ground fixtures are present. Returns process exit code:
+    # 0 = G5 PASS or fixtures absent (G6-only run) ; 1 = G5 FAIL (any CC -> off_topic).
+    import os.path as _p
+    if not (_p.exists(args.cc) and _p.exists(args.j5) and _p.exists(args.cc_ground)):
+        print("G5 SKIPPED: CC/J5/ground fixtures not present (G1-G4=G6 only). "
+              "supply --cc/--j5/--cc-ground (LOCAL-ONLY) to prove G5.")
+        return 0
+    r = run_g5(args.cc, args.j5, args.cc_ground)
+    for cid, cls, status in r["cc_rows"]:
+        print("  CC %-7s %-11s %s" % (cid, cls, status))
+    if r["b1_on_cc"]:
+        print("  WARN B1 fired NOT on CC (labeling/B1, not the policy):", r["b1_on_cc"])
+    print("  J5 recall (DIAGNOSTIC, not a bar): %d/%d caught -> %s"
+          % (len(r["j5_caught"]), r["n_j5"], r["j5_caught"]))
+    for jid, cls, status in r["j5_rows"]:
+        print("  J5 %-7s %-4s %s" % (jid, cls, status))
+    if r["g5_fails"]:
+        print("G5 FAIL (HARD, tol 0): %d/%d CC correct-cites flipped to off_topic->NOT = castration: %s"
+              % (len(r["g5_fails"]), r["n_cc"], r["g5_fails"]))
+        print("POLICY REJECTED at abstract level (defer full-text, SPEC sec 8). Predicate NOT tuned to pass (R7).")
+        return 1
+    print("G5 PASS (HARD, tol 0): 0/%d CC -> NOT. No castration. Off-topic policy is BUILDABLE+VALID at abstract level."
+          % r["n_cc"])
+    return 0
+
 # ---------- modes ----------
 def mode_selftest(args):
     fpath = args.falsifier
@@ -338,12 +433,12 @@ def mode_selftest(args):
             print("DET-ONLY FAIL:", fails); return 1
         print("DET-ONLY PASS: G1 (J2->NOT/binding) + G4 (J4->UNCLEAR) + B1 never fires on correct-cite J1/J3.")
         print("  (G2 and the B2-content side of G3 require the real B2 model -> run plain --selftest.)")
-        return 0
+        return _emit_g5(args)
     fails = check_bars(items, recs)
     if fails:
         print("BARS FAIL:", fails); return 1
     print("BARS PASS: G1 & G2 & G3 hold, G4 held. v0 judge is BUILDABLE+VALID.")
-    return 0
+    return _emit_g5(args)
 
 def mode_netcheck(args):
     meta = fetch_crossref(CONTROL_DOI)
@@ -384,6 +479,9 @@ def main():
     ap.add_argument("--b2", choices=["api", "local"], default="local")
     ap.add_argument("--falsifier", default="eval/_local/s2b_falsifier_v0.jsonl")
     ap.add_argument("--ground", default="eval/_local/ground_candidates.json")
+    ap.add_argument("--cc", default="eval/_local/cc_v0.jsonl")
+    ap.add_argument("--j5", default="eval/_local/j5_v0.jsonl")
+    ap.add_argument("--cc-ground", dest="cc_ground", default="eval/_local/cc_j5_ground_v0.json")
     ap.add_argument("--model", default=None)
     args = ap.parse_args()
     if args.model is None:
