@@ -10,14 +10,30 @@
 # BARS (SPEC §7, frozen): G1 zero J2->SUPPORTS (HARD) ; G2 zero J3->SUPPORTS (HARD) ;
 #                         G3 zero J1->NOT (HARD, no-castration) ; G4 J4->UNCLEAR (honesty).
 #
-# Modes:
-#   --selftest            fake getter (LOCAL ground json) + B2 ; asserts G1-G4 vs planted expect. No Crossref.
-#   --selftest --det-only stub B2 ; asserts only the DETERMINISTIC guarantees (G1 via B1 ; G4 via empty-abstract
-#                         short-circuit ; B1 does NOT fire on correct-cite J1/J3/J4). No model, no network.
-#   --netcheck            one live Crossref fetch of a fixed control doi ; prints metadata. Proves getter.
-#   --run INPUT.jsonl     live fetch per item -> B1 -> B2 -> write OUTPUT.jsonl + summary.
+# FULL-TEXT FALLBACK (v0.1, GATE_s2b_fulltext_v0.md md5 0c666ee0) -- a DOWNSTREAM, UNCLEAR-ONLY resolver.
+#   Fires ONLY when the abstract layer's verdict is UNCLEAR with reason in {no_abstract, b2_unclear}. Every
+#   abstract verdict already SUPPORTS / NOT / off_topic / wrong_binding PASSES THROUGH UNCHANGED (G6 carried).
+#   Imports NO abstract-layer bar ; can only ADD resolution to the UNCLEAR bucket. Read-strategy = CHUNK WITH
+#   COVERAGE GUARANTEE (gate sec 5 STEP 2 option ii): full text -> overlapping chunks (each within a verified
+#   char budget) -> the SAME grounded NON-PROPOSING B2 reads each chunk. Aggregation:
+#     SUPPORTS if ANY chunk supports ; NOT only if NO chunk supports AND coverage complete ; else UNCLEAR
+#     (reason=no_coverage). A support missed because its bytes were UNREAD (chunk cap / fetch truncation) MUST
+#     emit UNCLEAR, never NOT (G8 read-coverage bind). No OA full text -> UNCLEAR (reason=no_fulltext), fail-
+#     closed (G9). OA-only (arXiv / Europe-PMC / Unpaywall best-OA) ; no paywall scrape ; no fabrication.
+#   BARS (gate sec 3, frozen): G6 carried ; G7 HARD 0 FT-wrong->SUPPORTS ; G8 HARD 0 FT-thin-correct->NOT
+#   (read-coverage-bound) ; G9 no-OA->UNCLEAR. Resolution YIELD = diagnostic readout, NOT a bar.
 #
-# expect labels feed ONLY the falsifier check, NEVER the judge (no oracle leak).
+# Modes:
+#   --selftest            fake getter (LOCAL ground json) + B2 ; asserts G1-G4 vs planted expect ; THEN the
+#                         offline full-text logic selftest (fake OA-getter + stub B2-FT) asserts G7/G8/G9. No net.
+#   --selftest --det-only stub B2 ; asserts only the DETERMINISTIC guarantees (G1 via B1 ; G4 via empty-abstract
+#                         short-circuit ; B1 does NOT fire on correct-cite J1/J3/J4) + the G7/G8/G9 FT logic. No net.
+#   --netcheck            one live Crossref fetch of a fixed control doi ; prints metadata. Proves getter.
+#   --run INPUT.jsonl     live fetch per item -> B1 -> B2(abstract) -> [UNCLEAR? full-text fallback] -> OUTPUT.
+#                         --no-fulltext disables the fallback (abstract-only A/B). --in-md5 guards input freeze.
+#   --score OUT.jsonl --ground G.json  POST-HOC: join ground by id, report G7/G8/G9 + resolution yield (R7).
+#
+# expect labels feed ONLY the falsifier / scorer, NEVER the judge (no oracle leak).
 
 import sys, os, json, re, time, argparse, hashlib, urllib.request, urllib.error, urllib.parse
 
@@ -25,6 +41,18 @@ LOCKED_FALSIFIER_MD5 = "8307d97d541f06780763137edbbd4d9c"   # frozen before this
 MAILTO  = "council@ontostandard.org"
 B2_MODEL_DEFAULT = "claude-sonnet-4-6"
 CONTROL_DOI = "10.7554/eLife.00065"   # known abstract-present record, for --netcheck only
+DATACITE_PREFIXES = ("10.48550/",)    # arXiv DataCite ; Crossref 404s on these -> route to OpenAlex
+ARXIV_PROBE_DOI = "10.48550/arXiv.2312.14311"   # ftc04 ; DataCite -> must resolve via OpenAlex (--netcheck)
+
+# FT-CC freeze (gate sec 2 ; pass --in-md5 to --run to enforce ; mismatch = set drifted, STOP)
+FT_CC_INPUT_MD5  = "ea5e0ec43e73738116452a03a09b51e9"
+FT_CC_GROUND_MD5 = "88a14f9de99aeeea2b15631a59b6d1c6"
+# full-text chunking (read-strategy pin, gate sec 5 STEP 2 ii). char budget sized well under a 7B context.
+FT_CHUNK_CHARS   = 6000
+FT_CHUNK_OVERLAP = 400
+FT_MAX_CHUNKS    = 20         # cost ceiling ; text needing more chunks than this -> coverage INCOMPLETE -> UNCLEAR
+FT_FETCH_CAP     = 600000     # hard byte cap per fetched body ; exceeding it sets truncated=True (coverage gap)
+FT_ABSTRACT_UNCLEAR_REASONS = ("no_abstract", "b2_unclear")   # the ONLY abstract reasons the fallback fires on
 
 # ---------- util ----------
 def md5_file(path):
@@ -72,11 +100,56 @@ def fetch_openalex_abstract(doi, mailto=MAILTO, timeout=25):
         return ""
     return _reconstruct_inverted_index(body.get("abstract_inverted_index"))
 
+def fetch_openalex_meta(doi, mailto=MAILTO, timeout=25):
+    # FULL metadata from the OpenAlex works endpoint (covers arXiv/DataCite DOIs that Crossref 404s on).
+    # Mirrors fetch_crossref's return shape. Returns None when OpenAlex has no record (-> caller fails honest,
+    # never fabricates). Third-party verified source, not model self-report.
+    url = "https://api.openalex.org/works/doi:" + urllib.parse.quote(doi, safe="/.") + "?mailto=" + mailto
+    req = urllib.request.Request(url, headers={"User-Agent": "onto-s2b/0.0 (mailto:%s)" % mailto})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            body = json.load(r)
+    except (urllib.error.HTTPError, urllib.error.URLError, ValueError, KeyError):
+        return None
+    if not body or body.get("id") is None:
+        return None
+    src = ((body.get("primary_location") or {}).get("source") or {})
+    venue = src.get("display_name") or ((body.get("host_venue") or {}).get("display_name") or "")
+    authors = []
+    for a in (body.get("authorships") or []):
+        name = ((a.get("author") or {}).get("display_name") or a.get("raw_author_name") or "").strip()
+        if name:
+            authors.append(name.split()[-1])   # surname = last token (mirror Crossref family name)
+    return {
+        "doi": doi,
+        "title": body.get("display_name") or body.get("title") or "",
+        "venue": venue or "",
+        "year": body.get("publication_year"),
+        "author_surnames": authors,
+        "abstract": strip_jats(_reconstruct_inverted_index(body.get("abstract_inverted_index"))),
+    }
+
 def fetch_crossref(doi, mailto=MAILTO, timeout=25):
+    d = (doi or "").strip()
+    # arXiv/DataCite DOIs live in DataCite, not Crossref -> a Crossref hit is a guaranteed 404. Route them to
+    # OpenAlex for FULL metadata up front (avoids the wasted 404). Crossref STAYS primary for everything it owns.
+    if d.lower().startswith(DATACITE_PREFIXES):
+        meta = fetch_openalex_meta(d, mailto=mailto, timeout=timeout)
+        if meta is not None:
+            return meta
+        # OpenAlex has no record either -> fall through to Crossref (will 404 -> raise -> honest ERROR, no fabrication).
     url = "https://api.crossref.org/works/" + urllib.parse.quote(doi, safe="/.") + "?mailto=" + mailto
     req = urllib.request.Request(url, headers={"User-Agent": "onto-s2b/0.0 (mailto:%s)" % mailto})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        body = json.load(r)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            body = json.load(r)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            # Crossref 404 (other DataCite registrant, withdrawn, etc.) -> OpenAlex full-metadata safety net.
+            meta = fetch_openalex_meta(doi, mailto=mailto, timeout=timeout)
+            if meta is not None:
+                return meta
+        raise   # non-404, or OpenAlex also empty -> propagate -> honest ERROR (never fabricate metadata)
     m = body["message"]
     issued = m.get("issued", {}).get("date-parts", [[None]])
     year = issued[0][0] if issued and issued[0] else None
@@ -175,12 +248,13 @@ B2_SYS = (
     "Reply with exactly one token: SUPPORTS, NOT, or UNCLEAR."
 )
 
-def b2_call_api(claim_text, title, abstract, model):
+def b2_call_api(claim_text, title, abstract, model, system=None):
+    system = system or B2_SYS
     key = os.environ.get("ANTHROPIC_API_KEY")
     if not key:
         raise RuntimeError("ANTHROPIC_API_KEY not set (B2 needs the grounded model instance)")
     payload = {
-        "model": model, "max_tokens": 8, "system": B2_SYS,
+        "model": model, "max_tokens": 8, "system": system,
         "messages": [{"role": "user", "content":
             "CLAIM:\n%s\n\nSOURCE TITLE:\n%s\n\nSOURCE ABSTRACT:\n%s\n\nVerdict (one token):"
             % (claim_text, title or "(none)", abstract or "(none)")}],
@@ -213,8 +287,9 @@ def b2_local_factory(model_id):
         _LOCAL[model_id] = (tok, mdl)
     tok, mdl = _LOCAL[model_id]
 
-    def call(claim_text, title, abstract, model):
-        msgs = [{"role": "system", "content": B2_SYS},
+    def call(claim_text, title, abstract, model, system=None):
+        system = system or B2_SYS
+        msgs = [{"role": "system", "content": system},
                 {"role": "user", "content":
                     "CLAIM:\n%s\n\nSOURCE TITLE:\n%s\n\nSOURCE ABSTRACT:\n%s\n\nVerdict (one token):"
                     % (claim_text, title or "(none)", abstract or "(none)")}]
@@ -287,8 +362,124 @@ def b2_supports(claim_text, meta, model, b2_fn):
         return "NOT", "b2_not", raw
     return "UNCLEAR", "b2_unparseable", raw
 
-# ---------- judge one item ----------
-def judge(item, getter, model, b2_fn):
+# ---------- full-text fallback (v0.1 ; downstream UNCLEAR-only resolver ; GATE_s2b_fulltext_v0 md5 0c666ee0) -
+# Fires ONLY on abstract-UNCLEAR {no_abstract, b2_unclear}. Imports no abstract-layer bar. Read-strategy =
+# chunk-with-coverage-guarantee. The SAME grounded non-proposing B2 reads each chunk (B2_FT_SYS), grounded in
+# the excerpt only. NEVER reads star_quote as support. OA-only ; fail-closed on no OA / unread bytes.
+B2_FT_SYS = (
+    "You are a grounded scientific-claims verifier. You did NOT write the claim and are not its author. "
+    "Read ONLY the provided source full-text excerpt. Decide whether THIS excerpt SUPPORTS the claim, using "
+    "ONLY information present in the excerpt -- never outside knowledge. The excerpt is ONE part of a longer "
+    "paper; if this excerpt alone does not contain enough to adjudicate the claim, answer UNCLEAR (other parts "
+    "are read separately). Reply with exactly one token: SUPPORTS, NOT, or UNCLEAR."
+)
+
+def parse_b2(raw):
+    u = (raw or "").upper()
+    if "SUPPORTS" in u: return "SUPPORTS"
+    if "UNCLEAR"  in u: return "UNCLEAR"
+    if "NOT"      in u: return "NOT"
+    return "UNCLEAR"                                   # unparseable -> honest UNCLEAR (never a forced NOT)
+
+def _http_text(url, timeout=30, cap=FT_FETCH_CAP):
+    req = urllib.request.Request(url, headers={"User-Agent": "onto-s2b/0.0 (mailto:%s)" % MAILTO})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        raw = r.read(cap + 1)
+    truncated = len(raw) > cap
+    return raw[:cap].decode("utf-8", "replace"), truncated
+
+def _html_to_text(html):
+    html = re.sub(r"(?is)<(script|style|head|nav|footer)[^>]*>.*?</\1>", " ", html)
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html)).strip()
+
+def resolve_oa_fulltext(doi, timeout=30):
+    # Returns (text, source, truncated). OA-only ; first source with real text wins ; else (None, None, False).
+    # NO paywall scrape, NO PDF guessing without a real text body, NO fabrication. Fail-closed by returning "".
+    d = (doi or "").strip()
+    # 1) arXiv -- 10.48550/arXiv.XXXX -> ar5iv HTML full text (fallback: arxiv abs page is abstract-only, skip).
+    m = re.search(r"arxiv\.(\d{4}\.\d{4,5})(v\d+)?$", d, re.I)
+    if m:
+        arxiv_id = m.group(1)
+        for url in ("https://ar5iv.org/abs/" + arxiv_id, "https://ar5iv.labs.arxiv.org/html/" + arxiv_id):
+            try:
+                html, trunc = _http_text(url, timeout=timeout)
+                txt = _html_to_text(html)
+                if len(txt) > 1500:                   # real body, not a stub/error page
+                    return txt, "ar5iv:" + arxiv_id, trunc
+            except (urllib.error.HTTPError, urllib.error.URLError, ValueError):
+                continue
+    # 2) Europe PMC -- DOI -> PMCID -> OA fullTextXML (only when isOpenAccess).
+    try:
+        q = ("https://www.ebi.ac.uk/europepmc/webservices/rest/search?query="
+             + urllib.parse.quote('DOI:"%s"' % d) + "&format=json&pageSize=1&resultType=core")
+        body, _ = _http_text(q, timeout=timeout)
+        res = (json.loads(body).get("resultList", {}).get("result") or [{}])[0]
+        pmcid = res.get("pmcid")
+        is_oa = str(res.get("isOpenAccess", "")).upper() in ("Y", "TRUE")
+        if pmcid and is_oa:
+            xml, trunc = _http_text(
+                "https://www.ebi.ac.uk/europepmc/webservices/rest/%s/fullTextXML" % pmcid, timeout=timeout)
+            txt = _html_to_text(xml)
+            if len(txt) > 1500:
+                return txt, "epmc:" + pmcid, trunc
+    except (urllib.error.HTTPError, urllib.error.URLError, ValueError, KeyError, IndexError):
+        pass
+    # 3) Unpaywall best-OA-location -> only if it points at an HTML landing we can extract text from.
+    try:
+        u = "https://api.unpaywall.org/v2/" + urllib.parse.quote(d, safe="/.") + "?email=" + MAILTO
+        body, _ = _http_text(u, timeout=timeout)
+        loc = (json.loads(body) or {}).get("best_oa_location") or {}
+        url = loc.get("url_for_landing_page") or loc.get("url")
+        if url and not url.lower().endswith(".pdf"):
+            html, trunc = _http_text(url, timeout=timeout)
+            txt = _html_to_text(html)
+            if len(txt) > 2500:                       # higher bar: landing pages are noisy
+                return txt, "unpaywall:landing", trunc
+    except (urllib.error.HTTPError, urllib.error.URLError, ValueError, KeyError):
+        pass
+    return None, None, False                           # no OA full text -> fail-closed UNCLEAR (G9)
+
+def chunk_text(text, size=FT_CHUNK_CHARS, overlap=FT_CHUNK_OVERLAP):
+    text = text or ""
+    if len(text) <= size:
+        return [text] if text.strip() else []
+    chunks, i = [], 0
+    while i < len(text):
+        chunks.append(text[i:i + size])
+        i += size - overlap
+    return chunks
+
+def fulltext_resolve(item, meta, model, b2_ft_fn, oa_getter):
+    # oa_getter(doi) -> (text, source, truncated). b2_ft_fn(claim, title, excerpt, model, system=...).
+    doi = item["doi"]
+    text, source, truncated = oa_getter(doi)
+    snap = {"oa_source": source, "n_chunks": 0, "chunks_read": 0,
+            "coverage_complete": False, "truncated": bool(truncated)}
+    if not text:
+        return "UNCLEAR", "no_fulltext", snap                         # G9 fail-closed
+    chunks = chunk_text(text)
+    snap["n_chunks"] = len(chunks)
+    coverage_complete = (len(chunks) <= FT_MAX_CHUNKS) and not truncated
+    read = chunks[:FT_MAX_CHUNKS]
+    snap["chunks_read"] = len(read)
+    snap["coverage_complete"] = coverage_complete
+    title = meta.get("title", "")
+    claim = item.get("claim_text", "")
+    contradicted = False
+    for ch in read:
+        v = parse_b2(b2_ft_fn(claim, title, ch, model, system=B2_FT_SYS))
+        if v == "SUPPORTS":
+            return "SUPPORTS", "fulltext_supports", snap             # A3: ANY chunk SUPPORTS -> SUPPORTS (top precedence)
+        if v == "NOT":
+            contradicted = True                                      # A3: affirmative CONTRADICTS; scan all chunks first
+    if contradicted:
+        return "NOT", "fulltext_contradicted", snap                  # A3: NOT reserved for affirmative contradiction ONLY
+    if coverage_complete:
+        return "UNCLEAR", "fulltext_inconclusive", snap              # A3: read + full cov, no support/contra -> UNCLEAR, never NOT
+    return "UNCLEAR", "no_coverage", snap                            # unread bytes could hold support -> UNCLEAR (G8)
+
+
+def judge(item, getter, model, b2_fn, oa_getter=None, b2_ft_fn=None):
     doi = item["doi"]
     meta = getter(doi)
     rec = {"doi": doi, "claim_text": item.get("claim_text", ""),
@@ -303,6 +494,12 @@ def judge(item, getter, model, b2_fn):
         rec.update({"verdict": "NOT", "leg": "binding", "reason": reason})
         return rec
     v2, reason2, raw = b2_supports(item.get("claim_text", ""), meta, model, b2_fn)
+    # downstream UNCLEAR-only full-text fallback (gate 0c666ee0) ; abstract SUPPORTS/NOT/off_topic pass through.
+    if oa_getter is not None and v2 == "UNCLEAR" and reason2 in FT_ABSTRACT_UNCLEAR_REASONS:
+        v3, reason3, ftsnap = fulltext_resolve(item, meta, model, b2_ft_fn or b2_fn, oa_getter)
+        rec.update({"verdict": v3, "leg": "fulltext", "reason": reason3,
+                    "abstract_verdict": v2, "abstract_reason": reason2, "fulltext": ftsnap})
+        return rec
     rec.update({"verdict": v2, "leg": "supports", "reason": reason2})
     return rec
 
@@ -388,6 +585,73 @@ def _emit_g5(args):
           % r["n_cc"])
     return 0
 
+# ---------- G7/G8/G9 : full-text fallback logic selftest (offline ; fake OA-getter + stub B2-FT) ----------
+# Proves the RESOLVER LOGIC (aggregation + coverage + fail-closed), not the live B2's judgment. No model, no
+# net. Stub B2-FT: a chunk containing "[SUPPORT]" -> SUPPORTS ; "[CONTRA]" -> NOT ; else UNCLEAR. Planted
+# fixtures are generic synthetic strings (public-safe, zero dois/claim-texts).
+def _stub_b2_ft(claim, title, excerpt, model, system=None):
+    if "[SUPPORT]" in excerpt: return "SUPPORTS"
+    if "[CONTRA]"  in excerpt: return "NOT"
+    return "UNCLEAR"
+
+def run_ft_selftest():
+    stride = FT_CHUNK_CHARS - FT_CHUNK_OVERLAP
+    filler = "lorem ipsum dolor sit amet "                      # neutral, no marker
+    body_complete = (filler * 400)                              # ~10800 chars -> 2 chunks, fits under cap
+    body_support_early = "[SUPPORT] " + (filler * 400)          # support in chunk 0
+    # support placed PAST the chunk cap -> must NOT be read -> no_coverage UNCLEAR, never NOT (G8 read-coverage)
+    body_support_unread = (filler * (FT_MAX_CHUNKS * stride // len(filler) + 200)) + " [SUPPORT] tail"
+    contra_body = "[CONTRA] " + (filler * 400)                  # explicit non-support, full coverage -> NOT
+
+    ground = {
+        "10.0/g7_contra":   (contra_body,        "fake:g7",  False),   # wrong cite, full coverage -> NOT
+        "10.0/g7_neutral":  (body_complete,      "fake:g7n", False),   # A3: no support + no contra, full cov -> UNCLEAR (never NOT)
+        "10.0/g8a_support": (body_support_early, "fake:g8a", False),   # correct, support read -> SUPPORTS
+        "10.0/g8b_unread":  (body_support_unread,"fake:g8b", False),   # correct, support UNREAD -> UNCLEAR(no_cov)
+        "10.0/g8c_trunc":   (body_complete,      "fake:g8c", True),    # truncated fetch -> UNCLEAR(no_cov)
+        "10.0/g9_nooa":     (None,               None,       False),   # no OA -> UNCLEAR(no_fulltext)
+    }
+    def fake_oa(doi):
+        return ground.get(doi, (None, None, False))
+    def item(doi, claim="generic synthetic claim about a measured quantity"):
+        return {"id": doi, "doi": doi, "claim_text": claim}
+    meta = {"title": "Synthetic Source Title"}
+
+    cases = []  # (id, expect_verdict, expect_reason_or_None, bar)
+    def run(doi):
+        return fulltext_resolve(item(doi), meta, None, _stub_b2_ft, fake_oa)
+
+    fails, rows = [], []
+    checks = [
+        ("10.0/g7_contra",   "NOT",     "fulltext_contradicted",  "G7"),
+        ("10.0/g7_neutral",  "UNCLEAR", "fulltext_inconclusive",  "G7"),
+        ("10.0/g8a_support", "SUPPORTS","fulltext_supports","G8"),
+        ("10.0/g8b_unread",  "UNCLEAR", "no_coverage",      "G8"),
+        ("10.0/g8c_trunc",   "UNCLEAR", "no_coverage",      "G8"),
+        ("10.0/g9_nooa",     "UNCLEAR", "no_fulltext",      "G9"),
+    ]
+    for doi, exp_v, exp_r, bar in checks:
+        v, r, snap = run(doi)
+        ok = (v == exp_v) and (exp_r is None or r == exp_r)
+        # absolute G7/G8 guard: a wrong/unread item must NEVER be SUPPORTS, an unread support must NEVER be NOT
+        if bar == "G7" and v == "SUPPORTS": ok = False
+        if bar == "G8" and exp_v != "NOT" and v == "NOT": ok = False
+        rows.append((bar, doi.split("/")[-1], exp_v, v, r, "ok" if ok else "FAIL"))
+        if not ok:
+            fails.append((bar, doi, "expected %s/%s got %s/%s" % (exp_v, exp_r, v, r)))
+    return fails, rows
+
+def _emit_ft_selftest():
+    fails, rows = run_ft_selftest()
+    print("  --- full-text fallback logic (offline ; fake OA-getter + stub B2-FT) ---")
+    for bar, cid, exp, got, reason, status in rows:
+        print("  %-3s %-12s expect=%-9s got=%-9s reason=%-16s %s" % (bar, cid, exp, got, reason, status))
+    if fails:
+        print("FT-SELFTEST FAIL (G7/G8/G9):", fails); return 1
+    print("FT-SELFTEST PASS: G7 (no-poison: never SUPPORTS on wrong; NOT only on affirmative contra) + G8 (support read->SUPPORTS ; "
+          "support UNREAD->UNCLEAR/no_coverage, never NOT) + G9 (no-OA->UNCLEAR/no_fulltext).")
+    return 0
+
 # ---------- modes ----------
 def mode_selftest(args):
     fpath = args.falsifier
@@ -433,12 +697,12 @@ def mode_selftest(args):
             print("DET-ONLY FAIL:", fails); return 1
         print("DET-ONLY PASS: G1 (J2->NOT/binding) + G4 (J4->UNCLEAR) + B1 never fires on correct-cite J1/J3.")
         print("  (G2 and the B2-content side of G3 require the real B2 model -> run plain --selftest.)")
-        return _emit_g5(args)
+        return _emit_g5(args) or _emit_ft_selftest()
     fails = check_bars(items, recs)
     if fails:
         print("BARS FAIL:", fails); return 1
     print("BARS PASS: G1 & G2 & G3 hold, G4 held. v0 judge is BUILDABLE+VALID.")
-    return _emit_g5(args)
+    return _emit_g5(args) or _emit_ft_selftest()
 
 def mode_netcheck(args):
     meta = fetch_crossref(CONTROL_DOI)
@@ -446,18 +710,32 @@ def mode_netcheck(args):
     print("netcheck %s -> title=%r venue=%r year=%s authors=%d abstract_len=%d"
           % (CONTROL_DOI, meta["title"][:60], meta["venue"], meta["year"],
              len(meta["author_surnames"]), len(meta["abstract"])))
-    print("NETCHECK", "PASS" if ok else "FAIL")
-    return 0 if ok else 1
+    ax = fetch_crossref(ARXIV_PROBE_DOI)   # DataCite -> must resolve via OpenAlex full-metadata route
+    ok_ax = bool(ax["title"]) and bool(ax["author_surnames"])
+    print("netcheck %s -> title=%r venue=%r year=%s authors=%d abstract_len=%d"
+          % (ARXIV_PROBE_DOI, ax["title"][:60], ax["venue"], ax["year"],
+             len(ax["author_surnames"]), len(ax["abstract"])))
+    allok = ok and ok_ax
+    print("NETCHECK", "PASS" if allok else "FAIL", "(crossref=%s arxiv-openalex=%s)" % (ok, ok_ax))
+    return 0 if allok else 1
 
 def mode_run(args):
+    if args.in_md5:
+        got = md5_file(args.run)
+        if got != args.in_md5:
+            print("INPUT MD5 GUARD FAIL: %s != expected %s (FT-CC drifted -> STOP)" % (got, args.in_md5)); return 2
+        print("input md5-guard OK (%s == %s)" % (os.path.basename(args.run), got))
     items = load_falsifier(args.run)
     b2_fn = select_b2(args.b2, args.model)
+    oa_getter = None if args.no_fulltext else resolve_oa_fulltext
+    print("full-text fallback: %s" % ("OFF (--no-fulltext)" if args.no_fulltext else "ON (UNCLEAR-only resolver)"))
     out = []
     for it in items:
         try:
-            out.append(judge(it, fetch_crossref, args.model, b2_fn))
+            out.append(judge(it, fetch_crossref, args.model, b2_fn, oa_getter=oa_getter, b2_ft_fn=b2_fn))
         except Exception as e:
-            out.append({"doi": it.get("doi"), "verdict": "ERROR", "leg": "getter", "reason": str(e)})
+            out.append({"id": it.get("id"), "doi": it.get("doi"),
+                        "verdict": "ERROR", "leg": "getter", "reason": str(e)})
         time.sleep(1.0)
     outpath = args.out or (args.run.rsplit(".", 1)[0] + "_s2b_out.jsonl")
     with open(outpath, "w", encoding="utf-8") as f:
@@ -465,9 +743,51 @@ def mode_run(args):
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     from collections import Counter
     c = Counter(r["verdict"] for r in out)
-    print("ran %d items -> %s" % (len(out), dict(c)))
+    legs = Counter(r.get("leg") for r in out)
+    print("ran %d items -> verdicts %s ; legs %s" % (len(out), dict(c), dict(legs)))
     print("wrote", outpath)
     return 0
+
+# ---------- POST-HOC scorer (gate sec 3/4 ; joins ground by id ; predicate stays blind, R7) ----------
+def _load_ground_map(path):
+    g = json.load(open(path, encoding="utf-8"))
+    if isinstance(g, list):
+        return {r["id"]: r for r in g}
+    if isinstance(g, dict) and "items" in g and isinstance(g["items"], list):
+        return {r["id"]: r for r in g["items"]}
+    # dict keyed by id -> {class, expect, ...}
+    return {k: (v if isinstance(v, dict) else {"value": v}) for k, v in g.items()}
+
+def mode_score(args):
+    gmap = _load_ground_map(args.score_ground)
+    out = {r.get("id"): r for r in (json.loads(l) for l in open(args.score, encoding="utf-8") if l.strip())}
+    g7_fail, g8_fail, g9_fail, rows = [], [], [], []
+    n_cls = {"FT-wrong": 0, "FT-thin-correct": 0, "FT-no-OA": 0}
+    resolved = 0   # UNCLEAR-entering items the fallback turned into SUPPORTS/NOT (diagnostic yield)
+    for iid, gr in gmap.items():
+        cls = gr.get("class"); exp = gr.get("expect")
+        r = out.get(iid, {})
+        v = r.get("verdict"); leg = r.get("leg"); reason = r.get("reason")
+        n_cls[cls] = n_cls.get(cls, 0) + 1
+        if cls == "FT-wrong" and v == "SUPPORTS":          g7_fail.append(iid)   # poison (HARD, tol 0)
+        if cls == "FT-thin-correct" and v == "NOT":        g8_fail.append(iid)   # castration (HARD, tol 0)
+        if cls == "FT-no-OA" and v not in ("UNCLEAR", "ERROR"): g9_fail.append(iid)  # forced verdict w/o OA
+        if leg == "fulltext" and v in ("SUPPORTS", "NOT"): resolved += 1
+        rows.append((iid, cls, exp, v, leg, reason))
+    rows.sort(key=lambda x: (x[1] or "", x[0] or ""))
+    for iid, cls, exp, v, leg, reason in rows:
+        mark = "ok" if (exp == v or (cls == "FT-no-OA" and v in ("UNCLEAR", "ERROR"))) else "."
+        print("  %-7s %-15s expect=%-8s got=%-8s leg=%-9s %-16s %s" % (iid, cls, exp, v, leg, reason, mark))
+    print("--- BARS (gate sec 3 ; HARD dominate, tol 0) ---")
+    print("  G7 no-poison      (0 FT-wrong->SUPPORTS)      : %s  %s" % ("PASS" if not g7_fail else "FAIL", g7_fail))
+    print("  G8 no-castration  (0 FT-thin-correct->NOT)    : %s  %s" % ("PASS" if not g8_fail else "FAIL", g8_fail))
+    print("  G9 honesty        (FT-no-OA->UNCLEAR)         : %s  %s" % ("PASS" if not g9_fail else "FAIL", g9_fail))
+    ft_unclear_entering = n_cls.get("FT-thin-correct", 0) + n_cls.get("FT-wrong", 0) + n_cls.get("FT-no-OA", 0)
+    print("  resolution YIELD (DIAGNOSTIC, not a bar) : %d/%d UNCLEAR-entering items resolved by full text"
+          % (resolved, ft_unclear_entering))
+    ok = not (g7_fail or g8_fail or g9_fail)
+    print("VERDICT: %s (fallback BUILDABLE+VALID = G6 & G7 & G8 & G9)" % ("PASS" if ok else "REJECT (R7: bar not tuned)"))
+    return 0 if ok else 1
 
 def main():
     ap = argparse.ArgumentParser()
@@ -476,6 +796,10 @@ def main():
     ap.add_argument("--netcheck", action="store_true")
     ap.add_argument("--run")
     ap.add_argument("--out")
+    ap.add_argument("--score", help="POST-HOC: score a --run OUTPUT.jsonl against --score-ground (G7/G8/G9 + yield)")
+    ap.add_argument("--score-ground", dest="score_ground", help="FT-CC answer key for --score (read post-hoc only)")
+    ap.add_argument("--in-md5", dest="in_md5", default=None, help="freeze guard for --run input (FT-CC ea5e0ec4)")
+    ap.add_argument("--no-fulltext", dest="no_fulltext", action="store_true", help="disable the full-text fallback")
     ap.add_argument("--b2", choices=["api", "local"], default="local")
     ap.add_argument("--falsifier", default="eval/_local/s2b_falsifier_v0.jsonl")
     ap.add_argument("--ground", default="eval/_local/ground_candidates.json")
@@ -488,6 +812,7 @@ def main():
         args.model = "Qwen/Qwen2.5-7B-Instruct" if args.b2 == "local" else B2_MODEL_DEFAULT
     if args.selftest:  sys.exit(mode_selftest(args))
     if args.netcheck:  sys.exit(mode_netcheck(args))
+    if args.score:     sys.exit(mode_score(args))
     if args.run:       sys.exit(mode_run(args))
     ap.print_help(); sys.exit(0)
 
