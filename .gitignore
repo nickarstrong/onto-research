@@ -32,3 +32,9 @@ _local/
 __pycache__/
 *.bak.*
 lab/dpo/eval/_local/
+
+# R12 leak-guard (gg) -- held-out windows + truth-derived L5 reports + bak
+lab/dpo/eval/ordinary_window_*.jsonl
+lab/dpo/reports/report_L5_partI.md
+lab/dpo/append_l5_*.ps1
+*.bak
