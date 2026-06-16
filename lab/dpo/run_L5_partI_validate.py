@@ -99,7 +99,7 @@ def pair_predict(si, sj, meta):
     # P3 shared primary data (frozen: missing DAS -> PROV_UNKNOWN -> fail-closed coupled)
     di, dj = si.get("data_id"), sj.get("data_id")
     if di is None or dj is None:
-        legs["P3"] = "fail_closed"          # PROV_UNKNOWN -> coupled
+        legs["P3"] = "unknown"              # absent DAS = PROV_UNKNOWN -> NOT a coupling signal (no fail-close)
     elif di == dj:
         legs["P3"] = True
 
@@ -110,7 +110,7 @@ def pair_predict(si, sj, meta):
     method_coupled = (si.get("method_class") is not None
                       and si.get("method_class") == sj.get("method_class"))
 
-    prov_coupled = any(v is True or v == "fail_closed" for k, v in legs.items())
+    prov_coupled = any(v is True for k, v in legs.items())
     coupled_gating = prov_coupled or citation_coupled
     return coupled_gating, legs, method_coupled, citation_coupled
 
@@ -315,18 +315,18 @@ def selftest():
             {"a": "S4", "b": "S5", "label": "institution"},
         ],
     }]
-    # second claim exercises P3 (data): same data_id -> coupled ; missing data_id -> fail-closed coupled
+    # second claim exercises P3 (data): same data_id -> coupled ; missing data_id -> unknown (NOT coupled)
     rows.append({
         "claim_id": "T002", "claim": "synthetic-p3",
         "sources": [
             {"sid": "Q1", "doi": "10.y/1", "data_id": "SHARED", "method_class": "a"},
             {"sid": "Q2", "doi": "10.y/2", "data_id": "SHARED", "method_class": "b"},  # P3 same data
-            {"sid": "Q3", "doi": "10.y/3", "data_id": None,     "method_class": "c"},  # missing DAS -> fail-closed
+            {"sid": "Q3", "doi": "10.y/3", "data_id": None,     "method_class": "c"},  # missing DAS -> unknown (NOT coupled)
         ],
         "coupling_truth": [
             {"a": "Q1", "b": "Q2", "label": "data"},
-            {"a": "Q1", "b": "Q3", "label": "data"},   # fail-closed treats unknown-DAS as coupled
-            {"a": "Q2", "b": "Q3", "label": "data"},
+            {"a": "Q1", "b": "Q3", "label": "independent"},   # corrected: absent-DAS = NOT coupled
+            {"a": "Q2", "b": "Q3", "label": "independent"},
         ],
     })
     MOCK = {
@@ -354,7 +354,7 @@ def selftest():
     assert sc["per_class_recall"]["author"] == 1.0, "P1 author not recovered"
     assert sc["per_class_recall"]["citation"] == 1.0, "P4/I.4 citation not recovered"
     assert sc["per_class_recall"]["institution"] == 1.0, "P2 institution not recovered"
-    assert sc["per_class_recall"]["data"] == 1.0, "P3 data (incl fail-closed) not recovered"
+    assert sc["per_class_recall"]["data"] == 1.0, "P3 data (real shared accession) not recovered"
     assert sc["over_prune"] == 0.0, "spurious coupling on independents"
     assert sc["citation_discount_leak"] == 0, "citation chain leaked as distinct clusters"
     assert sc["balanced_accuracy"] == 1.0, "clean fixture must score 1.0"

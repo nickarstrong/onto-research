@@ -1,4 +1,10 @@
 # SPEC_disposition_audit.md -- DISPOSITION-AUDIT v0, PRE-REGISTERED bars (FROZEN)
+#
+# SUPERSEDED 2026-06-13: the statistical Founder-labeled-pool gate (sec 2) is RETIRED. Validation is
+# now WRITTEN-IN (verify_disp_audit.py --selftest must-fire/must-stay-silent conditions) + ORGANIC
+# (--audit on real outputs) + phase-3 by-effect. Founder: no synthetic data. See CONTINUITY_LOG 2026-06-13(b).
+# The pipeline/naming/flag-map (sec 1, 1b) and falsifiers (sec 3) remain valid; only the eval-by-labeled-pool
+# gate is dropped. Kept for dateable provenance.
 
 date   : 2026-06-12
 plane  : RESEARCH / self-checkup loop -- phase 2 (disposition-audit), per ARCHITECTURE_master sec 4

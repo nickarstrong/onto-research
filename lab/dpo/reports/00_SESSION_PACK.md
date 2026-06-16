@@ -1,71 +1,81 @@
-# 00_SESSION_PACK.md -- ONTO session pack v138 (baton)
+# 00_SESSION_PACK.md -- ONTO session pack v171 (baton)
+
+## RULE 0 -- HOW TO WRITE THIS PACK (applies to every line below)
+Write every load-bearing line for an instance that has ZERO context. You know the project; the next-session
+reader does not. If a line does not unpack into a concrete action for someone who knows nothing, it is a BUG.
+Compressed != encrypted. Spell the action out.
+
+## SESSION_FLOW -- the loop we run every session
+  1. Founder sends the session zip. Claude auto-intakes (PIPELINE v1, SEC 4) and READS the pack: state,
+     the one next task, how we work. No guessing from memory (memory is lossy, protocol 3.10).
+  2. If Claude needs a local file not in the pack (out.jsonl / held-out / bait / FT-CC), Claude gives ONE PS
+     line that zips exactly those into Downloads. Founder uploads that zip.
+  3. Work, one step per message, each step = a command + its expected output + a pass/fail line.
+  4. At close, Claude hands updated 00_SESSION_PACK.md + STATUS.md + CONTINUITY_LOG.md (append one entry).
+     Founder runs build_pack.ps1 -> next zip. Zip is transport; git holds the files.
 
 ## SEC 0 -- ROUTING (read in this order)
-1. 00_SESSION/CONTINUITY_LOG.md   -- READ FIRST. Settled frames + DO-NOT-REDO + open threads (now incl. (dd)).
-2. 00_SESSION/STRUCTURE.md        -- on-disk file map (what is where, no guessing).
-3. 01_CANON/ARCHITECTURE_master.md  -- where we go (sec3 weight-migration endpoint ; sec4 phase-3 gate).
-4. 01_CANON/STATUS.md             -- current state snapshot.
-5. 02_SPEC/SPEC_selfcheck_A.md    -- A-channel frozen bars (the precision contract every gate rides on).
-6. 03_REF/PACK_SPEC.md            -- conveyor contract (md5 f888f427).
+1. 00_SESSION/CONTINUITY_LOG.md   -- READ FIRST. Settled frames + DO-NOT-REDO + the (wd) record at the tail.
+2. 00_SESSION/STRUCTURE.md        -- on-disk file map (auto-generated).
+3. 01_CANON/ARCHITECTURE_master.md  -- North Star.
+4. 01_CANON/STATUS.md             -- current state in plain words. ACTIVE PLANE = NONE (full-text CLOSED).
+5. 02_SPEC/SPEC_s2b_v0.md         -- the judge contract (frozen, md5 80bdf2a9).
+6. 02_SPEC/GATE_s2b_offtopic_v0.md -- off-topic gate (frozen, CLEARED).
+7. 02_SPEC/GATE_s2b_fulltext_v0.md -- full-text gate (frozen). ALL BARS PASS at (wd) ; reference only.
+8. 03_REF/PACK_SPEC.md            -- conveyor contract (md5 f888f427).
 
-WE ARE HERE: phase 1/2/3 CLOSED. fix(a) RULE standing. fix(b) DPO leg CLOSED.
-   2026-06-14 (dd): L5 P4-edge disposition CLOSED (4/4) + predicate fix-gate FROZEN (CONCEPT). predicate UNTOUCHED.
-   Disposition (each pair's OWN ref list, primary source ; LOCAL-ONLY eval/_local/l5_C014_C015_P4_disposition.md):
-   C015 S3xS4 Yan/Kirchdoerfer = CITATION-EXEMPLAR (Yan cites Kirchdoerfer 2018 -> relabel independent->citation) ;
-   C015 S1xS2 Wrapp/Walls = DEFECT ; C015 S1xS3 Wrapp/Yan = DEFECT ; C014 S1xS2 Wu/Zhou = DEFECT (no direct cite).
-   1 exemplar + 3 P4-over-couple defect. No relabel-to-pass (R7).
-   FIX-GATE FROZEN: eval/_local/SPEC_L5_fixgate_v1.md md5 c7c67593 (AST anchors of the frozen predicate in sec1).
-   R16 ground: P4 reads refs_all = Crossref `reference` UNION OpenCitations -> real cites in Crossref `reference`,
-   the 3 DEFECT edges enter via the OC union. v1.1 discriminator (DESIGN HYPOTHESIS, gate-agnostic) = Crossref-ref-only
-   P4 + P3 positive-signal.
-PLANE: RESEARCH / lab. GOLD need: NONE (predicate-fix is structural, label-only).
-INTAKE TRIGGER: none (PIPELINE v1 auto-intake routes on upload).
-WORK TRIGGER: "LABA, L5 FIX". No trigger = wait.
-SESSION TYPE next: TYPE B (run the frozen fix-gate). eval != source: the C015 S3xS4 relabel is a SOURCE act done as
-   PREREQ, NOT in the run session. Gate is ALREADY frozen (c7c67593) -- do NOT re-design or move a bar (R7).
+WHERE WE ARE (plain): the s2b grounded verifier is COMPLETE end-to-end. B1 binding + B2 abstract (incl off-topic)
++ full-text fallback (getter wc + resolver wd) are all gate-valid. The G8 RESOLVER FIX is DONE: s2b_v0.py blob
+35eefda12c0774ef6e13522febfe1447 (LF) on onto-research main HEAD fd2b9ba ; --selftest G1-G9 PASS (Qwen2.5-7B) ;
+--score on frozen FT-CC = VERDICT PASS (G7/G8/G9) ; the 3 wc castrations (ftc02/03/08) now read UNCLEAR, never
+NOT. Public report reports/REPORT_s2b_g8_resolver_fix.md committed (provenance + bars + yield, no eval data). The
+s2b predicate has NO open defect. NEXT = Founder selects the next plane (SEC 1).
 
-## SEC 1 -- NEXT TASK (apply predicate v1.1 under the FROZEN gate ; one step/msg, TYPE B)
-PREREQ (Founder, LOCAL-ONLY, SOURCE act, R7): relabel C015 S3xS4 (Yan/Kirchdoerfer) independent->citation in
-   eval/_local/truth_input.txt, provenance = Yan cites Kirchdoerfer 2018 (recorded in l5_C014_C015_P4_disposition.md).
-   The 3 DEFECT pairs STAY independent (no relabel).
-THEN [one step/msg]:
-  1. snapshot pre-edit AST-md5 (SPEC_L5_fixgate_v1 sec1) ; confirm MUST-stay set matches before touching a byte.
-  2. apply predicate v1.1 -- provenance_edge (P4 source = Crossref `reference` only, drop OC union) + pair_predict
-     (P3 = positive coupling signal, not fail-close-on-absent-DAS). ONLY these + the refs_all assembly may move.
-  3. re-hash: MUST-stay set (score_dataset/verdict/clusters/contents/per_pair_readout/fetch_crossref) AST-identical ;
-     MAY-change set changed. Mismatch in MUST-stay = INVALID, redo.
-  4. build_l5_truth -> --contents -> net pre-check -> --run on the corrected accession-bearing set.
-  5. read G1-G5 off the per-pair table + indep sub-split. Apply gate sec4 verdict + sec5 FAIL-semantics.
-Conscience stays EXTERNAL (ARCHITECTURE sec1). North Star unaffected -- hardens the B-channel/L5 organ, migrates nothing.
-Do NOT relabel any DEFECT pair to pass. Do NOT move a frozen bar after results (R7).
+NO ACTIVE TRIGGER pre-set. The full-text plane is closed ; do NOT reopen it (getter, resolver, bars, gate all
+settled). Pick a PARKED plane below.
 
-## SEC 2 -- NEXT+1 PREVIEW
-TYPE A sourcing increment 2 -- INSTITUTION exemplar (same-institution / different-author / distinct-accession) +
-scale author/citation each toward >=5 + independents toward >=20. Self-source live (proven viable (bb)) OR Founder
-resolvable-DOIs ; every DOI Crossref-resolvable + every accession the REAL DAS line read LIVE. eval+source never
-share a session (run the ladder in a separate TYPE B).
+## SEC 1 -- NEXT TASK (Founder picks ; the s2b predicate is done -- this is a fresh plane, not a continuation)
+The full-text fallback is complete. Candidate next planes (Founder chooses ONE ; Claude does not open mid-session):
 
-## SEC 3 -- PARALLEL / PENDING (not a plane unless picked)
-  - L5 grounding: (x)+(y)+(z)+(aa)+(bb)+(cc) done ; (dd) disposition CLOSED + fix-gate FROZEN. Live next = apply
-    predicate v1.1 under the frozen gate (SEC1). All L5 artifacts LOCAL-ONLY.
-  - per-pair emit id-collision: claim-qualified ids (C015:S1xS2 etc.) are now LOAD-BEARING -- USED by the frozen gate
-    G1/G2. If the emitter still prints bare ids, fix the emit before/with the fix run so each G1/G2 pair traces to its claim.
-  - DEFECT + predicate v1.1: over_prune FAILs via TWO mechanisms (P3 fail-close 11/11 + P4-over-couple). The fix-gate
-    (c7c67593) covers BOTH. Entry = SEC1.
-  - tree hygiene: COSMETIC only (scoring_engine_v5_1 md5-dup ; e8 header mojibake/stale-"E7" ; .bak rollbacks ;
-    adapter_sftc STRUCTURE-exclude widen ; E34 untracked ; STRATEGY rev2 uncommitted).
-  - B-channel pyarrow access-violation dump on Win/Py3.12 -- benign, results stable, GOLD VERIFIED ; deferred.
+  (P1) RESOLUTION-YIELD / B2 SUPPORTS+CONTRA-leg at scale. 7/24 is the honest OA+contradiction-detection ceiling.
+       Many FT-wrong land at honest UNCLEAR because per-chunk affirmative CONTRADICTS is rare under the grounded
+       judge. A yield plane would strengthen the per-chunk SUPPORTS/CONTRA detection (better excerpt targeting /
+       read-strategy), measured against the SAME frozen FT-CC + gate. R7 HARD: yield is diagnostic -- never raise
+       it by tuning the G7/G8 bar ; only by a genuinely better read/judge. Needs a fresh measurement contract.
+  (P2) L5 FIX. Behind a FRESH gate (write the gate before any byte). L5 truth-set LOCAL-ONLY. (hh) CLOSED prior.
+  (P3) A-channel CI-clear : grow the clean A-set to ~30. Cheap polish.
+  (P4) 4-bit GPU B2 restore : speed-only (bnb DLL was broken on new CUDA -> CPU offload via S2B_NO_4BIT). No bar
+       impact, pure throughput.
+  (P5) HYGIENE micro-plane : add .gitattributes `*.py text eol=lf` to onto-research so checkout EOL is stable and
+       disk md5 == git-blob md5 (kills the recurring CRLF/md5 confusion seen at wd). One-file change + one commit.
+
+ENGINEER RECOMMENDATION (one line, R12): take (P5) first as a 10-minute clean-up (it removes a recurring
+  identity-drift hazard), THEN (P1) as the substantive next step toward a stronger grounded verifier. Founder
+  overrides freely.
+
+GOLD need next plane: NONE for P1/P3/P4/P5 ; P2 declares its own truth-set (LOCAL). SESSION TYPE depends on pick:
+  P1 = eval+build (split honored, fresh contract) ; P2 = gate-then-build ; P3/P4/P5 = build/hygiene.
+
+## SEC 2 -- PARKED HARVEST OPTIONS (folded into SEC 1 P1)
+  (a) B2 SUPPORTS/CONTRA-leg at scale = P1. (c) 4-bit GPU B2 = P4.
+
+## SEC 3 -- PARKED (not active unless Founder picks one)
+  - L5 FIX = P2. A-channel CI = P3. EOL hygiene = P5.
 
 ## SEC 4 -- INTAKE (PIPELINE v1)
   unzip -> md5 every file vs MANIFEST.md5 -> VALID/INVALID (INVALID = STOP).
-  03_REF/PACK_SPEC.md md5 MUST == f888f427597c7c45e6503c33f1babe24 (conveyor staleness guard). Mismatch = STOP.
+  03_REF/PACK_SPEC.md md5 MUST == f888f427597c7c45e6503c33f1babe24 (staleness guard). Mismatch = STOP.
 
 ## SEC 5 -- CLOSE
-  At close: Claude hands the updated 00_SESSION_PACK.md + STATUS.md + CONTINUITY_LOG.md (STRUCTURE is AUTO-
-  generated by the assembler). Founder places them in reports\, runs `build_pack.ps1 -N 139 -Spec
-  SPEC_selfcheck_A.md` -> next zip.
-  (3.10: this v138 pack was built by intake v137 -> -N 138 ; N is the NEXT version per PACK_SPEC "Claude builds
-  pack v(N+1)" -> v139 next. Verify the assembler stamps v138 on THIS pack and v139 on the next.)
-  The zip is transport only (Claude reads ONLY the zip). Git holds the individual files ; zip-blobs are NEVER committed.
-  truth_input.txt + C009_C014_sourced.md + C015_sourced.md + l5_coupling_truth.jsonl + report_L5_partI.md +
-  l5_C014_C015_P4_disposition.md + SPEC_L5_fixgate_v1.md + append scripts = LOCAL-ONLY, never in the pack, never public git.
+  At close Claude hands updated 00_SESSION_PACK.md + STATUS.md + CONTINUITY_LOG.md (STRUCTURE auto-gen by build_pack).
+  Founder places those 3 in lab\dpo\reports\, then runs:
+    .\build_pack.ps1 -N 171 -Spec SPEC_s2b_v0.md,GATE_s2b_offtopic_v0.md,GATE_s2b_fulltext_v0.md  -> onto_session_pack_v171.zip
+  SEMANTICS (verified from build_pack.ps1): zip filename = -N DIRECTLY. NO offset. 02_SPEC = exactly the -Spec list.
+  NOTE: input pack this session was v170 -> next = v171. If Founder's local counter differs, set -N accordingly
+  (filename = -N, no offset).
+  LOCAL-ONLY, never in pack, never public git: proposals/worksheet/rate_judgments/ledger(DOIs)/falsifier/
+  ground_candidates/cc/j5/cc_j5_ground/g5_live/ft_resolve/resolve_ft.ps1/ft_cc_v0*/ft_cc_ground/ft_cc_v0_s2b_out*/
+  all L5 truth-set.
+
+  STANDING HYGIENE: R12 leak (audit_v2_stdout.txt + onto_index_harvest.txt) RESOLVED at wd (moved to eval/_local/,
+  gitignored). Any future `git add .` stays explicit-path. The s2b plane git is CLEAN.

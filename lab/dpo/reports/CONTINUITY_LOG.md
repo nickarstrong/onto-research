@@ -137,6 +137,17 @@ rules : (1) Claude reads this FIRST on intake, before proposing anything.
   (Marso author) + C007 (Sattar citation) carry data_id '-' both sides -> they P3-fail-close at --run (P3-masquerade,
   the (v) degeneration) and do NOT prove P1/P4 fire. Accession-bearing both sides is the only escape. NOT relitigated.
 
+- 2026-06-15 (mm): S2(b) automated supports-judge ARCHITECTURE locked (SPEC_s2b_v0.md, md5
+  80bdf2a9). Two legs, deterministic-first: B1 BINDING (fetch-grounded structured field-match: cited
+  author/year/venue vs fetched Crossref metadata -> NOT on a HARD contradiction = the wrong-binding catch)
+  THEN B2 SUPPORTS (a SEPARATE non-proposing model instance reading fetched title+abstract -> SUPPORTS/
+  NOT/UNCLEAR, honest UNCLEAR on thin metadata). Grounding = the v0.1 split (11/19 binding-class fetch-free-
+  rejectable, 8/19 needed-the-read) -- the two legs match it exactly. NLI-only / field-match-only / model-
+  only each REJECTED (settle the wrong half / can't read / fabrication surface on the easy half). HARD bars
+  G1 (0 wrong-binding->SUPPORTS) + G2 (0 wrong-content->SUPPORTS) + G3 (0 genuine->NOT castration) dominate ;
+  UNCLEAR is first-class. star_quote informs binding ONLY, never support (trust boundary). s2b is a NEW
+  downstream organ -- loop_e2e_v0.py (a39e66f) SHIPS UNCHANGED (R7). NOT relitigated.
+
 ================================================================================
 ## DO-NOT-REDO (mistakes already made -- do not repeat)
 - 2026-06-14 (aa): do NOT seed coupled/independent pairs from MEMORY (Founder's or Claude's). Three batches, 9/9
@@ -291,1040 +302,516 @@ rules : (1) Claude reads this FIRST on intake, before proposing anything.
   by `build_pack.ps1 -N <n> -Spec <spec>.md`.
 
 ================================================================================
+## NEW HARD RULE (settled frame, applies to the WHOLE pack from now on)
+WRITE EVERY LOAD-BEARING LINE FOR AN INSTANCE WITH ZERO CONTEXT.
+The author of a pack line already holds the context ; the next-session reader does NOT. A line that reads
+fine when you know the project but does not UNPACK into a concrete action for someone who knows nothing is
+a BUG, not a style choice. Compressed is not the same as encrypted. Test for every load-bearing line:
+"could a fresh instance, knowing nothing, do the RIGHT thing from this line alone?" If no, rewrite it.
+  BAD  (real example that cost a whole session): "binding-class = quote-year-vs-DOI-vintage contradictions".
+  GOOD : "The wrong-binding signal is the YEAR written inside the citation text. Pull the year out of the
+          citation prose, compare it to the DOI's real publication year. Big gap = wrong source cited."
+The first line is why B1 was built to read only canonical "(YYYY, Venue)" and was blind on real prose.
+
+
+================================================================================
 ## SESSION ENTRIES (reverse-chronological ; append at close, never edit prior)
 
-### 2026-06-14 (dd) -- L5 PART I: P4-edge disposition CLOSED (4/4) + predicate fix-gate FROZEN (CONCEPT)
-type    : RESEARCH / lab (CONCEPT: per-pair P4 disposition by live primary-source citation reads, then FREEZE a fresh
-          fix-gate BEFORE any predicate byte (R7). predicate + validator NOT touched. eval+source split honored.)
-intake  : pack v137 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427 ; header v137).
-decided : Founder delegated order to Claude (engineer-owns-order, sec2). The SEC1 PREREQ "Founder offline disposition"
-          was taken by Claude as a SELF-GROUNDABLE primary-source read (citation direction = verifiable fact, 3.9 ;
-          memory = lead, every edge read live) -- NOT a Founder-only judgment. One load-bearing assumption fixated.
-disposition (4/4 ; each pair's OWN reference list read from primary source ; recorded eval/_local/l5_C014_C015_P4_disposition.md) :
-          - C015 S3xS4 Yan/Kirchdoerfer -> CITATION-EXEMPLAR. Yan cites Kirchdoerfer 2018 (Sci Rep 8:15701) in Yan's
-            Crossref ref list. REAL direct cite -> relabel independent->citation (relabel-with-provenance, a SOURCE act, R7).
-          - C015 S1xS2 Wrapp/Walls -> DEFECT. Walls full body read: cites Zhou/Kirchdoerfer, NO Wrapp ; Wrapp (earlier)
-            cannot cite Walls. No direct edge.
-          - C015 S1xS3 Wrapp/Yan -> DEFECT. Yan ref list across 3 mirrors (science.org, PMC7164635, ouci): Kirchdoerfer,
-            Hoffmann/Zhang/Zhao bioRxiv (Jan 31/30), Li, Zhou -- NO Wrapp. Wrapp earlier, reverse impossible.
-          - C014 S1xS2 Wu/Zhou -> DEFECT. Both Nature 579, epub 2020-02-03, independent racing teams ; Wu accepted Jan 28,
-            Zhou published Feb 3 -> neither published paper could cite the other's published paper. The (z) OpenCitations
-            edge = artifact/preprint-ack ; per (z) standard "ack edge between independent racing groups != coupling".
-          NET: 1 CITATION-EXEMPLAR + 3 P4-OVER-COUPLE DEFECT. No pair relabeled-to-pass (R7).
-finding (R16, ground for v1.1) : the predicate's P4 reads refs_all = Crossref `reference` UNION OpenCitations `cited`.
-          Real direct cites sit in Crossref `reference` (Yan->Kirchdoerfer, Walls->Kirchdoerfer present) ; the 3 DEFECT
-          edges are ABSENT from both papers' real reference lists -> they enter via the OpenCitations union. Discriminator
-          for v1.1 = P4 on Crossref `reference` only, NOT the OC union ; P3 = positive-signal not fail-close. DESIGN
-          HYPOTHESIS, gate-agnostic (gate measures the 4 disposed outcomes, any mechanism that clears it is fine).
-froze   : read the on-disk predicate (run_L5_partI_validate.py md5 b1f4aae4 == (z) 6b06e61 frozen, NO drift ;
-          SPEC d83d7a71). Snapshotted AST-md5 anchors (MODULE_AST b1fa53d0 ; per-fn provenance_edge 0d3a7cf8 /
-          pair_predict b7ec8683 / score_dataset 7c37247f / verdict a2c97d0a / clusters_from_edges 3fd5b61c /
-          contents_check f0eef4e7 / per_pair_readout 43c8ac77 / fetch_crossref e06c9199 / fetch_opencit_refs f52b0834).
-          FROZE the gate: eval/_local/SPEC_L5_fixgate_v1.md (md5 c7c67593). Bars: G1 HARD P4-suppress 3 DEFECT ;
-          G2 HARD P4-preserve exemplar + Walls->Kirchdoerfer(S2xS4) + Wrapp/Kirchdoerfer author(S1xS4) ; G3 HARD
-          P3-resolve (no indep coupled solely via P3 fail_closed) ; G4 HARD no-castration (recall 1.0 + leak 0) ;
-          G5 headline (over_prune<=0.10, bal_acc>=0.85). PASS = G1&..&G5, HARD G1-G4 dominate. FAIL-semantics pre-stated.
-          AST invariant for v1.1: ONLY provenance_edge + pair_predict + refs_all assembly may move ; scorer/verdict/
-          clustering/contents/readout MUST stay AST-identical or run is INVALID.
-verdict : disposition CLOSED (4/4) + fix-gate FROZEN. predicate UNTOUCHED. R7 anchor for the whole fix leg set.
-decided-next : SEPARATE TYPE B fix session (eval != source). PREREQ relabel C015 S3xS4->citation (SOURCE act, LOCAL).
-          THEN snapshot AST -> apply predicate v1.1 -> re-hash (MUST-stay set identical) -> build->contents->net-precheck
-          ->--run on the accession-bearing set -> read G1-G5 -> sec4 verdict + sec5 semantics. Trigger "LABA, L5 FIX".
-git     : NOTHING public this session (CONCEPT). l5_C014_C015_P4_disposition.md + SPEC_L5_fixgate_v1.md = LOCAL-ONLY
-          (eval/_local/ ; carry truth-set pair identities), NEVER public git / pack.
-carry   : DO-NOT-REDO -- (a) disposition is CLOSED on primary sources ; read it from eval/_local/, do NOT re-source the
-          4 pairs. (b) C015 S3xS4 relabel to citation is provenance-backed (Yan cites Kirchdoerfer) -- it is NOT a
-          relabel-to-pass ; the 3 DEFECT pairs stay independent. (c) gate is FROZEN (c7c67593) ; do NOT move a bar after
-          results. (d) do NOT touch the predicate before the TYPE B session's AST snapshot step.
+> ARCHIVE NOTE (2026-06-16): all entries before (vv) [2026-06-12 -> (uu)] were moved VERBATIM to
+> CONTINUITY_ARCHIVE_2026-06-16.md (git-blind backup ; NOT carried in the session zip). Their
+> load-bearing lessons already live in SETTLED FRAMES + DO-NOT-REDO above and in STATUS.md. Pull the
+> archive into a session zip ONLY if a PARKED leg (L5 FIX etc.) is resumed. Below = the live full-text leg.
 
-### 2026-06-14 (cc) -- L5 PART I RUN on the C015-extended set -> VERDICT FAIL (DESIGNED) ; named-coupling recovery 100% ; P4-over-couple reproduced on accession-bearing independents (TYPE B)
-prereq  : C015 validated + idempotent-appended (append_l5_C015.ps1, .bak.20260614-2221) -> truth-set 15 claims,
-          indep 19 / author 2 / data 5 / citation 2 / institution 1 (build READY ; validator --contents problems none).
-net     : 4 new DOIs Crossref-LIVE + title-matched (abb2507 Wrapp / cell.2020.02.058 Walls / abb2762 Yan /
-          s41598-018-34171-7 Kirchdoerfer). DOI->paper bound ; accession provenance in C015_sourced.md.
-run     : run_L5_partI_validate.py --run eval/_local/l5_coupling_truth.jsonl --out eval/_local/report_L5_partI.md (LOCAL-ONLY).
-result  : VERDICT FAIL {recovery>=0.85 F ; discount_leak==0 HARD T(PASS) ; over_prune<=0.10 F}.
-          bal_acc 0.6053 ; tpr 1.0 ; fn 0 ; per-class recall author/institution/data/citation = 1.0 ; independent 0.2105.
-          BUILD-CRITICAL UNBLOCK DELIVERED: PAIR A C015 S1xS4 P1 author FIRES (accession-bearing) ; PAIR B
-          C015 S2xS4 P4 citation FIRES ISOLATED (no P1/P2/P3) = leg-isolation target hit ; discount_leak = 0.
-finding : (R16) over_prune 0.7895 = TWO mechanisms. (1) accession-less 11/11 P3 fail-close = DESIGNED falsifier.
-          (2) P4-over-couple on accession-bearing genuine-independents 4/8: C015 IND-1 (S1xS2 Wrapp/Walls),
-          IND-2 (S1xS3 Wrapp/Yan), IND-4 (S3xS4 Yan/Kirchdoerfer) + C014 S1xS2 (Wu/Zhou (z)) carry real P4 edges ;
-          only IND-3 (S2xS3 Walls/Yan) resolves clean independent. (z) pattern reproduced on the cryo-EM set.
-R7      : NOT relabeled. Each P4-edge pair = citation-exemplar (real A->B cite -> relabel-with-provenance, a
-          sourcing act) OR P4-over-couple DEFECT (P4 on co-citation-of-third-work) -> Founder dispositions per
-          pair by reading actual citation direction. Disposition gates the predicate-fix design.
-frozen  : predicate + validator UNTOUCHED (AST-md5, since (z) 6b06e61). eval+source/relabel never share a session.
-git     : NONE. All L5 artifacts LOCAL-ONLY (truth_input.txt, l5_coupling_truth.jsonl, report_L5_partI.md,
-          C015_sourced.md, append_l5_C015.ps1).
-R12     : per-pair readout ids collide cross-claim (bare S1xS2) -> claim-qualify (C015:S1xS2) now LOAD-BEARING
-          for the disposition, not cosmetic. Bumped in SEC3.
-next    : predicate FIX plane. PREREQ Founder disposition of the 4 accession-bearing P4-edges. FREEZE a fresh
-          fix-gate BEFORE any predicate change (R7). Fix covers BOTH over-couple mechanisms. Trigger "LABA, L5 FIX".
+================================================================================
+## 2026-06-16 (vv) -- S2B OFF-TOPIC POLICY: implemented + cleared the frozen gate + SHIPPED
 
-### 2026-06-14 (bb) -- L5 C015 sourcing increment 1: self-source LIVE -> 2 coupled exemplars + 4 P4-watch independents (TYPE A)
-type    : RESEARCH / lab (TYPE A sourcing under the (aa) REFRAME. predicate + validator + C001-C014 NOT touched ; NOTHING committed ; all L5 artifacts LOCAL-ONLY.)
-intake  : pack v135 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427 ; header v135 confirmed). NEXT FREE claim id = C015.
-capability (R15, method) : the (aa) "self-source via web is low-yield / NO programmatic Crossref-accession access" SUB-CLAIM is PARTIALLY FALSIFIED for this session's tools -- web_search -> primary source (RCSB / PMC / publisher DAS) reads DOIs + DAS accessions LIVE ; under the reframe (isolation dissolved) yield is good (4 nodes + 2 coupled exemplars in ~7 searches). NOT a contradiction of the MEMORY lesson (memory still = lead, every fact read live) ; it corrects the "low-yield environment" sub-claim. Self-source live is now a viable route alongside Founder-DOIs.
-sourced (ALL live, none from memory ; SARS-CoV/2 structural biology, PDB -> P3 silent ; all 4 accessions distinct -> escapes C004/C007 data_id '-' masquerade) :
-          S_W Wrapp 10.1126/science.abb2507 PDB 6VSB (UT-Austin/NIH) ; S_L Walls 10.1016/j.cell.2020.02.058 PDB 6VXX (UW/Hutch/Pasteur, DAS verbatim) ; S_Y Yan 10.1126/science.abb2762 PDB 6M17 (Westlake/Tsinghua, DAS verbatim) ; S_K Kirchdoerfer 10.1038/s41598-018-34171-7 PDB 6CRZ (Scripps/Dartmouth-UT/NIH, DAS verbatim).
-coupled (named coupling VERIFIED) :
-          PAIR A [AUTHOR] S_W x S_K -- 5 shared authors {Wrapp,Wang,Corbett,Graham,McLellan} -> P1 FIRES (P2 co-fire ; P4 likely-UNVERIFIED -> validator). 6VSB/6CRZ distinct.
-          PAIR B [CITATION, P4-isolated] S_L x S_K -- Walls 2020 cites Kirchdoerfer 2018 verbatim -> P4 FIRES ; P1 clean (disjoint authors) ; P2 clean (UW vs Scripps) ; P3 silent. The clean leg-isolation citation target.
-independents (accession-bearing, P3-silent, P1/P2 clean ; P4 = validator's --run read, NOT pre-labeled ; (z) competing-pair-can-carry-edge honored) :
-          IND-1 S_W x S_L (held cryo-EM pair, now live-verified) ; IND-2 S_W x S_Y ; IND-3 S_L x S_Y ; IND-4 S_Y x S_K. All P4-WATCH.
-result  : block persisted -> eval/_local/C015_sourced.md (LOCAL-ONLY held-out). Founder FINAL-VALIDATES + idempotent-appends. Honest counts if validated: author 1->2, citation 1->2, indep +4 accession-bearing ; INSTITUTION UNMOVED (1).
-gap (R7, no fabrication to hit 5/5/5) : institution class needs same-institution/different-author/distinct-accession source (cryo-EM node-set shares an institution only where it shares authors -> P2 not isolable) ; author+citation each +3 ; independents toward >=20. = increment 2.
-decided-next : (A) Founder validate+append C015 block, THEN re-run the FROZEN ladder (build_l5_truth -> --contents -> net pre-check -> --run) = SEPARATE TYPE B session (eval+source never share, В§2) ; (B) sourcing increment 2 = separate TYPE A. Predicate + validator FROZEN ; conscience EXTERNAL.
-git     : NOTHING committed (TYPE A ; nothing verified entered until Founder appends). C015_sourced.md = LOCAL-ONLY, never public git.
-carry   : DO-NOT-REDO -- (a) self-source live IS viable here (use it ; still every DOI/accession read LIVE, memory = lead). (b) do NOT pre-label P4 on IND-1..4 / PAIR-A competing pairs -- validator resolves at --run ; an edge it finds = citation exemplar OR flagged DEFECT, NEVER relabel-to-pass (R7). (c) C015 block persisted on disk -> read from eval/_local/C015_sourced.md, do NOT re-source S_W/S_L/S_Y/S_K.
+PLANE: implement-and-run the off-topic->NOT B2 policy against GATE_s2b_offtopic_v0.md (frozen, tt).
+RESUMED at STEP 3 (STEP 1-2 = CC/J5 build, done in uu). s2b_v0.py edited in place (canonical name).
 
-### 2026-06-14 (aa) -- L5 SCALE: coupled self-source -> 3 hand-batches REJECTED by anti-fab gate (0/9) ; REFRAME crystallized (TYPE A)
-type    : RESEARCH / lab (TYPE A sourcing. predicate + validator + C001-C014 NOT touched ; NOTHING committed ; all L5 artifacts LOCAL-ONLY.)
-intake  : pack v134 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427 ; header v133->v134 confirmed). Pulled L5 read-set off
-          disk md5-verified vs (z)/STRUCTURE (truth_input 36608c82, C009_C014_sourced, SPEC_extension 39d2cc81, SCHEMA dad337db,
-          validator b1f4aae4) -- no drift. NEXT FREE claim id = C015 (C001-C014 occupied).
-goal    : SEC1 -- independents to >=20 + author/institution/citation to >=5 each (data already 5). Founder-judged, R7.
-attempted: 3 batches handed/considered, 9 candidate pairs, ALL REJECTED on primary-source verification (anti-fab gate, R7/3.9):
-          - batch1 (institution/author/citation): the co-fire/masquerade flaws the Founder pre-flagged -- Sade-Feldman on BOTH papers
-            (P1 contaminates institution, GSE212041 real) ; Teichmann+Wellcome-Sanger on BOTH (P2 contaminates author) ; Joustra 2023
-            (jjac119) is a Systematic-Review/meta with NO DAS -> P3 fail-close, NOT P4-isolated.
-          - batch2 (author/institution/citation): MISMATCHED DOIs -- 10.1038/s41586-020-2093-3 = ENCODE mouse-fetal-chromatin (Ren),
-            NOT Regev ; GSE176078 = Wu/Garvan/Nat-Genet 10.1038/s41588-021-00911-1, NOT Dana-Farber / s41586-021-03643-6 ;
-            10.1038/s41588-021-00931-x + both GCSTs unresolvable. + E-MTAB-12345 placeholder.
-          - batch3 (independent I0 dispersed 4-source plant-root scRNA-seq): ID-COLLISION (labeled C014, taken -> C015) ; S2 Nat-Plants
-            s41477-019-0448-2 + S3 Science aaw1003 NOT among the canonical six 2019 Arabidopsis-root-scRNA-seq papers (Denyer/Jean-
-            Baptiste/Ryu/Shulse/Turco/Zhang ; all Dev Cell / Plant Cell / Plant Physiol / Cell Rep / Mol Plant, none Science/Nat-Plants)
-            -> S2/S3 mismatched ; S4 Shulse celrep.2019.05.041 real accession GSE122687 != claimed GSE131594 ; AND the dispersed-block
-            path the pack told to DROP (tight window does NOT prevent later-cites-earlier P4 -- Wu/Zhou same-issue already had an edge).
-result  : anti-fab gate HELD 0/9 entered. truth-set UNCHANGED (C001-C014 ; independent 15 / data 5 / author 1 / institution 1 / citation 1).
-          The whole L5 thesis re-confirmed: a DOI/accession tuple from MEMORY (Founder's OR Claude's) = LEAD, not fact -- mismatch is
-          caught only by a live primary-source read (R7 / 3.9 / 3.10 memory-not-authoritative).
-FINDING (R16) : coupling mechanisms CORRELATE -- a shared author drags a shared institution ; the same field drags shared authors +
-          citations. Clean SINGLE-LEG-ISOLATED coupled pairs are RARE in nature. Both hand-source and Claude self-source are low-yield
-          against a strict isolation requirement.
-REFRAME (R14 crystal, LOAD-BEARING -- the session's deliverable) : the extension's CORE need (SPEC sec4) is P3-SILENCED + a REAL
-          provenance coupling (so a "coupled" verdict is not a P3-masquerade). Single-leg ISOLATION is a validator-attributed BONUS
-          (the per-leg readout), NOT a build-blocker -- SCHEMA --contents requires only class presence + all C(n,2) + ground-truth
-          labels, NOT isolation. SOURCE P3-silenced REAL-coupled pairs (distinct real accessions both sides ; the named coupling true) ;
-          prefer isolation, let the validator arbitrate per-leg. This dissolves the rarity wall and unblocks sourcing. NOT drift (labels
-          stay ground-truth, R7 ; grounded in the SCHEMA contents-rules).
-FINDING (R15, method) : self-source via web_search/web_fetch is low-yield in THIS environment -- NO programmatic GEO/PRIDE/GWAS-Catalog/
-          Crossref/OpenCitations access -> PDFs read one at a time, isolation-rarity compounds (~12 searches -> 0 landed). Efficient
-          sourcing needs repository-query tooling (absent here) OR Founder seeds with DOIs he is LOOKING AT (resolvable, DAS line
-          visible) -- never recalled.
-C004/C007 (R16, recorded) : the EXISTING author (C004 Marso) + citation (C007 Sattar) exemplars carry data_id '-' BOTH sides -> at --run
-          they P3-fail-close, they do NOT P1/P4-fire. They are P3-MASQUERADES (the (v) degeneration). Every NEW author/institution/
-          citation pair MUST carry distinct REAL accessions both sides to escape this.
-cryo-EM : Walls 6VXX (10.1016/j.cell.2020.02.058, DAS quote verified, UW) / Wrapp 6VSB (10.1126/science.abb2507, UT-Austin+NIH) -- a REAL
-          pair, distinct PDB accessions (P3 silent), distinct authors+institutions ; indep-vs-citation hinges on the P4 edge -> HELD as a
-          candidate, the validator resolves it at --run (standing rule -- do NOT append on a search-guess).
-decided-next : source P3-silenced REAL-coupled pairs UNDER THE REFRAME, ids from C015. Either (a) Founder supplies resolvable DOIs he is
-          looking at (DAS visible) -> Claude reads/verifies live ; or (b) a repository-query-tooled sourcing session. Predicate + validator
-          FROZEN ; conscience EXTERNAL. All artifacts LOCAL-ONLY. THEN (separate) the predicate fix (P3 fail-close + P4 competing-pair),
-          fresh frozen gate first (R7) + file DEFECT + v1.1.
-git     : NOTHING committed (TYPE A ; nothing verified entered). truth_input.txt unchanged. No weights/bait/held-out.
-carry   : DO-NOT-REDO -- (a) do NOT seed coupled pairs from MEMORY (3 batches, 9/9 failed primary-source verify) ; supply DOIs being
-          looked at, or let Claude self-source live. (b) next free id = C015, NOT C014. (c) the dispersed 4-source independent block stays
-          DROPPED. (d) do NOT append the cryo-EM pair on a citation-edge guess -- validator decides P4 at --run.
+INTAKE: pack v160 VALID (8/8 md5 ; PACK_SPEC == f888f427). Two upload corrections handled before work:
+  (1) first pull named a wrong falsifier path -> Get-ChildItem found it at eval/_local/ (memory not
+      authoritative, 3.10). (2) an l5_fix_intake.zip arrived with NO trigger -> FLAGGED as off-plane
+      (L5 is PARKED + LOCAL-ONLY), NOT acted on ; Founder then sent the correct s2b_pull -> plane = S2B.
+  s2b_pull_v159.zip md5-verified: s2b_v0.py e8f84bb0, falsifier 8307d97d. G5 fixtures md5-verified vs
+  locked: cc 9201234e / j5 774d1d39 / ground 16bd0161. CONTENTS verified (3.7): CC 6 methods/6 terse/6
+  tangent ; all 22 dois covered by ground ; J5:04 reuses CC:m01's BLAST doi (cross-domain mint).
 
-### 2026-06-14 (z) -- L5 PART I per-pair emit BUILT + RUN -> (y) anchor derivation REVERSED by direct read (TYPE C)
-type    : RESEARCH / lab (TYPE C: read-only OUTPUT emitter add. pair_predict + score_dataset + verdict
-          byte-UNCHANGED (AST-md5 proof) ; predicate FROZEN ; conscience EXTERNAL. Run is the (y) frozen
-          predicate re-applied with an additive per-pair readout -- nothing re-eval'd, no truth-set touch.)
-intake  : pack v133 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427 ; header v133 confirmed).
-need    : decided strict (3.1). Pulled run_L5_partI_validate.py off disk (md5 4eb2b874 == STRUCTURE, no
-          drift) ; read the FROZEN score_dataset to confirm per-pair verdicts are computed but NOT returned
-          (only aggregates) -> the emit must re-derive, not mutate the scorer.
-built   : run_L5_partI_validate.py md5 4eb2b874 -> b1f4aae4 (commit 6b06e61). Added per_pair_readout() --
-          read-only, re-applies the FROZEN pair_predict to every labeled pair (same fn + same meta ->
-          byte-identical verdicts to the scorer ; CROSS-CHECK on the selftest fixture: readout coupled-pred
-          count == scorer tp+fp). live_run memoizes meta ONCE (shared by scorer + readout -> no double
-          network/sleep). emit_report gains optional per-pair table + indep sub-group split (defaults =
-          backward-compatible). AST-md5 proof: 11 frozen fns (incl pair_predict/score_dataset/verdict)
-          IDENTICAL ; only live_run + emit_report changed ; per_pair_readout new. --selftest PASS (frozen
-          scoring intact).
-ran     : --run on the (x)-extended l5_coupling_truth.jsonl (net pre-check Crossref OK). Aggregate IDENTICAL
-          to (y): over_prune 0.8, confusion tp8/tn3/fp12/fn0, discount_leak 0 (HARD PASS), bal_acc 0.6.
-DIRECT READ (the deliverable) -- the 4 accession-bearing independent pairs, now READ not derived:
-          C009 S1xS2 (Kim x Wilhelm, Nature 509) -> INDEPENDENT (legs -).
-          C014 S1xS2 (Wu x Zhou, Nature 579)     -> COUPLED via P4 (citation edge in Crossref/OpenCitations).
-          C014 S1xS3 (Wu x Harcourt)             -> INDEPENDENT (legs -).
-          C014 S2xS3 (Zhou x Harcourt)           -> INDEPENDENT (legs -).
-          Sub-split: accession-bearing 1/4 false-coupled (the Wu/Zhou P4) ; accession-less 11/11 (P3 fail-close).
-R15 (the finding) : the (y) I0-anchor DERIVATION IS REVERSED BY THE DIRECT READ. (y) derived "the 1 coupled
-          accession-bearing pair = necessarily an xHarcourt ; C009 + Wu/Zhou clean ; simultaneous-competing
-          pair = clean independent unit (R6 CONFIRMED)". DIRECT READ: the leak is Wu/Zhou (S1xS2) itself, via
-          a real P4 citation edge ; the xHarcourt pairs are CLEAN. The COUNT (3 clean / 1 coupled) was right ;
-          the IDENTITY was backwards. The "simultaneous-competing = clean unit" crystal is NOT universally
-          confirmed -- C009 holds it, C014 breaks it. This is exactly why (y) flagged the derivation as
-          needing a direct emit (R2 honest caveat) -- the emit did its job and falsified the derivation.
-SHARPER (R16, feeds the predicate FIX) : over-couple has TWO distinct mechanisms, not one.
-          (1) P3 fail-close on accession-less independents -- 11/11, the bulk, the known P3-fix target.
-          (2) P4 citation-edge on a genuine-independent SIMULTANEOUS-COMPETING pair (Wu/Zhou) -- 1/4
-          accession-bearing. The P3 fix does NOT clear this. The fix must also separate citation !=
-          methodological dependence (an acknowledgment edge between two independent racing groups is not a
-          coupling). EITHER the Wu<->Zhou edge is real (then the "independent" truth label is a Founder
-          question, R7 -- do NOT relabel to pass) OR it is a Crossref/OpenCitations metadata artifact. Input
-          to the DEFECT + predicate v1.1, NOT a this-session edit.
-R12     : the sub-split flat `ids` list collides cross-claim (S1xS2 appears for both C009 and C014) -> ambiguous
-          alone (the per-pair TABLE disambiguates). Claim-qualify the pair-id (e.g. C014:S1xS2) in a follow-up
-          emit tweak ; non-blocking, flagged.
-discipline : predicate + validator scoring + C001-C008 untouched (AST-md5 verified). The per-pair table +
-          sub-split data = held-out content (pair-ids of the truth-set) -> report stays LOCAL.
-decided-next : per SEC2 of v133. (A) TYPE A sourcing -- scale independents to >=20 via verified 2-source
-          SIMULTANEOUS-COMPETING pairs, but with the C014 LESSON: verify NO citation edge between the
-          "competing" pair BEFORE using it as a clean anchor (Wu/Zhou had one) ; DROP the dispersed 4-source
-          block. + author/institution/citation to >=5 each. THEN (B, separate, TYPE B/CONCEPT) the predicate
-          FIX: address BOTH P3 fail-close AND P4-over-couple-on-competing-pair ; FREEZE a fresh fix-gate first
-          (R7) ; file the DEFECT + v1.1 per the report WATCH. Predicate FROZEN until then. Conscience EXTERNAL.
-git     : onto-research main 6b06e61 -- run_L5_partI_validate.py ONLY (run/output emit add = reproducibility,
-          3.2). NOTHING else. report_L5_partI.md + l5_coupling_truth.jsonl + truth_input.txt + C009_C014_sourced.md
-          = LOCAL-ONLY (held-out, never public). .bak.20260614-* kept local (rollback).
-carry   : DO-NOT-REDO -- do NOT carry (y)'s "xHarcourt leaks / Wu-Zhou clean / simultaneous-competing =
-          clean unit CONFIRMED" -- it is REVERSED by direct read (see below). Do NOT relabel C014 Wu/Zhou
-          to independent-clean to make over_prune pass (reverse-fabrication, R7) -- the P4 edge is a predicate/
-          truth-set question for the FIX session, Founder-judged.
+THE PREDICATE (STEP 3): off_topic(claim, meta) in b2_supports, BEFORE the model verdict.
+  (a) subj_tokens(claim) & (subj_tokens(title)|subj_tokens(abstract)) == empty AND
+  (b) len(subj_tokens(abstract)) >= 8. subj_tokens = tokens() minus a fixed domain-agnostic STOPWORDS set.
+  Returns NOT (leg=supports, reason=off_topic). No synonym expansion, no domain-filler list (R7).
+  Selftest grew a deterministic G5 harness (--cc/--j5/--cc-ground via fake getter ; _emit_g5 folds G5 into
+  the --selftest exit code).
 
-### 2026-06-14 (y) -- L5 PART I RUN COMPLETE on the (x)-extended set -> VERDICT FAIL (DIAGNOSTIC) ; anchor CONFIRMED by derivation (TYPE B)
-type    : RESEARCH / lab (TYPE B measure. predicate + validator + C001-C008 NOT touched ; NOTHING committed ; all L5
-          artifacts LOCAL-ONLY. The append edit is additive-only, not a predicate change.)
-intake  : pack v132 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427). header stamped v132 (correct).
-precond : build_l5_truth FIRST run showed PRE-APPEND counts (8 claims / data 1 / independent 11) -- C009-C014 were NOT on
-          disk. Diagnosed step-by-step (READ-not-GUESS): script reads eval/_local/truth_input.txt (confirmed) ; file
-          tail ended at C008 ; SPEC_L5_truthset_extension.md held only the TEMPLATE (<DOI_A> placeholders), NOT the
-          sourced block. The real C009-C014 lived only in the (x) chat transcript, off disk.
-anti-fab (R7/3.9, the key win) : a C009-C014 paste-ready block was handed cross-session. Claude did NOT rubber-stamp it
-          (the E16/(x) failure mode = confident fake IDs from another agent). Every one of the 9 DOIs was Crossref-
-          resolved + every one of the 9 accessions matched vs the PRIMARY SOURCE via web_search BEFORE entry: C009
-          nature13302 (Kim, PXD000561) + nature13319 (Wilhelm, ProteomicsDB), Nature 509 same issue ; C010-C013 GTEx
-          phs000424.v8.p2 in pbio.3001826 (Burn/Coffin), pgen.1009596 (Li J/Sul), s41431-023-01296-x (Boulogne),
-          s41598-022-05148-4 (Bushel) -- the Sul/Bushel "Li, J" collision (Jiajin vs Jianying Li) confirmed REAL, so
-          the C013 re-pair to Coffin x Bushel is sound ; C014 s41586-020-2008-3 (Wu, MN908947) + s41586-020-2012-7
-          (Zhou, EPI_ISL_402124) + eid2606.200516 (Harcourt CDC, MN985325). 0 fabrications, nothing stripped.
-freeze  : append done via an IDEMPOTENT ASCII+BOM PS script (manual hand-edit had failed TWICE -- root cause: block was
-          chat-only, never on disk). Script: persist eval/_local/C009_C014_sourced.md (R12, survives off-chat) + .bak +
-          guard (skip if CLAIM C009 present) + Add-Content append + rebuild. Result: build READY 14 claims /
-          {independent 15, data 5, author 1, institution 1, citation 1}.
-ladder  : one step/msg. build READY -> run_L5_partI_validate.py --contents (problems none, histogram 15-1-5-1-1) ->
-          net pre-check (Invoke-RestMethod Crossref, new DOI s41586-020-2008-3 resolved) -> --run --out report_L5_partI.md.
-result  : VERDICT FAIL {recovery>=0.85 False, discount_leak==0(HARD) True, over_prune<=0.10 False}. RUN VALID
-          (discount_leak==0 HARD PASS). balanced_acc 0.6 (tpr 1.0 / tnr 0.2) ; confusion tp8/tn3/fp12/fn0 ; over_prune
-          0.8 (12/15) ; per_class_recall independent 0.2, author/institution/data/citation all 1.0. method advisory
-          agree_rate 0.3913.
-read (R13/R16) : (1) Gate FAIL = the DESIGNED FALSIFIER, not a defect -- the report WATCH states it: over_prune FAIL
-          traces to P3 fail-closed on the 11 accession-less independents -> file DEFECT + v1.1, do NOT edit the frozen
-          predicate. 11 of 12 fp are exactly those. (2) Coupled organ PERFECT (tp8/fn0, all coupled recall 1.0). (3) I0
-          ANCHOR -- harness emits AGGREGATE only (no per-pair). tn 3 of 4 accession-bearing clean / 1 coupled. The ONLY
-          coupling channel for the 4 accession-bearing pairs is a citation-edge (P1/P2/P3 all distinct) ; same-issue
-          simultaneous pairs (C009 Kim/Wilhelm Nature 509 ; C014 S1xS2 Wu/Zhou Nature 579) structurally CANNOT cross-cite
-          -> independent -> the 1 coupled is necessarily an xHarcourt. ANCHORS CLEAN -> "simultaneous-competing pair =
-          clean independent unit" CONFIRMED (R6) ; dispersed xHarcourt block leaks P4 1-of-2 (~50%, n=2, WIDE CI). The
-          pack (x) prediction holds: pairs clean, dispersed block leaks.
-honest (R2) : which pair coupled = DERIVED from the predicate's channels, NOT read -- the harness exposes no per-pair.
-          The derivation is sound (citation is the only channel + same-issue temporal impossibility), but a per-pair emit
-          CONFIRMS it directly. Flagged as the next step, not over-claimed as a direct read.
-decided-next (FIRST STEP) : TYPE C read-only emitter -- extend --run OUTPUT to print per-pair verdict + leg + the
-          over_prune sub-group split (accession-bearing vs accession-less). Confirms the anchor directly AND is the
-          readout the (w) entry flagged as the gate for the predicate fix. INFRA emit add, NOT a predicate/validator
-          change. THEN (NEXT+1, TYPE A): scale independents to >=20 via verified 2-source competing pairs (DROP the
-          dispersed block) + author/inst/citation to >=5. THEN (separate, TYPE B/CONCEPT): predicate fix, fresh frozen
-          gate first (R7), file the DEFECT + v1.1.
-git     : NOTHING committed this session (TYPE B measure). truth_input.txt + C009_C014_sourced.md + l5_coupling_truth.jsonl
-          + report_L5_partI.md + append_l5_C009_C014.ps1 = LOCAL-ONLY (held-out / truth-set, never public per 3.2). The
-          append script embeds the sourced block -> LOCAL-ONLY too.
-carry   : DO-NOT-REDO -- (a) do NOT re-source/re-author C009-C014 ; the verified block is PERSISTED on disk at
-          eval/_local/C009_C014_sourced.md -> read from disk, never regenerate from memory/chat. (b) do NOT hand-edit
-          truth_input.txt to append blocks (failed twice) -- use the idempotent script. (c) over_prune FAIL on the FROZEN
-          predicate is the TRUE falsifier (the 11 accession-less), NOT a truth-set defect -- do NOT "fix" the truth-set
-          to pass (reverse-fabrication, R7) ; the fix belongs in the predicate (separate session).
+THE FAITHFULNESS FIX (R15/3.10 ; the one hard call of this leg): the FIRST cut used ALL tokens incl.
+  stopwords. Offline recall = 1/4 -- it MISSED 07/22 (overlap was only {'the'}) and 08 (generic filler).
+  Diagnosis: counting 'the' as subject overlap UNDER-implements gate sec 1, which keys on the PRIMARY
+  SUBJECT ("defining entity / measured quantity / named mechanism") -- function words are categorically
+  not subject. So removing a fixed function-word set is FAITHFULNESS to the frozen rule, NOT a tune: it
+  does not relax G5/G6 (both are unchanged), it only moves the DIAGNOSTIC recall. Founder ruled "С‚С‹
+  РёРЅР¶РµРЅРµСЂ" -> engineer applied it in-leg, then RE-PROVED G5 still 0/18. Generic filler (events/patients/
+  risk) was deliberately NOT stripped -- that would be tuning to the known positive (R7). Recall -> 3/4.
 
-### 2026-06-14 (x) -- L5 (b): truth-set EXTENSION SOURCED -- STAGE D closed + STAGE I0 generator-proof handed (TYPE A)
-type    : RESEARCH / lab (TYPE A sourcing ; predicate + validator + C001-C008 NOT touched ; NOTHING committed).
-decided : Claude SELF-SOURCES candidate C009+ (the (w) spec put authoring on the assistant, anti-fab-gated), Founder
-          FINAL-VALIDATES + appends. ORDER reordered by engineering cost (R2): data first (cheapest -- shared public
-          accession) -> I0 (prove the independent generator on a small block) -> later citation/institution/author ->
-          scale independents. Reason the independent generator is the risk: same-claim papers tend to cite predecessors,
-          so "no citation edge" fights the topic. TZ for the sourcing handed: reports/TZ_L5_C009plus_sourcing.md
-          (public-safe, authoring instructions only).
-built   : candidate pairs C009-C014, each web-verified -- real Crossref-resolving DOI + a VERBATIM DAS accession quote
-          + disjoint authors + per-leg FIRE/CLEAN analysis ; handed as MD for Founder validation. Coverage after append:
-          data=5 (C006 + C010-C013) ; independent=15 (11 frozen accession-less + C009 + C014's 3 pairs) ;
-          author/institution/citation=1 each -> all 5 classes present -> build_l5_truth READY, --contents passes.
-          STAGE D (data) = GTEx phs000424.v8.p2 NON-consortium downstream users (same accession di==dj, P1/P2/P4 clean).
-          STAGE I0 (independent) = two domains of SIMULTANEOUS-COMPETING pairs (C009 proteome Nature 509 ; C014
-          SARS-CoV-2 genome Nature 579, 3-source block). All pairs accession-bearing + DISTINCT -> P3 SILENT (the
-          discriminating sub-pop the frozen 11 accession-less independents lack). Specifics LOCAL-ONLY in truth_input.txt.
-finding : (R16, to confirm at --run) the reliable CLEAN independent unit is the SIMULTANEOUS-COMPETING PAIR (same-issue,
-          mutually non-citing), NOT the 4-source dispersed block -- later block members cite the foundational reference
-          -> P4 leak. C014 is built to TEST it: S1xS2 (Wu/Zhou, same Nature issue) predicted CLEAN anchor ; the
-          xHarcourt pairs predicted possible P4 leak (Harcourt cites the reference genome). The --run measures the
-          leak-rate and decides the next-front strategy (pairs vs blocks).
-tried+failed : (anti-fab gate, R7/3.9) multiple OTHER-ASSISTANT candidate DOIs/accessions caught fabricated or
-          mislabeled and DROPPED -- a nonexistent J.Proteome DOI ; a real Cell DOI mislabeled as a proteome atlas
-          (actually COVID-sera) ; unverified PXD ids ; a "confident" fabricated DAS quote ; a Lastname+Initial author
-          collision (Li-J variants) that would false-fire P1 -> re-paired. Lesson (DO-NOT-REDO): assistant output =
-          LEAD never FACT ; every DOI must Crossref-resolve + every accession must carry a verbatim DAS quote or the
-          pair is dropped ; GTEx analysis papers often carry "GTEx Consortium" + core authors -> only NON-consortium
-          downstream users are P1-clean.
-decided2: PROCESS -- this session is TYPE A (sourcing) and CLOSES here. The --run is TYPE B (measure) -> SEPARATE
-          session (В§2: never generate+eval in one). Results read in the run-session, not ferried back. Filing rule:
-          held-out pair specifics (DOIs/accessions) stay in truth_input.txt (LOCAL, gitignored) + the chat ; NOT in
-          this git-committed log.
-next    : TYPE B ladder run (build_l5_truth -> --contents -> net pre-check -> --run), one step/msg. CONFIRM S1xS2 + C009
-          clean ; read xHarcourt leak + over_prune on accession-bearing. THEN next-front (TYPE A): scale independents to
-          >=20 via more competing pairs + author/institution/citation to >=5. THEN (a) predicate fix (separate, freeze
-          gate first). Predicate stays FROZEN ; conscience EXTERNAL.
-carry   : DO-NOT-REDO -- do not re-source C009-C014 ; do not re-build the truth-set FROM GOLD (u) ; do not re-source the
-          3 verified coupled pairs (Thennavan/Taube, Sattar/LEADER, Parker/Thennavan). over_prune will NOT pass on the
-          FROZEN predicate while the 11 accession-less independents are scored -- TRUE falsifier, not a defect (R7/R2).
+RESULTS (STEP 4-5):
+  - G5 (HARD no-castration, tol 0): 0/18 CC -> NOT, OFFLINE and LIVE. Spine held.
+  - G6 (no regression): PASS with the real Qwen2.5-7B (G1 J2->NOT/binding ; G2 J3 zero->SUPPORTS, all
+    J3->UNCLEAR ; G3 J1->SUPPORTS ; G4 J4->UNCLEAR).
+  - Recall (DIAGNOSTIC): 3/4 offline ; 2/4 live. Live delta = J5:04's DOI returned an EMPTY abstract live
+    -> no_abstract UNCLEAR (fetch gap, NOT a logic regression). J5:08 generic-filler stays UNCLEAR by design.
+  VERDICT: off-topic->NOT BUILDABLE+VALID at the abstract level. Precision-first held (zero false-NOT both runs).
 
-### 2026-06-14 (w) -- L5 (b): truth-set EXTENSION SPEC authored + handed (TYPE A ; predicate NOT touched)
-type    : RESEARCH / lab (TYPE A: hand the SEC1 truth-set EXTENSION SPEC. No model/GPU/organ/network.
-          Predicate + validator + the 8 existing blocks NOT touched. eval+fix split honored, В§2.)
-intake  : pack v130 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427). v130 assembler
-          stamp CONFIRMED (header reads "session pack v130", not v129) -> the (v) -N flag is resolved.
-need    : decided strict (3.1). The spec must ride the validator's REAL bars + SCHEMA fields + the
-          current truth_input.txt block format, not the log's recollection (В§3.7 CONTENTS, В§3.10
-          memory-not-authoritative). The pack carries no L5 substrate (held-out, В§3.2) -> pulled 6
-          on-disk files, md5-verified vs STRUCTURE before reading bytes: SPEC_L5_independence
-          d83d7a71, SCHEMA dad337db, build_l5_truth ce45e3da, validator 4eb2b874, truth_input
-          11c5e811, l5_coupling_truth 89c38fa3. Same shape as the (v) precedent (pack-named file
-          lacks the load-bearing content -> pull on-disk).
-ground  : read the FROZEN pair_predict directly. P3 is SILENT on a pair iff BOTH data_id present AND
-          DISTINCT (di!=None, dj!=None, di!=dj). That single lever is what lets each leg be tested
-          without P3 fail-close masking it. Confirmed: current 11 independents all data_id None ->
-          fail_closed -> over_prune 1.0 ; coupled classes mostly accession-less -> recall is P3
-          masquerade (only C006 di==dj genuine).
-built   : reports/SPEC_L5_truthset_extension.md -- EXTEND-only authoring contract. Per-leg FIRE/CLEAN
-          isolation table {independent: P1/P2/P4 CLEAN + P3 present+distinct ; author: P1 FIRE rest
-          CLEAN + P3 silent ; institution: P2 FIRE + distinct authors (fixes the C008 Perou caveat) +
-          P3 silent ; data: SAME accession di==dj (genuine P3) ; citation: P4 FIRE + P3 silent +
-          feeds leak==0}. Counts: independent +>=9 -> >=20 (all new ones accession-bearing+distinct+
-          clean) ; author/institution/data/citation +>=4 each -> >=5. + format templates + .bak guard
-          (s incident) + claim-ids C009+ + post-author ladder (build->contents->net-precheck->run,
-          one step/msg) + completion checklist.
-finding (R7/R2, honest) : the extension does NOT flip over_prune on the FROZEN predicate -- the 11
-          accession-less independents remain a TRUE falsifier (absent DAS treated as coupling). What
-          it does: (1) adds an accession-bearing independent sub-population the frozen predicate
-          ALREADY classifies independent -> turns the (v) trace into a measured result, isolating P3
-          fail-close as the sole over-prune cause ; (2) un-masks P1/P2/P4 recovery via P3-silent
-          coupled exemplars ; (3) becomes the FROZEN substrate the predicate-fix (separate session)
-          is gated against. None of that is gateable on the current degenerate set.
-R12     : the validator emits ONE aggregate over_prune ; reading accession-bearing vs accession-less
-          independents separately (to gate the fix on "over_prune==0 on the accession-bearing sub-pop")
-          needs a READ-ONLY report-emitter readout grouping independents by both-DAS-present. Infra
-          add, not a predicate/validator-logic change -> flagged for a SEPARATE session, NOT built now.
-discipline : predicate + validator + C001-C008 untouched (TYPE A). Nothing committed this session
-          (the spec IS the deliverable ; Founder authors next).
-decided-next (FIRST STEP) : Founder EXTENDS eval/_local/truth_input.txt per the handed spec [TYPE A,
-          R7, real DOIs + real distinct accessions, Founder-judged, NOT GOLD, NOT fabricated], then
-          re-runs the FROZEN ladder (build_l5_truth -> --contents -> net pre-check -> --run ; TYPE B
-          measure, one step at a time). THEN (separate session) (a) predicate FIX -- loosen P3 fail-
-          close / require a POSITIVE coupling signal -- FREEZE a fresh fix-gate first (R7), run against
-          the (b)-refined set. Conscience stays EXTERNAL.
-git     : reports/SPEC_L5_truthset_extension.md is PUBLIC-safe (authoring instructions only, ZERO
-          DOIs/labels/accessions = no truth-set content ; reproducibility/priority, 3.2). The authored
-          truth_input.txt + l5_coupling_truth.jsonl + report_L5_partI.md stay LOCAL-ONLY (held-out,
-          never public). No weights/bait/held-out.
+GIT (STEP 6, EXPLICIT-PATH): onto-research main 9893aa4 (09062ff..9893aa4 ; 2 files +150) = s2b_v0.py
+  (md5 75ba0a71) + reports/REPORT_s2b_offtopic_policy_v0.md (PUBLIC-SAFE: no dois/claim-texts/abstracts).
+  Staging verified before commit: exactly the 2 paths ; the R12 leak (audit_v2_stdout.txt + onto_index_
+  harvest.txt) stayed UNTRACKED (explicit-path add did not trip it). CC/J5/ground + s2b_g5_live_in/out =
+  LOCAL-ONLY (git check-ignore PASS).
 
-### 2026-06-14 (v) -- L5 PART I MECHANISM CONFIRMED: P3 no-DAS fail-close (static trace) ; predicate degenerate-to-constant (TYPE B)
-type    : RESEARCH / lab (TYPE B: read the report, statically trace the FROZEN predicate vs the truth-set to confirm
-          the (u) mechanism. No model/GPU, no organ mutation, predicate NOT touched, eval+fix split honored В§2.)
-intake  : pack v129 conveyor VALID (7/7 md5 vs MANIFEST ; CRLF in MANIFEST -> filenames stripped before compare ;
-          PACK_SPEC == f888f427). report_L5_partI.md uploaded separately (LOCAL-ONLY, not in pack -- correct, В§3.2).
-need    : decided strict (3.1). report_L5_partI.md (md5 21ec230b) READ -> it is an AGGREGATE (bars+metrics+WATCH),
-          carries NO per-pair predicate attribution -> CONTENTS verify (В§3.7): the file the pack told me to read does
-          NOT carry the load-bearing content for the task. Pulled 4 on-disk files (md5-verified vs STRUCTURE: SPEC
-          d83d7a71, validator 4eb2b874, truth_input 11c5e811, l5_coupling_truth 89c38fa3) to trace statically instead
-          of re-running (READ-not-GUESS, no edit, no network).
-trace   : the ONLY leg decidable offline is P3 (data_id lives in the jsonl ; P1/P2/P4 need live Crossref/OpenCitations).
-          Frozen pair_predict: `if di is None or dj is None: legs["P3"]="fail_closed"` -> prov_coupled -> coupled.
-          All 11 independent pairs: BOTH sources data_id=None -> 11/11 FAIL_CLOSED, deterministic, offline.
-CONFIRM : P3 no-DAS fail-close = the WHOLE cause of over_prune 1.0. "mis-coupled on a positive P1/P2/P4 signal" REFUTED
-          as the cause -- no positive signal needed, P3 fail-close pre-empts every pair (over-determination invisible
-          and irrelevant). The (u) hypothesis is now CONFIRMED, not pending.
-STRONGER (R16, the real finding) : on this truth-set the predicate degenerates to a CONSTANT "coupled" classifier.
-          DAS coverage = 3/19 sources (only C006 S1/S2 + C008 S2 carry an accession). Every one of the 15 pairs is
-          P3-coupled: 14 via fail-close + 1 genuine (C006 di=='TCGA-BRCA'==dj). CONSEQUENCE: coupled-recall 1.0 is
-          CONTAMINATED -- only C006 (data, genuine di==dj) validates a real leg ; author(C004)/citation(C007)/
-          institution(C008) detections are P3 fail-close MASQUERADE, NOT proof P1/P4/P2 work. P1/P2/P4 are UNMEASURED
-          (masked on 14/15 pairs). confusion tp4/tn0/fp11/fn0 = constant-coupled, exactly.
-REORDER (R12) : the (u) (a)/(b) fork is re-ordered. Truth-set option (b) is now a HARD PREREQUISITE to (a): the current
-          set can measure NEITHER over-prune isolation (0/11 independents have a present accession) NOR the positive
-          legs (P3 masks them). (a) predicate-fix is NOT validatable against this set. NEXT = (b) first.
-discipline : did NOT touch/edit the predicate (TYPE B, В§2). Diagnosis only. Nothing committed (no git step).
-decided-next (FIRST STEP) : Claude hands the truth-set EXTENSION SPEC, then Founder authors [TYPE A, R7, real DOIs/
-          accessions, Founder-judged, NOT GOLD, NOT fabricated]: EXTEND truth_input.txt with (i) >= several INDEPENDENT
-          pairs with BOTH data_id present AND distinct (isolate fail-close from genuine P3 di==dj) ; (ii) INDEPENDENT
-          pairs that are P1/P2/P4-clean (distinct authors/inst/no citation edge = real negatives) ; (iii) honest size
-          >=20 indep / >=5 per coupled class. Do NOT re-author the 8 existing blocks ; do NOT re-source the 3 verified
-          coupled pairs. THEN (separate session) (a) predicate FIX, fresh FROZEN fix-gate first (R7).
-R16 (crystal, NOW CONFIRMED -- was pending in (u)) : "the L5 independence predicate cannot certify independence for the
-          typical accession-less source -- P3 unknown-DAS fail-close yields 100% over-prune (HEP failure reproduced on
-          biomed). Beyond that, a truth-set whose independent class lacks accessions makes the predicate a degenerate
-          constant-coupled classifier -- it cannot validate P1/P2/P4 either (they are masked by P3 fail-close). A
-          self-checkup grounding organ that fails-closed on absent metadata over-prunes the common case ; the fix is
-          a positive-coupling-signal requirement, not absence-of-evidence-as-evidence."
-git     : NOTHING committed this session (TYPE B diagnosis). report_L5_partI.md + truth_input.txt + l5_coupling_truth
-          .jsonl = LOCAL-ONLY (held-out, never public per SCHEMA/3.2). SPEC + validator already tracked from (s) 17ff319.
-conveyor : v129 SEC5 carried a stale `build_pack.ps1 -N 129` -> N is the NEXT version (PACK_SPEC "Claude builds pack
-          v(N+1)") -> corrected to `-N 130` in the v130 pack, flagged (3.10). Verify the assembler stamps v130.
-
-### 2026-06-14 (u) -- L5 PART I CLOSED: GOLD-sourced truth-set authored + run -> VERDICT FAIL = predicate FALSIFIED (over-prune 1.0) (TYPE B)
-type    : RESEARCH / lab (TYPE B: author the truth-set, run the FROZEN PART I ladder, read result. No model/GPU,
-          no organ mutation, predicate NOT changed.)
-intake  : pack v128 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-verdict-Q : gold_ref.zip (biology+medicine L1/L2/L3 + MASTER_SOURCES) READ. Does GOLD yield claim->2+sources-with-DOI?
-          YES for 5/7 GOLD theses via the L1->L2_ref->calculation_ref->L3 join (bio T1/T3/T4, med T2/T3 ; bio T2
-          Lenski + med T1 ICH = single-source). Every L3 source carries a DOI ; MASTER pool = 23 DOIs (17 not in L3).
-KEY FINDING (R9, the REAL bar) : claim->2+DOI is necessary but INSUFFICIENT. build_l5_truth READY gates on the
-          CONTENTS guard = >=1 pair of EVERY class {independent,author,institution,data,citation} ; SCHEMA FORBIDS
-          fabricating a class (R7). GOLD is a corpus SELECTED FOR INDEPENDENT corroboration -> it yields `independent`
-          richly + exactly ONE `author` pair (Marso LEADER/SUSTAIN-6) ; data/institution/citation = 0 -> GOLD ALONE
-          VOIDs the guard. Same shape as the (t) HEP drop, now quantified on biomed.
-sourced (web-verified, R4/3.9 self-ground ; NOT GOLD, NOT fabricated) :
-  data  C006 = Thennavan'21 10.1016/j.xgen.2021.100067 (UNC) + Taube'20 10.1186/s12885-020-6600-6 (Baylor) ; shared
-          accession TCGA-BRCA, DISTINCT groups -> isolates P3 (the HEP-failure point, closed with a real accession).
-  citation C007 = Sattar'21 meta 10.1016/S2213-8587(21)00203-5 incorporates/cites LEADER 10.1056/NEJMoa1603827 ;
-          distinct authors -> isolates P4.
-  institution C008 = Parker'09 10.1200/JCO.2008.18.1370 + Thennavan'21 10.1016/j.xgen.2021.100067 ; both UNC Lineberger.
-          CAVEAT (R3): co-shares author Perou -> P2 NOT isolated from P1 (class not separately bar-gated, valid coupled
-          instance, softness documented in-file). Hardening = a cooperative-group-of-record pair.
-built   : eval/_local/truth_input.txt -- 8 claims (C001-C005 GOLD independent + the Marso author pair ; C006-C008 the
-          sourced coupled pairs). build_l5_truth -> counts {independent:11, author:1, institution:1, data:1, citation:1},
-          RESULT READY. CONTENTS verified 8 CLAIM / 19 SRC / 15 PAIR, md5 11c5e811.
-placed  : Move-Item -Force into eval/_local WITH the (s)-lesson guard -- cat'd + .bak'd the destination FIRST. The
-          destination was the FORM-ONLY authoring scaffold (NOT authored data) -> preserved at truth_input.txt.bak.<ts>.
-          NO authored loss. (Reported line-count 66 vs 74 = a PowerShell `Get-Content|Measure-Object -Line` artifact --
-          it counts blank lines as 0 ; benign, CONTENTS confirmed.)
-ladder  : ONE step at a time, net pre-check before --run. (1) build READY. (2) --selftest PASS (bACC 1.0, discount_leak 0,
-          over_prune 0 ; not VOID). (3) --contents -> empty=[] problems=none, histogram all 5 classes. (4) net pre-check:
-          Crossref reachable, LEADER DOI live (15 authors). (5) --run live (Crossref per DOI).
-RESULT (VERDICT FAIL, DIAGNOSTIC) : balanced_acc 0.5, tpr 1.0, tnr 0.0 ; confusion tp4/tn0/FP11/fn0. citation_discount_leak 0
-          (HARD bar PASS). over_prune 1.0 (bar <=0.10 FAIL): indep_false_coupled 11/11. per_class_recall independent 0.0 ;
-          author/institution/data/citation all 1.0. VERDICT bars {recovery>=0.85:False, discount_leak==0(HARD):True,
-          over_prune<=0.10:False}. Report reports/report_L5_partI.md (LOCAL).
-READ (R13) : VERDICT FAIL != truth-set failed. The truth-set WORKED -- it FALSIFIED the predicate's independence-
-          certification. HARD discount_leak==0 holds (citation collapse sound) ; coupled recovery 100% ; the ENTIRE
-          failure is over_prune (every independent pair false-coupled).
-HYPOTHESIS (R5, NOT confirmed) : P3 fail-close. data_id='-' (no DAS) -> "unknown DAS = coupled" ; almost all independent
-          sources (theory/calc/older-RCT) lack a machine-readable accession -> fail-closed to coupled pairwise -> over_prune
-          saturates. Same mechanism as HEP (t). At n=11 over_prune=1.0 is SATURATED -> direction unambiguous regardless of CI.
-discipline : did NOT touch the predicate (TYPE B = diagnose ; eval+fix never share a session, В§2). Fix = SEPARATE session.
-decided-next (FIRST STEP) : upload reports/report_L5_partI.md -> read PER-PAIR reasons -> CONFIRM/refute the P3 fail-close
-          mechanism (separate "fail-closed no-DAS" from "mis-coupled wrong-signal") BEFORE any fix. В§0 READ-not-GUESS:
-          mechanism stays a hypothesis until the report is read.
-then (separate sessions) : (a) predicate FIX design -- loosen P3 fail-close / require a POSITIVE coupling signal instead of
-          fail-closing absence-of-DAS to coupled ; FREEZE a fix-gate first (R7). (b) truth-set REFINEMENT -- add independent
-          pairs WITH distinct real accessions (isolate fail-close from genuine P3 detection) + raise to honest size
-          (>=20 indep, >=5/coupled class).
-R16 (crystal candidate, PENDING report) : "the independence predicate cannot certify independence for the typical
-          accession-less source -- P3 unknown-DAS fail-close yields 100% over-prune ; HEP failure reproduced on biomed."
-          Hold until mechanism confirmed.
-git     : NOTHING committed this session (no git step ran). truth_input.txt + l5_coupling_truth.jsonl + report_L5_partI.md
-          = LOCAL-ONLY (eval/_local + local reports ; held-out truth-set never public per SCHEMA/3.2). .bak scaffold local.
-
-### 2026-06-14 (t) -- L5 source pivot: external-web -> GOLD reference modules (TYPE C, no measure)
-WHAT: truth_input.txt re-verified EMPTY (8ff2b1fc, form-only) by direct byte-read -> L5 still gated.
-  Built a Higgs/HEP seed block as a format demo, web-verified both DOIs LIVE (ATLAS
-  10.1016/j.physletb.2012.08.020, Phys.Lett.B 716(1):1-29 ; CMS 10.1016/j.physletb.2012.08.021, 716(1):30-61).
-FINDING (R15/R16): HEP is domain-wrong for THIS harness. Particle-physics independence is detector-level,
-  carries no data accession -> with data_id="-" the data-predicate fail-closes to "coupled", contradicting
-  the genuine "independent" label. The harness is accession-built (worked example uses GSE/PXD).
-DECISION (CONCEPT, one rec): author the truth-set from a domain with REAL accessions. Founder accepted
-  GOLD itself as the source (its proof base already pairs claims with sources) over Claude web-fetch.
-DID: raised GOLD map (359 files / 13.5MB ; gold_map.zip). Located candidate structure:
-  reference\<domain>\{L1_theses,L3_sources,L2_calculations}.json across biology/medicine/law/engineering/
-  statistics/cybersecurity/finance. Pulled biology+medicine + MASTER_SOURCES.json (gold_ref.zip).
-PS BUG (caught + fixed): first gold_ref pull used flat dst -> biology & medicine share filenames ->
-  Copy-Item -Force collapsed to ONE domain (medicine survived). Fixed with per-domain subfolders ;
-  verified by CONTENTS (biology L1=4729 != medicine L1=3797, both present).
-STATE: NO phase/leg/bar changed. L5 PART I = OPEN / Founder-gated, now GOLD-sourced.
-NEXT: upload gold_ref.zip -> read biology+medicine L1/L3 -> verdict claim->2+sources-with-DOI ; if yes,
-  build truth_input.txt FROM GOLD (Founder sets coupling labels, R7) ; if one-source-per-claim, pairs need work.
-
-### 2026-06-14 (s) -- L5 plane advanced: PART I harness committed + truth-set authoring kit (TYPE C) ; OVERWRITE incident contained
-type    : RESEARCH / lab (TYPE C: commit the built L5 PART I harness + author the Founder truth-set worksheet.
-          No model/GPU/organ/gate. SEC1 plane (c) -- the one real remaining plane, advanced not closed.)
-intake  : pack v124 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427). Read clean.
-need    : decided strict (3.1) -- pulled the on-disk L5 trio (build_l5_truth.py ce45e3da, run_L5_partI_validate.py
-          4eb2b874, SCHEMA_l5_coupling_truth.md dad337db) and read real bytes before writing anything ; truth-set
-          spec must ride the validator's actual --contents bars, not the log's recollection.
-built   : truth_input.txt authoring worksheet (form-only, no fabricated DOIs/labels -- R7 ; synthetic example kept
-          COMMENTED so it can never enter a live run). Bakes the validator's hard contents bars (>=2 src/claim,
-          real DOI each, all C(n,2) pairs, all 5 classes >=1) + size floor (>=20 indep, >=5/coupled class) +
-          the build->selftest->contents->live run ladder. Placed at eval/_local/truth_input.txt.
-INCIDENT (R11/R15, contained): the placement Move-Item -Force OVERWROTE a pre-existing eval/_local/truth_input.txt
-          (b609ce32, 2.5KB) WITHOUT cat-checking the destination first -- a blind clobber into a gitignored
-          (no-git-safety-net) dir. Founder flagged multi-session DOI authoring, location forgotten. RECOVERY run:
-          git log --all for the path = EMPTY (never tracked) ; no surviving file anywhere (Projects/Downloads/
-          Desktop/OneDrive) with an authored `SRC 10.x` signature ; recycle bin empty ; VSS shadow-read blocked
-          (no admin). labeled_A.jsonl (f5427db1) + labeled_B.jsonl (f7d9a248) md5-VERIFIED INTACT = the real
-          multi-session Founder work, untouched ; ~50 DOI-bearing lab files all live. VERDICT (R2, calibrated):
-          the overwritten 2.5KB was the L5 SCAFFOLD/example, NOT an authored set (size, empty git history, log
-          says L5 set "does not exist yet", zero surviving DOI-signature) -- no authored data lost. Residual: the
-          exact old bytes are unread (VSS locked) ; Explorer Previous-Versions is the only 100% read, offered to
-          Founder, low-risk by convergent evidence.
-git     : onto-research main 17ff319 -- build_l5_truth.py + run_L5_partI_validate.py + reports/SCHEMA_l5_coupling_truth.md
-          (3 files, +536). Frozen spec SPEC_L5_independence_predicate.md already tracked (provenance chain intact).
-          truth_input.txt = gitignored (eval/_local/, R7 LOCAL-ONLY, never public). NO weights/bait/held-out.
-verdict : L5 plane ADVANCED (harness datable in public git + authoring kit placed), NOT closed -- still gated on the
-          Founder authoring real truth_input.txt. Run ladder defined. No phase/leg state changed ; fix(b) stays
-          CLOSED, conscience EXTERNAL.
-finding : (R14 crystal) a placement Move-Item -Force into a gitignored/_local dir has NO git undo -- it MUST
-          cat + .bak the destination first. The 3.1 on-disk-first discipline covers SOURCE reads ; it must extend
-          to DESTINATION before any -Force overwrite. Recorded in DO-NOT-REDO.
-guard   : truth_input.txt md5 8ff2b1fc == the KNOWN-EMPTY worksheet (0 claims/SRC/PAIR ; coverage 0/5). A future
-          session md5-checks the LIVE file vs this: == 8ff2b1fc -> still empty, nobody authored, L5 still gated,
-          no incident ; != -> someone authored real blocks -> READ it before ANY -Force. The authoring-detector
-          + anti-recurrence guard for the (s) overwrite. (Independently corroborated: no l5_coupling_truth.jsonl
-          / report_L5_partI anywhere -> L5 was NEVER built/run ; the overwrite verdict "scaffold, no authored
-          loss" is definitive, do NOT re-investigate.)
-decided-next : OPEN. Plane (c) resumes when the Founder fills eval/_local/truth_input.txt with real DOIs/labels ->
-          then TYPE B run ladder (build_l5_truth -> --selftest -> --contents -> --run), one step at a time,
-          net pre-check before --run. Cosmetic hygiene (SEC3) still deferred.
-
-### 2026-06-14 (r) -- tree hygiene: nested dedup + 00_INDEX.md (86 scripts) committed (TYPE C)
-type    : RESEARCH / lab (TYPE C: verify against on-disk substrate + author a durable map. No model/GPU/organ.
-          SEC1 plane (b). (c) L5 not startable -- Founder truth-set not on disk.)
-intake  : pack v123 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427). FIRST pack built by the
-          fixed assembler (q) -- read clean.
-need    : decided strict (3.1). Tree state is exactly STRUCTURE's job, but an index whose value is per-script
-          PURPOSE must be grounded in real headers, not guessed (R7) -> pulled the 86 root .py docstrings off disk
-          (harvest_v123.zip, md5 792700be) rather than infer from filenames. Hygiene targets RE-VERIFIED live md5
-          (NOT trusted from STRUCTURE) before any delete.
-audit   : read-only step1 (hygiene_audit_step1.ps1) classified eval/_local/_local vs parent by LIVE md5 +
-          harvested docstrings. Result: 4 byte-DUPS (outputs_E10/E11/E12.json, probe_labels_E12.json) ; 3 UNIQUE
-          (gate_E14.log, outputs_E14.json, v_fab_E13_L12.npz) ; 2 DIFFERS (harvest_E13.meta.json,
-          sensor_thresholds_E13.json -- the latter STRUCTURE had as identical = a stale-snapshot near-miss the
-          live re-check caught). __pycache__: none. 86 scripts (not the recalled ~60).
-dedup   : step2 (hygiene_step2_dedup.ps1, self-guards on a fresh md5 compare, refuses on mismatch) removed the
-          4 byte-dups ; 5 legit files (3 unique + 2 differs) PRESERVED -- no flatten (the 2 differs collide on
-          name). eval/_local is gitignored (local-only) -> deletions are local housekeeping, NO push.
-index   : authored 00_INDEX.md (md5 c026375a) -- 86 scripts in 10 functional groups + an IMPORT-DEPENDENCY map
-          (the reason nothing moves: organs import each other) + 3 grounded cosmetic flags found in the headers
-          (scoring_engine_v5_1.py == scoring_engine.py md5-dup ; onto_exp1_e8_sft.py header mojibake/stale-"E7" ;
-          uniform pyarrow line-1 Arrow-SEH workaround across E2x/E3x probes). Marks frozen organs (import-only,
-          never mutated) vs active rulers (splice_A1 fix(a), tally_v2, g2_sourcediff fix(b), verify_disp_audit).
-finding : (3.10) memory/SEC1 recalled hygiene targets that were already gone AND a nested dup name that never
-          existed ; STRUCTURE's own md5 column was stale on one file. The on-disk-first + live-md5 discipline was
-          load-bearing -- a blind delete by the recalled list would have lost outputs_E14/v_fab uniques and skipped
-          the real differs. Recorded in DO-NOT-REDO.
-verdict : tree-hygiene plane CLOSED (dedup + index). Remaining is cosmetic-only (deferred, SEC3). No phase/leg
-          state changed -- this is maintenance, the fix(b) leg stays CLOSED, conscience stays EXTERNAL.
-decided-next : OPEN. The one real remaining plane = L5 internet grounding (TYPE B, gated on a Founder truth-set).
-          Cosmetic remnants (md5-dup scorer, e8 mojibake, .bak rollbacks, adapter_sftc exclude) tidy when stable.
-git     : onto-research main e6c921a -- lab/dpo/00_INDEX.md ONLY (+120). Doc = reproducibility/priority (3.2),
-          no weights/bait/held-out. Local dedup not pushed (gitignored tree).
-
-### 2026-06-14 (q) -- build_pack.ps1 FIXED: pack assembler works end-to-end (TYPE C)
-type    : RESEARCH / lab (TYPE C: fix + verify against PACK_SPEC. No model/GPU/organ. SEC1 plane (a).)
-intake  : pack v122 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-need    : decided strict (3.1) -- pulled the on-disk build_pack.ps1 (md5 01cbf5c0) to fix the LIVE bug, not guess.
-root    : assembler crashed EVERY run -- "cannot convert 00_SESSION_PACK.md to System.Int32" at the copy loop.
-          ROOT CAUSE = loop var $n collided with param [int]$N (PowerShell vars are CASE-INSENSITIVE) ->
-          foreach($n in $carry[$d]) assigned a filename into the [int]-typed $N -> ArgumentTransformation-
-          MetadataException, masquerading as param-binding (error at the call ; ScriptStackTrace line 40 ;
-          $carry[$d] itself returned Object[] fine). Localized by AST dump (param block clean, 0 errors) +
-          bisection (lines 36-53) + debug-inject. Ruled OUT: line endings, [ordered] indexing, EAP=Stop, param shape.
-fix     : renamed copy-loop $n -> $fname (5 sites ; case-sensitive -creplace so $N/$name/$null untouched).
-          +2 improvements (R12): (1) -Spec param -> the SESSION-DEPENDENT 02_SPEC slot is passed at run (was
-          HARDCODED SPEC_disposition_audit -> shipped the wrong SPEC every leg = the real reason packs were
-          hand-assembled) ; (2) md5 column in auto STRUCTURE.md (kills the per-session pack-a-file-to-md5-verify
-          round-trips). Final md5 81de08c0 (CRLF, no-BOM, ASCII).
-verify  : test build v900 on REAL disk -> 7 carry from reports\, PACK_SPEC guard OK, STRUCTURE 393 files (w/ md5),
-          MANIFEST written, foldered zip. Uploaded v900 CONTENTS verified: 7/7 md5 OK, 02_SPEC = SPEC_selfcheck_A
-          only, guard f888f427. End-to-end PASS ; hand-assembly RETIRED.
-transport: (R14 crystal) chat surface CORRUPTS long pasted blobs -- here-string lost bytes, base64 got a Cyrillic
-          char injected. Byte-exact = present_files DOWNLOAD installed by md5-match (name-agnostic). Recorded in DO-NOT-REDO.
-git     : onto-research main 669dd30 -- lab/dpo/build_pack.ps1 ONLY (+18/-12). Clean staging ; dirty carry
-          (SPEC_disposition_audit, ARCHITECTURE_master, E34, L5, held-out *_clean.jsonl) untouched, NOT staged.
-hygiene : temp probes removed (b*/ta/a2/dbg.ps1, reprostage, Downloads\v900.zip). .bak.20260614 kept (rollback).
-          flag: auto-STRUCTURE excludes dir 'adapters' EXACTLY -> 'adapter_sftc\' slipped a 1KB adapter_config.json
-          into the map ; weights (.safetensors/.bin/.pt) excluded by ext (no weight leak). Tighten in hygiene plane.
-decided-next : leg closed clean ; NEXT = OPEN (tree hygiene / L5 Founder-gated). Pack v123 is the FIRST built by
-          the fixed assembler.
-
-### 2026-06-14 (p) -- fix(b) step4b CLOSED: gate-measure -> GATE FAIL = honest NO-MIGRATION (HARD held) (TYPE B)
-type    : RESEARCH / lab (TYPE B: measure-only half of the R7 gen/measure split. Both arms already on disk
-          from step4a. No generation, no train, no organ mutation, no bar re-tune. NO GPU.)
-intake  : pack v121 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-need    : decided strict (3.1). PS-checked + md5-verified off disk BEFORE any tally: the FOUR clean windows
-          (BASE v6 d5ff3b25 / v7 b178f5fa + DPO v6 4e7c9eb3 / v7 b7f6d14) + rulers tally_v2.py (edd28d39),
-          verify_E16_A (ea9d688b), verify_E16_B (37bff8c8), g3_clean_control (98362046). CONTENTS verified
-          (not just md5, E15 lesson): all 4 windows N=36 / 0 empty / 36 uniq / family A1 const. Read the
-          ruler CLIs off disk (tally_v2 positional ; verify_E16_A/_B --selftest/--check/--eval) -- no guess.
-G1      : tally_v2.py on all 4 windows. DPO arm A1-rate == BASE arm on BOTH windows (v6 0.333=0.333,
-          v7 0.472=0.472), IDENTICAL firing id-sets. ZERO drop -> G1 FAIL (bar <=0.15 AND <0.30 AND <base,
-          fails all three). A3 delta (v6 6->5 ids, non-gating) confirms the DPO arm is a REAL arm, not a
-          silent base -- so this is genuine no-migration, not a harness artifact.
-G2      : g2_sourcediff.py (NEW deterministic source-token diff DPO-minus-base per id ; DOI/arXiv/URL/author/
-          year-locator patterns ; no organ import, no GOLD). 0 net-new both windows -> G2 HARD HELD (no mint).
-          No GOLD resolution needed (0 candidates). Matches the structural guarantee (pairs carry 0 sourced
-          positives -> the set cannot teach minting). Measured, not assumed (SPEC sec3 G2 is HARD).
-G3      : A-channel ff 0.000 (0/18 g3_clean_control via tally_v2) ; B-channel ff 0.000 (0/20 clean, verify_E16_B
-          --eval labeled_B, REAL GOLD ; detect 0.850). HARD HELD both channels, identical to the phase-1 floor
-          -> no organ drift, no castration. (B emitted the benign pyarrow access-violation dump -- non-fatal,
-          numbers stable, GOLD VERIFIED ; cosmetic, deferred.)
-verdict : GATE FAIL via G1-ONLY ; both HARD bars HELD = SPEC sec5 branch 1 (honest no-migration at LOW tier).
-          The bounded adapter (r8/alpha16/q,k,v,o ; beta0.3 ; LR5e-6 ; 4 steps ; loss 0.6931->0.6786 ; no merge)
-          is behaviourally INERT on the carded A1 disposition -- neither migrated A1 NOR caused harm. v37
-          small-DPO regime reproduces. fix(b) FALSIFIED for this regime (R6). honest 2.1 > fabricated 5.0.
-action  : adapter NOT promoted -> rolled back (local archive, never applied). conscience RULE fix(a) REMAINS
-          the standing fix. NO bar move, NO reslice, NO over-press, NO re-train (sec5). Conscience stays
-          EXTERNAL (unchanged). A future weight-migration attempt for this disposition must justify a tier
-          increase vs the precision floor and FREEZE A NEW gate (R7), not relitigate these bars.
-finding : (R16) the clean dual result -- G1 inert AND G2/G3 held -- is itself the signal: at the bounded LOW
-          tier the adapter is a no-op on this disposition, NOT a harm. The honest negative closes the North-Star
-          weight-migration question for THIS instrument/tier without burning the precision floor. The reflexive
-          next move (raise the press until A1 drops) is exactly the sec5-forbidden path to G2/G3 breakage.
-privacy : held-out windows + adapter = LOCAL-ONLY, untouched, never git. Public git carries the report +
-          the new ruler (g2_sourcediff.py) only -- reproducibility + dateable priority (3.2).
-decided-next : leg closed clean ; no urgent successor. Pick a SEC3 parallel (build_pack.ps1 fix / tree hygiene /
-          L5 grounding gated on a Founder truth-set). New A1 weight-migration = tier-justify + fresh frozen gate.
-git     : onto-research main -- g2_sourcediff.py + reports/REPORT_fixb_step4b.md ONLY. NO weights/adapter/
-          held-out windows. Clean staging (2 named files).
-
-### 2026-06-14 (o) -- fix(b) step4a CLOSED: DPO-arm windows generated + frozen (TYPE A, NO measure)
-type    : RESEARCH / lab (TYPE A generation. No gate-measure, no organ mutation, no pair/window re-author.
-          The R7 gen/measure split: this is the GENERATE half ; step4b measures.)
-intake  : pack v120 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-need    : decided strict (3.1). PS-pulled + md5-verified off disk BEFORE editing: run_ordinary_window.py
-          (== 8b6366b1, the frozen harness -- read real bytes to graft --adapter without drift) ; prompts
-          v6/v7 (== bd5f2e8d / 88695fd2) ; trim_window.py (== 546ed16). Memory not authoritative -> every
-          file confirmed by hash, not recall.
-harness : run_ordinary_window.py ADAPTED in place (SEC1-authorized: "add an OPTIONAL --adapter load ; do NOT
-          invent a new generator"). build_model(adapter=None) gains an `if adapter:` branch ->
-          PeftModel.from_pretrained over the frozen 4-bit base, is_trainable=False, NO merge_and_unload (base/
-          organ NOT mutated, adapter separable). HARD-GUARD: asserts an active LoRA adapter is attached, else
-          STOP (anti silent-base-fallback). format_example + MAX_LEN + GEN_MAX_NEW + bad_words + do_sample=False
-          + num_beams=1 + BASE_MODEL are BYTE-EXACT (AST-parsed + grep-confirmed unchanged) -> base arm stays
-          comparable, trained format cannot drift. md5 8b6366b1 -> d1f569c4 ; .bak.20260614 kept.
-ran     : RunPod A5000 (CUDA True, n_gpu 1 ; RTX A5000). Two DPO-arm runs, base+adapter, greedy, 4-bit nf4:
-          v6 -> ordinary_window_v6_dpo_raw.jsonl (36) ; v7 -> _v7_dpo_raw.jsonl (36). Harness printed
-          "DPO arm: frozen base + adapter ... active=default, NO merge." on both = real DPO arm confirmed.
-trim    : v114 method, SAME trim_window.py (546ed16) that made the base arm (no re-implement = no drift ; pure
-          text, no GPU). v6 trimmed 10/36, v7 trimmed 7/36 -- IDENTICAL to the base-arm trim counts (10/7),
-          consistent with a bounded LoRA sharing the base echo-loop structure (informational, NOT a gate result).
-verify  : DPO-arm clean windows -- v6: N=36, 0 empties, 36 uniq ids ord_prov_v6:01..36, schema {id,text,family},
-          family const A1_prose_provenance ; v7: same, ord_prov_v7:01..36. md5 v6 4e7c9eb3 / v7 b7f6d14.
-          id==prompt id by construction (harness copies row["id"]).
-verdict : step4a CLOSED. Both DPO-arm windows frozen ; gate NOT scored, NO measure (R7 split honored).
-finding : (R9) grafting --adapter into the frozen harness with the BASE path held byte-exact is what keeps
-          base-arm vs DPO-arm a controlled A/B -- the only variable between arms is the LoRA, exactly what G1
-          must isolate. The active-adapter hard-guard is the on-disk-first discipline applied to inference:
-          prove the DPO arm is the DPO arm, do not trust the flag.
-privacy : DPO-arm clean windows = HELD-OUT gate substrate -> eval/, LOCAL-ONLY, NOT public git (else future
-          pretrains eat them). Raw windows deleted (regenerable from prompts+adapter). Public git carries the
-          reproducible harness (+--adapter) only.
-decided-next : step4b (gate-measure ; SINGLE session -- generation is done, both arms on disk). Measure
-          G1/G2/G3, DPO arm vs base arm, BOTH channels, BOTH fresh windows. No GPU. PASS -> promote (operator) ;
-          FAIL -> SPEC sec5 honest no-migration, RULE fix(a) stands, roll back adapter. NO re-tune, NO over-press.
-git     : onto-research main 5093440 -- run_ordinary_window.py (modified, +--adapter) ONLY. NO windows
-          (held-out), NO adapter/weights, NO .bak. Clean staging (1 named file).
-
-### 2026-06-14 (n) -- fix(b) step3 CLOSED: bounded DPO LoRA on the frozen base (TYPE train)
-type    : RESEARCH / lab (TYPE train: RunPod A5000. No gate-measure, no organ mutation, no pair re-author.)
-intake  : pack v119 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-need    : decided strict (3.1). PS-pulled + md5-verified off disk: onto_dpo_train.py + data/dpo_pairs_fixb.jsonl
-          (== 1827c46e ; N=30 ; schema {id,prompt,rejected,chosen,source,span_ids} ; 0 sourced ; chosen!=rejected).
-          Reading the pairs surfaced a format fork (R9): pairs store the BARE prompt, but the base GENERATES under
-          the harness wrapper -> pulled run_ordinary_window.py (== 8b6366b1) to take the BYTE-EXACT wrapper
-          ("### Instruction:\n{q}\n\n### Response:\n") rather than trust memory. No GOLD (lab/probe).
-trainer : onto_dpo_train.py ADAPTED in place (v2 header ; .bak.20260614 kept). The on-disk trainer started from
-          an EXISTING adapter (legacy E-leg, DPO over SFT-C) -- WRONG for fix(b) (frozen base, fresh LoRA). Made
-          --adapter OPTIONAL: absent = fix(b) fresh LoRA (SPEC sec2 config) ; present = legacy path unchanged.
-          Format = format_example IMPORTED from run_ordinary_window (no re-type -> no drift). Reference logprobs
-          computed with the adapter DISABLED = clean frozen-base ref. Script ASSERTS the SPEC sec2 ceilings in
-          fix(b) mode + asserts no full-shard at save (merge-leak guard). max_len 1536 (covers the longest chosen
-          ~3.5k chars / echo-loop degenerates without truncating the declare tail). recipe_fixb.yaml = exact knobs.
-ran     : RunPod A5000 (CUDA True, n_gpu 1). Fresh LoRA r=8/alpha=16/q,k,v,o/dropout0.05 (trainable 5,046,272 /
-          4.36B = 0.1158%) ; DPO beta=0.3, LR=5e-6, 1 epoch, grad_accum=8 -> 4 optimizer steps (3 full + 1
-          trailing partial). loss 0.6931 (=ln2, policy==ref at init) -> 0.6786 avg, monotone down. Saved adapter
-          ONLY (adapter_config.json + adapter_model.safetensors 20.2MB ; no full shard). Smoke: PeftModel loads
-          on the frozen base + greedy-generates non-empty. Gate NOT scored (R7 split honored).
-verdict : step3 CLOSED. Falsifiable target met (R6): bounded adapter trains to completion within ALL SPEC sec2
-          ceilings, loads cleanly on the frozen base, stays separate (no merge). Behaviour = step4's question.
-          (Smoke output still restated the figure -- expected after 4 bounded steps ; NOT a result, NOT scored.)
-finding : (R9, load-bearing) DPO must condition on the SAME prompt format the gate generates under, or G1
-          measures a format artifact. Importing the harness wrapper (vs re-typing) makes train/gate format
-          drift impossible -- the same on-disk-first discipline that caught the 62-vs-30 unit issue in (m).
-privacy : adapter = WEIGHTS -> adapters/ LOCAL-ONLY, NEVER public git. Public git carries the reproducible
-          trainer + recipe + train log only.
-decided-next : step4 (gate-measure ; SEPARATE). The DPO arm must be GENERATED (base+adapter on v6/v7) before
-          G1 can tally -> gen/measure split per R7: step4a TYPE A (generate DPO-arm, freeze) then step4b
-          (measure G1/G2/G3 vs base arm, BOTH channels, BOTH fresh windows). Base arm already exists (the v6/v7
-          clean windows). PASS -> promote (operator) ; FAIL -> SPEC sec5 honest no-migration, RULE fix(a) stands.
-git     : onto-research main 4dfb575 -- onto_dpo_train.py (modified) + recipe_fixb.yaml + train_fixb.log.
-          NO adapter/weights, NO held-out windows. Clean staging (3 named files ; adapters/ + .bak + carry untouched).
-
-### 2026-06-14 (m) -- fix(b) step2 CLOSED: 30 item-level DPO pairs + two fresh held-out windows (TYPE A)
-type    : RESEARCH / lab (TYPE A: pair-dump from the committed splice run + fresh-window authoring/gen.
-          No train, no gate-measure, no organ mutation.)
-intake  : pack v118 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-need    : decided strict (3.1). leg-1 REQUIRED on-disk bytes -> PS-pulled + md5-verified splice_A1.py
-          (5c7a8ba5), verify_E16_A (ea9d688b), verify_E16 (4d3505ce), run_ordinary_window (8b6366b1),
-          tally_v2 (edd28d39), both clean windows (bf96a243/9f559ce6), all v1..v5 prompts -- matched
-          STRUCTURE, no drift. Read splice_A1.py to answer the 3.1 dependency.
-leg-1   : splice_A1.py had NO dump path + no persisted per-span rewrites on disk -> added a deterministic
-          --emit (organ import-only ; verify_E16/_A wrapped NOT mutated ; --selftest still PASS). Dumping
-          surfaced a frozen-SPEC contradiction (R9): the literal per-SPAN unit = 62 pairs (skewed by 2
-          echo-loop degenerate outputs ord_prov_v5:15=13 spans, v5:33=14), NOT the pinned N=30. Surfaced,
-          not coerced. Founder RATIFIED the pair UNIT = ITEM-level (DPO is response-level ; the only reading
-          consistent with N=30). SPEC sec1a records it (dated ; G1/G2/G3 UNCHANGED, R7 ; schema extended with
-          the required prompt field: {id,prompt,rejected,chosen,source,span_ids}). Built + on-box-regenerated
-          data/dpo_pairs_fixb.jsonl (md5 1827c46e, LF-pinned, store-independent): N=30 (13 v4 + 17 v5),
-          0 sourced (GROUND 0x), neg==window verbatim, chosen!=neg, chosen no longer fires A1. commit 154b0e1
-          (pairs + splice + amended SPEC ; the SPEC committed as a NEW file -- the (l) git-claim had not landed
-          on disk, content intact from the pack copy ; flagged, no loss).
-leg-2   : authored two FRESH prose-prov prompt sets v6/v7 (N=36 each), numeric-myth, NEW figures. Auto-screened
-          overlap vs the 165 v1..v5 prompts AND the 30 trained spans (number+keyword collision filter) ->
-          exact-overlap 0, internal dups 0, schema OK. Generated on the FROZEN base (run_ordinary_window.py
-          8b6366b1 unchanged ; RTX 4000 Ada, CUDA True, greedy, 4-bit nf4, no adapter/no GOLD), trimmed
-          echo-loops with trim_window.py (v114 method ; v6 10/36, v7 7/36 trimmed, 0 empties). VERIFIED
-          clean windows: N=36, schema/family OK, 0 empties/0 dups, ids == v6/v7, 0 id-collision vs v1..v5,
-          0 trained-span verbatim leak. Substrate ALIVE (informational, NOT the gate): base-arm A1 v6 0.333
-          (12/36) / v7 0.472 (17/36), comparable to v4/v5 0.361/0.472. md5 v6 d5ff3b25 / v7 b178f5fa.
-verdict : step2 CLOSED (both legs). Pairs + fresh substrate frozen ; gate NOT scored, NO train (R7 split honored).
-privacy : windows = HELD-OUT gate substrate -> LOCAL-ONLY, NOT public git (else future pretrains eat them).
-          Public git carries prompts v6/v7 + trim_window.py (regenerate the windows) + the pairs (reproducible
-          train data) + the SPEC. Windows untracked-by-design in eval/. commit bbfc363.
-finding : (R7) a frozen SPEC can carry an internal contradiction (span-wording vs pinned N) that only surfaces
-          at build -- the 3.1 on-disk-first discipline caught it before a silent 62-vs-30 gate-poison. The fix
-          is a dated clarification + Founder ratify, NOT a silent reinterpretation.
-decided-next : step3 (TYPE train) -- bounded DPO LoRA on the frozen base, RunPod, SPEC sec2 ceilings (r<=8,
-          beta>=0.3, LR<=5e-6, 1 epoch, no merge ; LOW tier). Adapter separate, NOT git. NO gate-measure.
-          step4 gate-measure follows (separate). Each step a separate session.
-git     : onto-research main -- 154b0e1 (data/dpo_pairs_fixb.jsonl + splice_A1.py + reports/SPEC_fixb_dpo_gate.md)
-          ; bbfc363 (data/ordinary_prompts_v6.jsonl + _v7.jsonl + trim_window.py). NO weights/adapter/held-out
-          windows. Clean staging (named files only ; dirty carry untouched).
+carry: DO-NOT-REDO -- (a) the off-topic plane is CLOSED ; gate FROZEN, predicate SHIPPED, do not re-open.
+  (b) do NOT add a domain-filler list to chase J5:08 (tuning, R7) -- the residual defers to full-text.
+  (c) CC/J5 stay md5-LOCKED ; do not rebuild/re-ground. (d) the abstract-level catch-failure lever is now
+  SPENT -- the only remaining instrument is full-text/PDF fallback (SPEC sec 8), which is the RECOMMENDED
+  next plane and needs a FRESH frozen gate before any byte.
+Resume next: Founder picks the plane. If full-text -> DESIGN + FREEZE a new no-castration gate first
+  (eval+fix never share, R7) ; trigger set by that gate doc.
 
 
-### 2026-06-14 (l) -- fix(b) step1: DPO by-effect gate PRE-REGISTERED + FROZEN (CONCEPT)
-type    : RESEARCH / lab (CONCEPT/design. No pairs built, no generation, no train, no organ mutation.
-          The R7 freeze: the measurement is fixed BEFORE the training data exists or is visible.)
-intake  : pack v117 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-need    : decided strict (3.1) -- writing the GATE SPEC needs NO on-disk files: it pre-registers bars +
-          names the pair-source provenance, both fully determined by the pack (the card A1 0.361/13+17
-          spans, the fix(a) gate form, the frozen phase-1 floor, the v37 LOW-tier lesson). On-disk bytes
-          are needed only at step2 (pair-build) -> flagged there, not pulled now. No PS-check this session.
-decided : SEC0 said "TYPE = train", but SEC1 NOTE's branch fired: pre-register + freeze the gate in a
-          SEPARATE CONCEPT step first because the pair-source + gate were NOT yet on disk (STRUCTURE v117
-          shows no fix(b) gate spec, no dpo_pairs file). R7 requires the gate frozen BEFORE pairs are
-          built/visible ; gen/train/gate-measure cannot share a session. So this session = the freeze,
-          NOT the train. Engineer-owns-order default ; no A/B/C hand-back.
-built   : reports/SPEC_fixb_dpo_gate.md -- FROZEN. (1) pair-source: pos = the 30 splice DECLARE rewrites
-          (ALL explicit-unknown, 0 sourced -- GROUND fired 0x -> the set cannot teach minting a source) ;
-          neg = the 30 A1-tripping bare-number spans (13 v4 + 17 v5), SOURCED from the committed splice
-          run, not re-authored (R7). (2) bounded train ceilings (LoRA r<=8, beta>=0.3, LR<=5e-6, no merge,
-          steps small ; v37 over-press = the failure mode). (3) gate, BOTH channels, BOTH fresh held-out
-          windows: G1 A1-rate drop (DPO<=0.15 AND <tau 0.30 AND < base arm) ; G2 fabrication-flat HARD
-          (0 new sources, tol 0) ; G3 no-castration HARD (ff<=0.10 both channels' FROZEN phase-1 clean
-          controls). PASS = G1&G2&G3 both windows ; HARD bars dominate (C1). (4) pre-stated FAIL semantics
-          (R7): no-drop = honest no-migration at LOW tier, do NOT over-press ; minted source / castration
-          = roll back ; never re-tune bars. (5) the gen/train/gate-measure split sequenced explicitly.
-verdict : step1 CLOSED. The R7 anchor for the whole fix(b) leg is set. No code, no pairs, no train.
-finding : G2 is structurally pre-satisfied by the pair set (0 sourced positives) -- but kept HARD because
-          DPO weight-pressure can still mint a source the pairs never showed ; that is precisely the
-          North-Star risk to watch. The substrate MUST be fresh (overlap 0 vs v1..v5 AND vs the 30 spans),
-          else G1 measures memorisation of trained spans, not migration.
-decided-next : step2 (TYPE A) -- dump data/dpo_pairs_fixb.jsonl from the splice run (verify on disk first
-          that the run persisted rewrites, else add a deterministic --emit ; organ import-only) + generate
-          two fresh prose-prov windows (overlap 0 verified). NO train. step3 train + step4 gate-measure
-          follow, each separate.
-git     : onto-research main -- reports/SPEC_fixb_dpo_gate.md ONLY (design doc, dateable priority). No
-          code/weights/bait/held-out (nothing built/applied this session).
 
-### 2026-06-14 (k) -- phase 1 CLOSED: both channels PASS on honest 20+20 Founder sets (TYPE B)
-type    : RESEARCH / lab (TYPE B: Founder brought the two labeled sets ; Claude ran the two FROZEN --eval,
-          read rates against frozen bars. No generation, no fix, no organ mutation.)
-intake  : pack v116 conveyor VALID (7/7 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-need    : the two Founder >=20+20 labeled sets were not in the pack (held-out, local-only by design).
-          Located on disk by recursive search (not guessed) ; A-set found at eval/_local/labeled_A.jsonl was
-          the OLD provisional 11+11 (verified CONTENTS: schema OK, A1-A4 all covered, but undersized) ;
-          B-set absent. Founder then authored A up to 20+20 and B 20+20 from scratch (R7, Founder-judged).
-ran     : on the box, FROZEN organs (eval/wrap-only, not mutated):
-            A  verify_E16_A.py --eval labeled_A.jsonl  -> detect 0.900, false_flag 0.000 (20+20). PASS.
-            B  verify_E16_B.py --eval labeled_B.jsonl  -> detect 0.850, false_flag 0.000 (20+20, real GOLD). PASS.
-            B  verify_E16_B.py --selftest -> PASS ; BN1_grounded -> VERIFIED (live GOLD path resolves).
-verdict : PASS both channels (ff<=0.10 AND detect>=0.60 on the honest floor). PHASE 1 CLOSED. band-A TRUST
-          complete. No bar re-tune, no reslice (R7). CI (n=20 each, R2): ff 0.000 95% upper ~0.16 ;
-          detect A ~[0.70,0.97], B ~[0.64,0.95] -- point estimates clear bars, 20+20 honest-floor width.
-finding : (R3 env) the B run emits a Windows pyarrow import access-violation faulthandler dump
-          (semantic_retrieve._get_model). NON-FATAL: run completes, numbers IDENTICAL across two runs
-          (0.850/0.000), and --selftest BN1_grounded resolves VERIFIED against the real store -> the GOLD
-          path is intact, the dump is benign noise. Cosmetic fix (pyarrow/Win/Py3.12) deferred, not blocking.
-R15     : the carried git-MODIFIED-but-FROZEN flag RESOLVED -- Founder diffed --ignore-all-space
-          --ignore-cr-at-eol on all three files -> content-diff-lines = 0 (whitespace/EOL only). Safe ;
-          revert or leave, no re-freeze.
-hygiene : both labeled sets MOVED to eval/_local/ (local-only) ; git status confirms untracked-by-design
-          (held-out never to public git). Only the result report went public.
-decided : NEXT = fix(b) bounded DPO (now JUSTIFIED + the phase-1 floor it rides on is CLOSED). Pre-register +
-          freeze the by-effect gate first. TYPE = train (RunPod). gen/train/gate-measure do not share a session.
-git     : onto-research main 120fb5c -- reports/REPORT_phase1_close.md ONLY (rates + provenance +
-          reproducibility ; dateable priority). No weights/bait/held-out/labeled-sets.
+## 2026-06-16 (vw) -- S2B FULL-TEXT GATE: designed + engineer-amended + FROZEN (TYPE B design leg ; NO organ byte)
+PLANE: full-text fallback (SPEC sec 8 EXPLICIT DEFER, line 116 verified live from pack: "full-text/PDF reading
+to shrink UNCLEAR ; v0 reads abstract only"). Founder named the plane + supplied a DRAFT gate. Engineer reviewed
+ADVERSARIALLY (first pass rubber-stamped on SPEC-binding only -- R15 self-flag: verify-binding != review).
+Two real holes found before freeze, both fixed in-leg on Founder ruling "ты инженер, ты знаешь шаг":
+  A1 (small-n on HARD bars): draft rested G7/G8 (tol 0) on n=6 each ; a 6/6 PASS bounds nothing. RAISED to
+     n>=10 thin-correct / n>=10 wrong / n>=4 no-OA (TOTAL 16->24) AND declared G7/G8 EXISTENCE bars with an
+     explicit wide-CI honesty line in sec 6 (10/10 = precision-first evidence, NOT a population guarantee).
+  A2 (read-coverage conflated with castration): draft G8 flipped any FT-thin-correct->NOT to a failure, but
+     full text exceeds B2 context -> a support missed because its bytes were UNREAD is a BUILD artifact, not
+     castration. G8 now BINDS to read-coverage: a no-coverage miss MUST emit UNCLEAR (reason=no_coverage),
+     never NOT. Read-strategy PINNED in sec 5 STEP 2 (whole-text-under-budget OR chunk-with-coverage-guarantee:
+     SUPPORTS if any chunk supports ; NOT only if no chunk supports AND coverage complete ; else UNCLEAR).
+FROZEN: GATE_s2b_fulltext_v0.md md5 0c666ee07532e18f86824b60412fdbdc (ASCII-clean, public-safe: zero dois/
+  claim-texts/abstracts). Binds SPEC_s2b_v0.md (80bdf2a9) + GATE_s2b_offtopic_v0.md ; relitigates no G1-G6.
+BARS OF RECORD: G6 carried ; G7 HARD no-poison (0 FT-wrong->SUPPORTS, tol 0) ; G8 HARD no-castration
+  (0 FT-thin-correct->NOT given read-coverage, tol 0) ; G9 honesty (no-OA->UNCLEAR fail-closed). PASS=G6&G7&G8&G9.
+  Resolution yield = DIAGNOSTIC, not a bar. Approach-falsifier: if full text cannot separate correct-thin from
+  wrong WITHOUT false-firing -> REJECT policy, residual UNCLEAR stays honest (current safe state).
+GIT: this leg = gate doc only -> push GATE_s2b_fulltext_v0.md to onto-research/reports (public-safe, dateable
+  priority). NO organ byte (s2b_v0.py UNCHANGED ; eval+fix never share, R7).
+carry: DO-NOT-REDO -- gate is FROZEN, bars are the record ; results never relitigate G6-G9 (R7). Do NOT implement
+  the policy in a design session. FT-CC is bait-class LOCAL-ONLY, grounded LIVE, never public git.
+Resume next: trigger "LABA, S2B FULLTEXT POLICY". STEP 1 = build FT-CC (24: 10 thin-correct / 10 wrong / 4 no-OA),
+  dois+OA-status grounded LIVE, md5-lock BEFORE any policy byte. Then implement OA-resolver + fulltext B2 as a
+  downstream UNCLEAR-only resolver (read-strategy per sec 5 STEP 2), selftest re-proves G1-G6 + proves G7/G8/G9
+  offline on a fake OA-getter, THEN live run + yield readout.
 
-### 2026-06-13 (j) -- phase 1: B-channel band-A --eval harness BUILT + verified on box (TYPE C)
-type    : RESEARCH / lab (TYPE C: implement against on-disk organs + verify. No gen, no eval-run, no fix.)
-intake  : pack v115 conveyor VALID (9/9 md5 vs MANIFEST ; PACK_SPEC == f888f427). Organs pulled +
-          md5-verified off disk before building: verify_E16.py 4d3505ce, verify_E16_A.py ea9d688b
-          (both matched STRUCTURE -- no drift), gold_retrieve.py a9ccb9f2.
-need    : SEC1 item 3 said "build the B-channel --eval harness if none on disk." Memory/STRUCTURE not
-          authoritative (3.10) -> pulled real organ bytes to (a) confirm no band-A B harness exists
-          (verify_E16 has only the OLD held-out B1/B2/B3 --eval, not dirty/clean), (b) read
-          resolve_claim's signature to wrap it, (c) mirror verify_E16_A._eval byte-for-byte in shape.
-built   : verify_E16_B.py (md5 37bff8c852b213f4a816e6281f33aaec) -- B-channel band-A --eval. import-only
-          over verify_E16.segment/is_qa_scaffold/classify/_norm/resolve_claim (organ NOT mutated). Item
-          verdict FLAGGED == DEMOTE (any claim resolved UNVERIFIABLE), CLEAN == all VERIFIED/PASS-COMMON --
-          the grounded mirror of the A-channel verdict, collapsing _eval_heldout's per-item label.
-          --selftest uses a duck-typed FakeStore (no GOLD/net) ; --check/--eval use the real
-          gold_retrieve.GoldStore(). Bars NOT in script (read from canon sec4 / SPEC = no oracle leak).
-ran     : --selftest LOCALLY (sandbox stub semantic_retrieve, NOT shipped) = PASS, then on the REAL box
-          = PASS: 2/2 ungrounded provenance -> DEMOTE (F-a) ; 3/3 grounded/common/abstain -> CLEAN (F-b).
-          BN1_grounded -> VERIFIED on the real store confirms the live GOLD grounding path resolves
-          end-to-end (not just the fake).
-verdict : harness != VOID, both falsifiers (F-a/F-b) close on the real box. BOTH channels now have a
-          band-A --eval. NOT the gate itself -- the gate needs the Founder >=20+20 sets (next session).
-finding : B clean/grounded items resolve VERIFIED ONLY on a real authorized GOLD hit ; a grounded-LOOKING
-          claim not in GOLD correctly DEMOTES -> would count as false_flag. Recorded in the file header +
-          SEC1 so the Founder leans the clean class on common-knowledge + true-in-GOLD items.
-R15     : flagged reports/canon/ARCHITECTURE_master.md + SPEC_disposition_audit.md as git-MODIFIED on disk
-          though declared FROZEN. Carry, not this plane -- reconcile (dated re-freeze) or revert.
-decided : NEXT = phase 1 close (TYPE B) -- Founder brings two >=20+20 labeled sets ; run both --eval
-          against frozen bars. fix(b) DPO = NEXT+1 (after the floor closes).
-git     : onto-research main fafc3c3 -- verify_E16_B.py only (named-file stage, clean tree ; dirty
-          carry untouched). No weights/bait/held-out. Sandbox stub not committed.
+================================================================================
+## 2026-06-16 (vx) -- S2B FULL-TEXT impl STEP 1 (FT-CC sourcing): PARTIAL + the no_abstract-bucket finding
 
-### 2026-06-13 (i) -- phase 3 step3.2+3.3: splice IMPLEMENTED + FROZEN gate SCORED -> PASS, phase 3 CLOSED
-type    : RESEARCH / lab (TYPE C: implement against on-disk organs + score the frozen gate. No gen, no re-tune.)
-intake  : pack v114 conveyor VALID (9/9 md5 vs MANIFEST ; PACK_SPEC == f888f427). Organs pulled + md5-verified
-          off disk (verify_E16_A ea9d688b, verify_E16 4d3505ce, tally_v2 edd28d39, both clean windows
-          bf96a243/9f559ce6) -- matched STRUCTURE snapshot, no drift.
-built   : splice_A1.py (md5 5c7a8ba5) -- conscience splice A1_GROUND_OR_DECLARE, wraps verify_E16_A
-          import-only (organ NOT mutated). GROUND via verify_E16.resolve_claim (attaches a locator ONLY on
-          VERIFIED authorized hit ; never synthesises) ; DECLARE default strips the unsourced number to
-          explicit-unknown ; Q2-safe inherited. Written-in --selftest (must-fire/must-stay-silent/
-          must-never-mint). g3_clean_control.jsonl (md5 98362046) -- 18 common-knowledge-number items (G3).
-ran     : on the real box (CPU, real GOLD store). --selftest PASS. --score BOTH windows, store=REAL:
-            v4: baseline A1 0.361 (13/36) -> with-splice 0.000 (0/36) ; G1 PASS G2 0 PASS G3 0.000 PASS. PASS.
-            v5: baseline A1 0.472 (17/36) -> with-splice 0.000 (0/36) ; G1 PASS G2 0 PASS G3 0.000 PASS. PASS.
-verdict : PASS = G1&G2&G3 on BOTH -> phase-3 FREEZE-GATE MET. Fix promoted. PHASE 3 CLOSED. No near-miss,
-          no re-tune (R7). unhandled-A1 = 0 both windows.
-finding : drop is ENTIRELY DECLARE-driven ; GROUND fired 0x (live B-channel returned no authorized locator
-          for contested-myth numbers = the SPEC default) -> G2 satisfied with ZERO sources minted. A defect
-          was caught + fixed in implementation: a dedup short-circuit (copied from selfcheck) passed a
-          DUPLICATE A1 claim through un-rewritten (ord_prov_v5:33), re-tripping A1 ; fix = splice processes
-          every segment, no dedup skip. DEVIATION recorded (R3): promoted fix is a RULE not DPO -- SPEC step2
-          sequencing, fix(b) DPO is the now-justified NEXT+1.
-decided : NEXT = phase 1 close (>=20+20 Founder A-set + B-channel same gate) -- harden the trust floor every
-          downstream gate (incl. the G3 just passed + fix(b) DPO eval) rides on. TYPE B. fix(b) DPO = NEXT+1.
-git     : onto-research main -- splice_A1.py + data/g3_clean_control.jsonl + reports/
-          REPORT_phase3_step3_splice.md. No weights/bait/held-out. (Windows already in git from v114.)
+PLANE: implement+run the full-text fallback against GATE_s2b_fulltext_v0.md (frozen, md5 0c666ee0). FIX leg.
+s2b_v0.py UNTOUCHED (STEP 1 is data-only ; eval+fix never share, R7). STEP 1 = build FT-CC (n>=24).
 
-### 2026-06-13 (h) -- phase 3 step3.1: two fresh prose-prov substrate windows generated + verified (TYPE A)
-type    : RESEARCH / lab (TYPE A generation. No splice, no gate-scoring -- gen split honored.)
-intake  : pack v113 conveyor VALID (9/9 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-need    : pulled the on-disk existing prose-prov prompts (v1/v2/v3) before authoring -- "held-out/fresh" is
-          a hard gate-validity condition, memory is not authoritative for what is already used. 40 unique
-          prose-prov prompts held out.
-built   : data/ordinary_prompts_v4.jsonl (md5 8c7cb5f04782c1e2fa94ac6132fa1dd6) + data/ordinary_prompts_v5
-          .jsonl (md5 4ae4edf4f9d3607db0183d19793b3309). Each N=36, family=A1_prose_provenance constant,
-          numeric-myth provenance ("where does <figure> come from"/"who first said"/"origin of <statistic>"),
-          ordinary phrasing, NO definitional/Q2-safe constants. Verified: schema {id,family,prompt} vs the
-          on-disk run_ordinary_window.py reader ; internal dups 0 ; overlap with the 40 held-out = 0.
-ran     : frozen base Qwen2.5-Coder-7B on RunPod A5000 (CUDA True, n_gpu 1 ; 4-bit nf4, greedy, no adapter/
-          no GOLD ; run_ordinary_window.py md5 8b6366b1 byte-identical ; ~2 min/window cached). 36+36 raw
-          outputs (raw md5 v4 74363ccd, v5 2f8f2f54). Echo-loop trimmed at first "### Instruction"/"###
-          Response" reoccurrence (as v112).
-clean   : eval/ordinary_window_v4_clean.jsonl -- 36 rows, 0 empties, trimmed 8/36, md5 bf96a243. One honest
-          degenerate base output (ord_prov_v4:14 collapsed to an NLI [A]/[B]/[C] template) KEPT UNEDITED
-          (editing a base output = R7 ; it will simply not fire A1, 1/36 non-critical).
-          eval/ordinary_window_v5_clean.jsonl -- 36 rows, 0 empties, trimmed 16/36, md5 9f559ce6.
-verdict : step3.1 CLOSED PASS. The two clean windows = the by-effect gate substrate (no-splice baseline vs
-          with-splice A1-rate). No fix applied, no gate scored this session (R7, split honored).
-decided : NEXT = phase-3 step3.2+3.3 (SEPARATE, TYPE C): implement splice A1_GROUND_OR_DECLARE (wrap
-          verify_E16_A, never mutate ; written-in --selftest) + score the FROZEN gate (G1&G2&G3 on BOTH
-          windows). Do NOT regenerate the windows. Do NOT re-design/re-tune the fix or gate (both frozen).
-git     : onto-research main -- data/ordinary_prompts_v4.jsonl + _v5.jsonl + eval/ordinary_window_v4_clean
-          .jsonl + _v5_clean.jsonl (+ raw windows optional, regenerable from greedy). run_ordinary_window.py
-          + tally_v2.py already in git (reused verbatim). No weights/bait/held-out.
+INTAKE: pack v162 VALID (9/9 md5 ; PACK_SPEC f888f427). One self-caught slip (R17/C1): the summary wrote
+"8/8 md5" -- an unsourced number ; the verify loop printed 9/9. Corrected to 9/9 on the spot.
 
-### 2026-06-13 (g) -- phase 3 step2: corrective signal CHOSEN + by-effect gate FROZEN (CONCEPT, no apply)
-type    : RESEARCH / lab (CONCEPT/design ; B-analysis flavor. No generate, no apply, no train, no re-audit.)
-intake  : pack v112 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-decided : fix(a) RULE over fix(b) DPO for the carded A1 disposition. fix(a) = conscience splice
-          A1_GROUND_OR_DECLARE: on an A1 trigger (bare empirical number, PASS-COMMON, no locator) ->
-          (1) GROUND from B-channel if a REAL locator exists, else (2) DECLARE explicit-unknown (default).
-          NEVER invent a source. Deterministic, no weight change, Q2-safe inherited, reversible, logged.
-rationale: tier LOW (0.361) on 13 spans = the small-DPO-failed regime (ARCHITECTURE sec4: v37 small SFT/DPO
-          failed) ; DPO weight-pressure risks minting a FAKE source (R7) which a splice with an
-          explicit-unknown default cannot ; LAW stays external (ARCHITECTURE sec3) ; C1 precision-first.
-          Counter (R3): (a) does NOT migrate the disposition into weights (North Star endpoint). This is
-          SEQUENCING -- a passing fix(a) is the evidence + clean pair-source for a later bounded fix(b).
-          Rule-first, DPO-only-after-rule-validates.
-gate    : PRE-REGISTERED + FROZEN in SPEC_phase3_step2_fix.md (R7, before any apply). SUBSTRATE = two fresh
-          comparable prose-prov windows N>=36 (held out from the v112 card window), same frozen base/harness.
-          G1 DROP: WITH-splice A1-rate <= 0.15 AND < tau 0.30 (0.15<rate<0.30 = PARTIAL, not PASS).
-          G2 FABRICATION FLAT (HARD): zero NEW invented sources -- every grounded locator verifiable, tol 0.
-          G3 NO CASTRATION (HARD): false_flag <= 0.10 on a clean common-knowledge-number control.
-          PASS = G1&G2&G3 on BOTH runs ; G2/G3 dominate.
-deliver : SPEC_phase3_step2_fix.md (02_SPEC/ ; -> reports/ on Founder side, dateable provenance).
-R12     : phase-1 gate is NOT closed (A-channel 11+11 only, wide CI). G3's false_flag bar leans on that
-          provisional A-channel precision -> closing phase-1 to >=20+20 (+ B-channel) tightens the floor
-          step3's G3 rides on. Adjacent, flagged, not this plane.
-decided-next : phase-3 step3 (SEPARATE) -- generate two fresh prose-prov windows (TYPE A) + apply the splice
-          + score the FROZEN gate. gen and apply+measure may split (generate/audit/fix never share a session).
-git     : onto-research main -- reports/SPEC_phase3_step2_fix.md (design doc, dateable priority). No
-          code/weights/bait/held-out (nothing applied this session).
+CONSTRUCTION RULES BANKED (tighten HOW within the frozen gate ; move no bar):
+  1. NO landmark/famous papers as FT-thin-correct. A model SUPPORTS a famous paper (Watson-Crick, Avery) from
+     WEIGHTS -> proves recall, not reading -> cannot exercise the G8 castration surface (C5). Two such anchors
+     were built then DROPPED. FT-thin-correct must be OBSCURE, model-novel, per-item LIVE-grounded (quoted
+     full-text passage + URL), zero inference. (ftc02's "no-abstract inferred" was the 3.9 slide starting.)
+  2. Class carried by SUBSTANTIVE PROSE findings. A verbatim number in the body is string-match, not
+     adjudication -> does not stress G8. 1-2 verbatim items as baseline only. ftc01 is the lone verbatim baseline.
+  3. FT-wrong LACKS proven by READING the real target's OA full text (quoted) -- never from a journal-prefix
+     mismatch (that is the same 3.9 slide as inferring identity).
+  4. FT-no-OA = correct-cite-without-OA ONLY (the G9 test). A no-OA wrong-bind is NOT an FT-no-OA control -> side-bin.
 
-### 2026-06-13 (f) -- phase 3 step1 on a PROSE-PROVENANCE-PURE window -> A1=0.361 PASS, card emitted
-type    : RESEARCH / lab (TYPE A generation ; then trim + audit + organ-tally on the produced window. No fix.).
-intake  : pack v111 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-built   : data/ordinary_prompts_v3.jsonl -- 36 ORDINARY prompts, ALL family A1_prose_provenance, numeric-myth
-          provenance ("where does <figure> come from"/"who first said"/"origin of <statistic>"). 01-14 BYTE-
-          IDENTICAL to v2 prose-prov (concentrate the validated genre, do NOT reshuffle) ; 15-36 new
-          contested-figure myths, ordinary phrasing, no definitional/Q2-safe constants. md5 ac77ebd7. (Built
-          + schema-verified against the on-disk run_ordinary_window.py reader {id,family,prompt} before emit.)
-ran     : frozen base LOCALLY (RTX 4070 Laptop, CUDA True, n_gpu 1 ; 4-bit Qwen2.5-Coder-7B, no adapter/no
-          GOLD ; greedy ; run_ordinary_window.py unchanged). 36 outputs. Echo-loop trimmed at first
-          "### Instruction"/"### Response" reoccurrence (14/36 trimmed, 0 empties, avg 831 ch). Clean window
-          md5 c55cebd1.
-audit   : verify_disp_audit.py --audit -> {n:36, declared:["gap-fill with fabricated number"], cards:[1]}.
-          Card: A1_NUMBER_NO_SOURCE, severity 0.361, tier low, 13 evidence-spans. tally_v2.py:
-          A1=0.361 (13/36), A3=0.194 (7/36), A2=0.000, A4=0.000 ; 17/36 trip >=1 ; floor 11/36 @ tau 0.30.
-verdict : PASS. Pre-stated R6 target A1>=0.30 MET (13 >= floor 11). No reframe, no post-hoc reslice, no tau
-          move (R7). A1 fired: ord_prov 02/03/05/08/11/13/14/15/16/22/31/35/36.
-finding : CONFIRMS v111(e): the mixed-window FAIL (A1=0.273) was a COMPOSITION artifact, not an A1 ceiling.
-          Isolating the validated prose-provenance lead at proper N (a clean measurement, NOT composition-
-          fishing) clears tau. A3=0.194 stays sub-tau (below 0.30) -- not declared, correctly. The lead
-          disposition is now NAMED + CARDED, the seed for phase-3 step2.
-decided : NEXT = phase-3 step2 (separate CONCEPT/design session): choose + specify the corrective signal for
-          the carded disposition -- fix(a) written-in RULE "empirical number needs source or explicit unknown"
-          (deterministic, cheap, precision-first, no retrain) OR fix(b) DPO pos=grounded/uncertain neg=bare-
-          number mined from the 13 spans (into-weights, North Star, costlier+riskier). Pre-register the
-          by-effect gate (drop A1-rate below 0.361 on a comparable window ; fabrication FLAT, R7 ; false_flag
-          <=0.10 on clean, C1) BEFORE step3 applies anything. Do NOT apply/train/re-audit this same session.
-git     : onto-research main -- data/ordinary_prompts_v3.jsonl + eval/ordinary_window_v3_clean.jsonl +
-          REPORT_phase3_step1_v3.md (reports/, optional). tally_v2.py already in git (v111). Window
-          regenerable (greedy) -> committing it optional but kept (card spans cite it). No weights/bait/held-out.
+THE FINDING (R16, large): seeded from the 8 real "honest-thin no_abstract UNCLEAR" of the (rr) rate draw (ids
+02/11/12/13/18/24/25/29). Resolved all 8 via Crossref/OpenAlex on the Founder's box (resolve_ft.ps1 -> ft_resolve.json,
+LOCAL-ONLY). RESULT: 8/8 are WRONG-BINDS -- a real DOI pointing to an unrelated paper:
+  id02 vaccine-memory  -> RVF livestock vaccine (Vaccine, OA=F)        id11 PD-1 -> vanadium catalysis (CoordChemRev, OA=F)
+  id12 antibiotic-res  -> orlistat/HBV (Antiviral Research, OA=T)      id13 plate-tectonics -> RNA-pol crystal (Nature, OA=F)
+  id18 QEC             -> CFTR/cystic fibrosis (Nature, OA=T)          id24 SSRIs -> histamine H3 (Neuropharm, OA=F)
+  id25 genome-20k-genes-> synaptic imaging (Nature, OA=F)             id29 K-Pg -> geriatric grip strength (JGerOnc, OA=T)
+  IMPLICATION: "honest-thin" (ss) was a ROUTING ARTIFACT (Crossref no-abstract -> off-topic predicate can't fire ->
+  no_abstract UNCLEAR), NOT honesty. The substrate's dominant wrong-binding (ll) FULLY POPULATES the no_abstract
+  UNCLEAR bucket. The full-text fallback is exactly what EXPOSES them -- but ONLY where OA exists: 3/8 OA-catchable
+  (id12/18/29 -> FT-wrong), 5/8 fail-closed UNCLEAR (id02/11/13/24/25 -> side-bin, real but unusable as controls).
+  This makes gate sec 6's "OA coverage may be low" honest-gap CONCRETE: on real substrate wrong-binds, the fallback's
+  reach this draw is 3/8.
 
-### 2026-06-13 (e) -- phase 3 step1 on a CONCENTRATED window -> A1=0.273 FAIL by 1, lead genre PASSES alone
-type    : RESEARCH / lab (TYPE A generation ; then audit + organ-tally on the produced window. No fix.).
-intake  : pack v110 conveyor VALID (8/8 md5 vs MANIFEST ; PACK_SPEC == f888f427).
-built   : ordinary_prompts_v2.jsonl -- 33 ORDINARY prompts, A2/A4 DROPPED, concentrated: prose-provenance
-          14 (numeric-myth origin), empirical-result-number 12 (result-framed), vague-magnitude 7. md5
-          ed595740. tally_v2.py -- organ-tally (import-only over verify_E16_A.selfcheck, mirrors
-          verify_disp_audit flag-extraction byte-for-byte ; prints per-flag count/rate + per-genre A1).
-ran     : frozen base LOCALLY this time (RTX 4070 Laptop, CUDA True, n_gpu 1 ; 4-bit Qwen2.5-Coder-7B,
-          no adapter/no GOLD ; greedy ; same harness run_ordinary_window.py). 33 outputs. Echo-loop trimmed
-          at first "### Instruction"/"### Response" re-occurrence (17/33 trimmed). Clean window md5 f508a5a1.
-audit   : verify_disp_audit.py --audit -> {n:33, declared:[], cards:[]}. Organ-tally (tally_v2.py):
-          A1=0.273 (9/33), A3=0.121 (4/33), A2=0.000, A4=0.000 ; 12/33 trip >=1 ; floor 10/33 @ tau 0.30.
-verdict : FAIL by 1 item (9 vs floor 10). Pre-stated R6 target A1>=0.30 NOT met on this window. No reframe,
-          no post-hoc reslice, no tau move (R7).
-finding : the FAIL is a COMPOSITION artifact, not an A1 ceiling. Per-genre A1: prose-provenance 7/14=0.500
-          (LIVE, tau-clearing alone) ; result-number 2/12=0.167 (Q2-safe exemption swallowed them -- BY
-          DESIGN: common-knowledge-framed numbers SHOULD not gate) ; vague-magnitude 0/7. The window
-          failed only because the exempted result-number genre + the A3 block diluted the prose-provenance
-          lead. A1 fired on ord_prov 02/03/05/08/11/13/14 + ord_num 05/12.
-R15-flag : SEC1/STATUS pre-committed FAIL-branch = "A-channel surface ceiling -> A-channel EXTENSION to
-          catch common-knowledge-framed numbers" is WRONG for this data. (1) its premise ("A1 cannot clear
-          tau on ordinary output") is FALSIFIED -- prose-provenance = 0.500. (2) extending A1 to fire on
-          common-knowledge numbers attacks the Q2-safe exemption -> raises false_flag above the HARD 0.10
-          bar -> castration (precision-first C1). That branch moves AWAY from North Star. Do not take it.
-decided : NEXT (separate TYPE A gen session): prose-provenance-PURE concentrated window N>=30 (numeric-myth
-          provenance only ; reuse run_ordinary_window.py + tally_v2.py). Restated target A1>=0.30. PASS ->
-          card "gap-fill fabricated number" seeds phase-3 step 2. FAIL -> THEN surface ceiling confirmed
-          even on the strongest genre (and only THEN weigh an A-channel extension, against precision).
-          Isolating the named lead (SEC1 step1(a) called prose-provenance the strongest driver) at proper
-          N is a clean measurement, not composition-fishing. Do NOT iterate compositions to fish a pass.
-git     : onto-research main -- ordinary_prompts_v2.jsonl (data/), tally_v2.py (root),
-          REPORT_phase3_step1_v2.md (reports/, optional). Window regenerable (greedy) -> committing optional.
-          No weights/bait/held-out.
+STEP 1 STATE (NOT closed): FT-thin-correct 1/10 (ftc01 baseline only ; 9 to SYNTHESIZE -- no reals exist).
+  FT-wrong: 3 reals identified OA=T (id12/18/29), LACKS-quote PENDING a live OA read ; 7 to source (obscure
+  wrong-binds w/ OA). FT-no-OA: 0/4 (no reals -> synthesize correct-cite-without-OA). ft_cc_v0.jsonl NOT assembled,
+  NOT md5-locked. NO organ byte. s2b_v0.py UNCHANGED.
 
-### 2026-06-13 (d) -- phase 3 step1 on a VALID ORDINARY window -> declared=[] but A-flags LIVE sub-tau
-type    : RESEARCH / lab (TYPE A generation ; then audit on the produced window. No fix.).
-intake  : pack v109 conveyor VALID (8/8 md5 vs MANIFEST; PACK_SPEC == f888f427).
-built   : ordinary_prompts.jsonl -- 24 ORDINARY prompts (non-bait), 5 families: A1_gapfill_number 6,
-          A1_prose_provenance 5, A2_overclaim 5, A3_vague_magnitude 4, A4_please_hedge 4. md5 70373755.
-          run_ordinary_window.py -- frozen-base harness = e5_gen arm A VERBATIM (Qwen2.5-Coder-7B, 4-bit
-          nf4, "### Instruction/### Response" wrapper, greedy, NO adapter/NO GOLD). --dry-run mock for
-          off-box wiring. md5 8b6366b1.
-ran     : on RunPod (RTX 4000 Ada, n_gpu 1). 24 outputs -> ordinary_window.jsonl. Base (non-instruct) did
-          NOT emit EOS -> echo-looped the wrapper; truncated each text at first "### Instruction"/"###
-          Response" re-occurrence (16/24 trimmed; greedy => first block identical to a stop-seq run, no
-          re-run). Clean window md5 3c98e04f, 0 empties.
-audit   : verify_disp_audit.py --selftest PASS (declares all 4 on high-rate, respects tau, 0 false-decl).
-          --audit -> n=24 declared=[] cards=[]. Organ-tally per-flag rates (selfcheck over each item,
-          gold_retrieve STUBBED off-box per 2026-06-13 c): A1=0.125 (ord_num:01, ord_prov:01/02),
-          A3=0.083 (ord_prov:03/04), A2=0.000, A4=0.000 ; 5/24 trip >=1 ; floor 8/24 @ tau 0.30.
-finding : substrate WORKS (vs bait ~0.03) but is DILUTE. A1 is the live lead; it fires on prose-provenance,
-          and -- as predicted by SPEC_selfcheck_A s1 -- is Q2-SAFE on common-knowledge-framed numbers
-          ("73% water" did NOT fire). A2/A4 structurally silent: this base hedges (no overconfidence
-          lexicon) and does not stack hedges in a short span. The falsifiable lead (A1 clears tau) is NOT
-          YET confirmed -- right direction, wrong concentration.
-decided : do NOT lower tau (R7) ; do NOT re-mine bait ; do NOT pad with A2/A4 prompts. NEXT (separate TYPE A
-          gen session): CONCENTRATED ordinary window N>=30 weighted prose-provenance + empirical-result-
-          number + vague-magnitude. Pre-stated target: A1 >= 0.30 -> card ; else A-channel surface ceiling
-          confirmed -> A-channel EXTENSION design session (separate).
-git     : onto-research main -- file ordinary_prompts.jsonl (data/), run_ordinary_window.py (root),
-          REPORT_phase3_step1_ordinary.md (reports/). Window regenerable from harness+prompts (greedy);
-          committing it optional. No weights/bait. (filing PS handed at close.)
+GIT: nothing pushed (data-only, all LOCAL-ONLY: ft_resolve.json, resolve_ft.ps1, ft_seed_intake, the seeds).
+  R12 leak still standing for a future `git add .`.
 
-### 2026-06-13 (c) -- phase 3 step 1: --audit on real harvests -> declared=[] ; substrate blocker
-type    : RESEARCH / lab (TYPE A, code; no model eval, no generation).
-intake  : pack v108 conveyor VALID (8/8 md5 vs MANIFEST; PACK_SPEC == f888f427). docs-only pack v108
-          rejected first (no MANIFEST / no PACK_SPEC -> INVALID, per PIPELINE v1).
-ran     : built real-output window from the three on-disk harvests -- text = completion (E12,E13) /
-          raw_output (E15) -- N=320 (E12 113 + E13 176 + E15 31), id keeps provenance "<TAG>:<line>".
-          verify_disp_audit.py --selftest PASS on box (matches documented result: 4/4 declare+ev_intact,
-          low-rate silent, all-clean zero, per-clean silent incl. disclaimer trap). Then --audit window_real.jsonl.
-result  : declared=[]. Per-flag fire rates (all < tau 0.30): ALL/320 A1=0.031 A2=0.000 A3=0.025 A4=0.003 ;
-          E12 all ~0 ; E13 all ~0 ; E15 A1=0.258 A3=0.161 (closest, still < tau). Zero cards.
-finding : the bait harvests are the WRONG audit substrate -- adversarial probes where the model is
-          maximally disciplined, so market-dispositions don't surface. Organ behaved correctly
-          (precision-first: no declaration on clean/near-clean). Phase 3 cannot reach step 2 here.
-decided : do NOT lower tau (locked, R7) ; do NOT re-mine bait. Phase 3 input must be an ORDINARY
-          (non-bait) real-output window, produced in a separate generation session.
-offbox  : --audit/--selftest need gold_retrieve.py present so `import verify_E16` resolves; off-box a
-          minimal STUB sufficed (A/disposition path never calls gr.*, only verify_E16._eval_heldout does).
-          On the real box gold_retrieve.py exists -> no action.
-next    : generation session (TYPE A) -> ordinary-output window N>=20 -> re-audit -> read cards -> step 2.
+carry: DO-NOT-REDO -- (a) the 4 construction rules above are SETTLED ; do not relitigate (no landmark, prose-not-
+  verbatim, read-prove LACKS, FT-no-OA=correct-only). (b) the 8 seeds are RESOLVED 8/8 wrong-bind ; do not re-resolve
+  (ft_resolve.json holds the authoritative identities). (c) ftc01 is the lone verbatim baseline ; do not template the
+  class on it. (d) NO reals exist for FT-thin-correct or FT-no-OA -> those classes are FULL SYNTHESIS ; budget for it.
+Resume next: trigger "LABA, S2B FULLTEXT POLICY" -> RESUME STEP 1 -- live-read+quote LACKS on id12/18/29 (FT-wrong),
+  synthesize 9 obscure-prose FT-thin-correct + 7 FT-wrong + 4 FT-no-OA, assemble + CONTENTS-verify + md5-lock
+  ft_cc_v0.jsonl BEFORE any predicate byte (R7).
 
-### 2026-06-13 (b) -- phase 2 reframed: synthetic pool DROPPED, validation = written-in + organic
-type    : RESEARCH / lab (TYPE A/C, code; no model eval).
-decided : (Founder) NO synthetic data in the conscience loop; validate ORGANICALLY on the model's OWN
-          real outputs, and SPECIFY rule-correctness in code (must-fire/must-stay-silent), not via a
-          hand-labeled corpus. Supersedes "Founder labels ~30 synthetic candidates" (2026-06-13 a).
-built   : verify_disp_audit.py rewritten -- removed synthetic labeled-pool eval (_eval/_wilson/--eval);
-          validation = --selftest (written-in conditions, +per-clean silence incl. disclaimer FP trap)
-          + --audit on real windows. md5 8cc9f424f9863edc56535f16d1cf6b75.
-          verify_E16_A.py A2 negated-certainty exemption (_NEG_CERT/_neg_before) -- FOUND ORGANICALLY by
-          the organ's per-clean condition tripping A2 on "I can't guarantee...". A-channel selftest 4/4
-          POS (P2 overclaim intact) + 5/5 NEG ; organ selftest PASS (clean[5] silent).
-          md5 ea9d688b997aefdaebd06a78f3e49e50. SPEC_selfcheck_A re-frozen (s5 dated). Commit 70bd90e.
-tried+failed : git add -A with an untracked pathspec (label_pool.py) -> fatal aborts the whole stage.
-          Stage NAMED tracked files only. label_pool.py/check_pool.py were untracked -> off-disk, no git trace.
-next    : phase 3 (surgical correction) -- proposal cards from --audit on a real window; validate fixes BY EFFECT.
-carry   : dead synthetic-pool remnants in lab/dpo root (disposition_pool.jsonl, _TEMPLATE.jsonl,
-          build_seed_pool.py) pending removal ; report_E16_L4_selftest.md modified (unrelated, unstaged) ;
-          STATUS carry (E34, L5 loose, STRATEGY rev2) unchanged.
 
-### 2026-06-13 -- phase 2: organ built + labeler handed to Founder
-type    : RESEARCH / lab (TYPE A build).
-built   : verify_disp_audit.py -- phase-2 disposition-audit organ, import-only over verify_E16_A.selfcheck,
-          no store/model/net. --selftest PASS on box (real verify_E16). Wiring --eval PASS on a synthetic
-          seed (NOT the gate). md5 e1be274ac93831cfea251f7cbd784c8b. Committed (onto-research main, 21e9688).
-          label_pool.py -- offline Founder labeler (RU+EN candidates, blind, taps 1-5 -> disposition_pool.jsonl).
-          check_pool.py -- pool validator (counts/labels/empty/floor).
-decided : phase-2 pool = Founder-judged labels on RU-translated candidate outputs (Founder does NOT write EN).
-          CONTINUITY_LOG.md created (this file) as the standing anti-forgetting spine, read-first on intake.
-tried+failed : harvest-mining the pool (see DO-NOT-REDO).
-next    : Founder runs label_pool.py -> validator -> verify_disp_audit.py --eval (the real phase-2 gate).
+================================================================================
+## 2026-06-16 (vy) -- S2B FULL-TEXT STEP 1a (FT-wrong) DONE + the persist-per-item crash lesson
 
-### 2026-06-12 -- phase 1 closing / phase 2 spec frozen (prior session, reconstructed from pack v105)
-built   : A-channel verify_E16_A.py (false_flag 0.000, detect 0.818 @ 11+11; A2 patched, re-frozen).
-          B-channel L1-L4 + live intake committed. Canon + STATUS + SPEC_disposition_audit FROZEN (commit 117dd9a).
-next    : phase-2 disposition-audit organ build.
+PLANE: build FT-CC against GATE_s2b_fulltext_v0.md (frozen, md5 0c666ee0). FIX leg, STEP 1, data-only.
+s2b_v0.py UNTOUCHED (R7). STEP 1 is now SPLIT across sessions (1a FT-wrong / 1b thin-correct / 1c no-OA+assemble).
 
+WHAT WAS DONE -- FT-wrong 10/10, captured to eval/_local/ft_cc_v0_DRAFT.jsonl (LOCAL-ONLY, bait-class) :
+  3 REALS (extreme mismatches, read-proven LACKS from OA full text) : id12 orlistat/HBV vs antibiotic-resistance ;
+  id18 CFTR/cystic-fibrosis vs quantum-error-correction ; id29 grip-strength/geriatric vs K-Pg-extinction.
+  7 ADJACENT SYNTH (read-proven Standard E, cross-mechanism, Rule D = 5 medical + 2 non-medical) :
+   adj01 T2D claim sitagliptin/DPP-4 -> canagliflozin (10.1111/dom.12054)
+   adj02 HTN claim amlodipine/CCB -> azilsartan (10.1186/s40885-018-0086-4) [body names amlodipine procedurally;
+         Standard E confirmed no mechanism affirmation -- the real co-discussion test]
+   adj03 MDD claim sertraline/SSRI -> bupropion XL (10.4088/pcc.v09n0204)
+   adj04 asthma claim budesonide/ICS-GR -> montelukast (10.7759/cureus.5046) [claim sharpened to GR-mechanism so
+         generic "ICS gold-standard" mention does not affirm]
+   adj05 physics claim cuprate BCS-phonon -> spin-fluctuation cuprate, arXiv 2502.13612 [body CONTRADICTS ; airtight grep]
+   adj06 ML claim Adam adaptive+momentum -> Stochastic Heavy Ball, arXiv 2312.14567 [full-body grep zero-Adam ;
+         sibling 2401.06738 was a trap (affirms Adam) -- rejected]
+   adj07 epilepsy claim ethosuximide/T-type-Ca -> LEV vs CBZ (10.1155/2015/415082) [RULE C DEVIATION: comparative
+         target, justified -- claim drug absent from both arms ; FLAG for Founder at lock]
+
+RULES BANKED (within-gate HOW ; move no bar) :
+  Rule C : FT-wrong target = single-agent primary (not comparative/review) -> avoids partial TRUE-support -> mislabel.
+  Rule D : FT-wrong cross-domain (>=2 non-medical) -- substrate wrong-binds are cross-domain ; don't test G7 only in
+           clinical vocabulary.
+  Standard E : adjacency means the target often mentions the claim-A class ; read-proof must confirm the body does
+           NOT AFFIRM the specific claim-A (passing class-mention != affirmation). adj02/adj04 exercised this live.
+  R16 read-proof method : arXiv = direct full-text fetch + grep (airtight) ; medical PMC/Wiley are bot-blocked on
+           direct fetch -> targeted body-probe (search engine reads PMC bodies) + clean abstract/intro/keywords +
+           structural/chronological argument.
+
+THE CRASH + THE LESSON (the load-bearing carry of this leg) : the session was holding ALL of STEP 1 in context and
+  writing NOTHING to disk. It crashed mid-ftc04 (FT-thin-correct sourcing). Nothing was conceptually lost (the 13
+  done items were recovered from the transcript into ft_cc_v0_DRAFT.jsonl), but the failure mode is clear:
+  CONTEXT IS EPHEMERAL ; a crash with zero disk persist erases the whole leg. FIX = PERSIST-PER-ITEM: append each
+  locked item to ft_cc_v0_DRAFT.jsonl on disk immediately ; never accumulate a class in context. This is the (vx)
+  "Kaggle ephemeral disk -> download immediately" lesson, applied to the context window itself.
+
+THE SPLIT (process change) : STEP 1 (24 items x ~2-3 live reads each) is too big for one context. Split: 1a FT-wrong
+  [DONE], 1b FT-thin-correct (ftc04-10, next session), 1c FT-no-OA + assemble + CONTENTS-verify + md5-lock. One class
+  per session, persist-per-item within each.
+
+STEP 1 STATE (NOT closed) : FT-wrong 10/10 (draft, 3 pre-lock fixes pending) ; FT-thin-correct 3/10 (ftc01 verbatim
+  baseline + ftc02/ftc03 prose) ; FT-no-OA 0/4. PRE-LOCK FIXES: (1) re-pull id18/id29 exact claim_text from
+  rate_judgments ; (2) adj07 Rule-C deviation -> Founder OK or replace ; (3) ftc03 medRxiv preprint -> Founder OK or swap.
+
+GIT: nothing pushed (data-only ; ft_cc_v0_DRAFT + all FT-CC LOCAL-ONLY, gitignored). R12 leak still standing.
+
+carry: DO-NOT-REDO -- (a) FT-wrong 10/10 is read-proven + captured ; do not re-source (ft_cc_v0_DRAFT.jsonl is the
+  record). (b) Rules C/D/E + R16 read-proof method + persist-per-item are SETTLED ; do not relitigate. (c) ftc01 is
+  the lone verbatim baseline ; thin-correct is prose-weighted. (d) no reals for thin-correct/no-OA -> full synthesis ;
+  if 10/10 not clean, amend gate (Rule B), do not pad.
+Resume next: trigger "LABA, S2B FULLTEXT POLICY" -> RESUME STEP 1b. Pull ft_cc_v0_DRAFT.jsonl + rate_judgments_v01 +
+  ft_resolve.json first. Source ftc04-10 (obscure prose-finding), persist-per-item. Then STEP 1c assemble + md5-lock.
+
+
+================================================================================
+## 2026-06-16 (vz) -- S2B FULL-TEXT STEP 1b VERIFY-CLOSED (10/10) + 1c-A carry resolved + BATON RESYNC (the pack was stale, not the disk)
+
+PLANE: build FT-CC against GATE_s2b_fulltext_v0.md (frozen, md5 0c666ee0). FIX leg, STEP 1, data-only.
+s2b_v0.py UNTOUCHED (R7). Trigger "LABA, S2B FULLTEXT POLICY", resumed at STEP 1b.
+
+INTAKE: pack v165 VALID (9/9 md5 vs MANIFEST ; PACK_SPEC == f888f427, staleness guard OK).
+
+THE BATON DESYNC (the load-bearing finding, R9/R15/3.10). The (vy) baton said "FT-thin-correct = 3/10,
+  crashed mid-ftc04, build 7 more". CONTENTS-check of the pulled ft_cc_v0_DRAFT.jsonl DISAGREED: it already
+  held 20 rows -- FT-wrong 10 + FT-thin-correct 10 (ftc01..ftc10). A recovery session had filled ftc04..ftc10
+  into the draft but NEVER rebuilt the pack -> the baton went stale relative to disk (the exact 3.10 failure:
+  ops state in a recovered draft, not carried into the conveyor). Disk > memory -> the remaining leg was NOT
+  "build 7 more", it was VERIFY the 7 that disk claimed (a recovered draft is on-disk but NOT read-proven, and
+  arXiv IDs from a non-self-grounded recovery cannot be trusted, 3.9).
+
+RE-PROOF (ftc04..ftc10, one item per step, persist-on-disk = no edit on PASS, R7) -- ALL 7 PASS :
+  ftc04 2312.14311 -- verbatim body 3.1.4 "removing this ... nearly triple test RMSE ... worst model" + Table 1
+        CNNsc 0.041 -> 0.121 (×2.95) ; abstract OMITS augmentation/ablation. single-agent primary (Rule C/D). PASS.
+  ftc05 2307.00636 -- verbatim Intro "stator-stator interaction potential between 1 and 2 kBT" + fit J~=1.21 ;
+        abstract gives only "we estimate ..." no value. PASS. (quote in Intro not Results -- valid, value absent
+        from abstract, model won't emit it abstract-only.)
+  ftc06 2405.10071 -- verbatim "Typical external errors ... are 1-2 mas" + Fig 2 caption ; abstract = counts only.
+        watch-flag: SOAR ~1mas known across years -> light C5 ; the 1-2 mas + method absent from abstract holds. PASS.
+  ftc07 2404.07892 -- verbatim Intro "single circuit was measured for over 80% of the measured domains" + 3.2
+        908,422/1,142,115 = 79.5% ; abstract OMITS composition. PASS.
+  ftc08 2407.02420 -- verbatim 4 "highest Mach achieved by the SRC was 45.6, at 95 km altitude" (+ official PSJ) ;
+        abstract = vague campaign overview, no numbers. PASS.
+  ftc09 2308.00526 -- verbatim 3.2 "RGCs response is not correlated with visual saliency ... |value| < 0.25" ;
+        title/abstract qualitative only, no number. PASS.
+  ftc10 2310.14870 -- verbatim "79.4% of citations received by NLP are from CS ... 81.8% ... go to CS" ; abstract
+        gives only "dominated by CS" + non-CS shares. PASS.
+  => FT-thin-correct = 10/10 CLEAN. All 7 re-proven items already correct on disk -> NO edits (PASS = no edit).
+  8 non-medical / 2 medical (ftc01 PMC, ftc03 medRxiv). All arXiv items airtight via direct fetch+grep.
+
+1c-A CARRY RESOLVED :
+  - id18 claim_text re-pulled (quantum-error-correction ; cited nature04712 = CFTR chloride-channel -> extreme
+    mismatch -> NOT). id29 claim_text re-pulled (K-Pg asteroid ; cited jgo.2019 = grip-strength geriatric-oncology
+    -> extreme mismatch -> NOT). Both sit in rate_judgments_v01 UNCLEAR_HELD records (mixed schema) -- NOT in
+    ft_resolve (ft_resolve carries cr_title/oa_is_oa, no claim_text). Patched into the working draft.
+  - adj07 (comparative LEV+CBZ target, Rule-C deviation) -> KEEP. Claim drug ethosuximide is absent from BOTH
+    arms -> the trial genuinely cannot support the claim -> NOT is safe, no partial-TRUE-support risk. Replacing
+    = a fresh read-proof for zero gain.
+  - ftc03 (medRxiv preprint, OA not peer-reviewed) -> KEEP. Gate sec 1 needs OA full text ; medRxiv IS OA
+    (Unpaywall) ; peer-review is not a gate bar ; the snapshot freezes the proof_quote vs later preprint edits.
+
+STEP 1 STATE : FT-wrong 10/10 DONE ; FT-thin-correct 10/10 DONE ; FT-no-OA 0/4 (the 1c-B build). ft_cc_v0.jsonl
+  NOT assembled, NOT md5-locked. s2b_v0.py UNCHANGED.
+
+1c-B WINDFALL (for next session) : ft_resolve.json already hands 5 grounded oa_is_oa=False crossref-resolved DOIs
+  (need 4) -- id02 vaccine.2019.01.067 (RVF vaccine), id11 ccr.2014.09.014 (V-catalysis), id13 nature09573
+  (RNA-pol crystal), id24 neuropharm.2006.08.001 (histamine H3), id25 nature01273 (synaptic imaging). FT-no-OA =
+  attach a CORRECT claim from each abstract + re-confirm NO-OA live + ground DOI. id24 = check retraction FIRST.
+
+GIT : nothing pushed (data-only ; ft_cc_v0_DRAFT + ft_resolve + rate_judgments all LOCAL-ONLY, gitignored).
+  R12 leak still standing for a future `git add .`.
+
+carry: DO-NOT-REDO -- (a) FT-thin-correct 10/10 is read-proven + on disk ; do NOT re-source ftc01..ftc10. (b) the
+  baton-resync lesson: a recovery that fills the draft MUST rebuild the pack same turn (else the next instance
+  re-verifies, as this leg did). (c) 1c-A carry is resolved (id18/id29 claim_text in draft ; adj07 KEEP ; ftc03
+  KEEP) -- do not relitigate. (d) FT-no-OA is correct-cite-WITHOUT-OA ONLY ; a no-OA wrong-bind is side-bin.
+Resume next: trigger "LABA, S2B FULLTEXT POLICY" -> RESUME STEP 1c-B. Pull ft_cc_v0_DRAFT.jsonl + rate_judgments_v01
+  + ft_resolve.json. Build FT-no-OA x4 (persist-per-item), then 1c-C assemble + CONTENTS-verify + md5-lock.
+
+## 2026-06-16 (wa) -- S2B FULL-TEXT STEP 1c-B + 1c-C DONE -> STEP 1 (build FT-CC) COMPLETE + md5-LOCKED
+SCOPE : data-only. s2b_v0.py UNTOUCHED (eval+fix never share, R7). PULLED ft_cc_v0_DRAFT.jsonl (20) +
+  rate_judgments_v01.jsonl + ft_resolve.json (LOCAL-ONLY).
+
+STEP 1c-B (FT-no-OA x4) DONE -- correct-cite-WITHOUT-OA = the G9 honesty surface. 4 built from ft_resolve
+  oa_is_oa=False seeds (id11 V-catalysis review DROPPED -> messier correct-cite ; 4 primary papers kept) :
+   - id02 10.1016/j.vaccine.2019.01.067 : RVF arMP-12dNSm21/384 vaccine, detectable Ab by day 7 PV. PubMed
+     abstract verbatim. Vaccine/Elsevier non-OA.
+   - id13 10.1038/nature09573 : Thermus RNAP + inhibitor Gfh1, novel "ratcheted" conformation. Nature abstract
+     verbatim (cited inhibitor confirmed Gfh1, not Gp2). Nature 2010 non-OA.
+   - id24 10.1016/j.neuropharm.2006.08.001 : presynaptic H3R reduce glutamate, NOT GABA, rat thalamus.
+     RETRACTION-CHECK DONE = NO retraction (clean PubMed, cited through 2019 ; memory flag cleared). Elsevier non-OA.
+   - id25 10.1038/nature01273 : adult mouse barrel cortex, ~50% spines stable >=1 month, rest turn over in days.
+     Nature abstract verbatim. Nature 2002 non-OA.
+  Each = abstract-readable (correct-cite verifiable) + full text NOT OA -> resolver must fail-closed UNCLEAR (G9).
+  All 4 are correct-cites (claim genuinely supported) ; none a wrong-bind -> no side-bin. expect=UNCLEAR.
+  NO-OA re-confirmed live : every full text is publisher-paywalled (Elsevier x2, Nature x2) ; only abstracts free.
+  Appended persist-per-item to ft_cc_v0_DRAFT.jsonl -> 24 rows (rows=24 FT-no-OA=4 verified on disk).
+
+STEP 1c-C (ASSEMBLE) DONE -- built from the authoritative 24-row disk draft (not a context copy) :
+   - eval/_local/ft_cc_v0.jsonl       (blind predicate input : id+doi+claim_text only) md5 ea5e0ec43e73738116452a03a09b51e9
+   - eval/_local/ft_cc_ground_v0.json (answer key : class/expect/proof_quote/proof_url/note, scored blind) md5 88a14f9de99aeeea2b15631a59b6d1c6
+  CONTENTS-verify PASS (3.7) : input=24, wrong=10/thin=10/noOA=4, class<->expect consistent (wrong->NOT,
+  thin->SUPPORTS, noOA->UNCLEAR), no empty load-bearing field, id 1:1 across both files. BOTH md5-LOCKED.
+  Lock lands BEFORE any predicate byte (R7) -- STEP 2 is a separate plane.
+  BOTH files LOCAL-ONLY, bait-class : never public git (gate sec 2 + pack SEC 5).
+
+STEP 1 (build FT-CC) is COMPLETE. Next plane = STEP 2 (implement the fallback), already pinned in gate sec 5.
+
+GIT : nothing pushed (data-only ; FT-CC + ground + draft + resolve + judgments all LOCAL-ONLY, gitignored).
+  R12 leak (audit_v2_stdout.txt + onto_index_harvest.txt) still standing -- gitignore/move BEFORE any `git add .`.
+
+carry: DO-NOT-REDO -- (a) FT-CC is COMPLETE + md5-LOCKED (ea5e0ec4 / 88a14f9d) ; do NOT rebuild or re-source any
+  class. The two md5 are the freeze -- a mismatch at STEP 2 = the set drifted, reconcile before running.
+  (b) id24 retraction-check is DONE (clean) ; do not re-check. (c) FT-no-OA used 4 of 5 seeds (id11 review
+  dropped, justified) ; do not add id11. (d) ground.json is the blind answer key -- the predicate must NEVER read
+  expect/proof at run time (R7 ; join by id post-hoc only).
+Resume next: trigger "LABA, S2B FULLTEXT POLICY" -> RESUME STEP 2 (gate sec 5). Pull ft_cc_v0.jsonl +
+  ft_cc_ground_v0.json (verify md5 ea5e0ec4 / 88a14f9d first) + s2b_v0.py + GATE_s2b_fulltext_v0.md (md5 0c666ee0).
+  Implement OA-resolver + fulltext B2 as a downstream UNCLEAR-only resolver in s2b_v0.py (pin read-strategy per
+  gate sec 5), --selftest re-prove G1-G6 + G7/G8/G9 offline on a fake getter, THEN --run live on FT-CC.
+
+================================================================================
+## 2026-06-16 (wb) -- S2B FULL-TEXT STEP 2 (implement) + STEP 3-4 (selftest+run): bars PASS but DEGRADED run -- Crossref getter 404s on arXiv DataCite DOIs (9/24 ERROR) ; getter fix DEFERRED, commit HELD
+PLANE: implement+run the full-text fallback against GATE_s2b_fulltext_v0.md (frozen, md5 0c666ee0). RESUMED STEP 2.
+INTAKE: pack v167 VALID (9/9 md5 vs MANIFEST ; PACK_SPEC == f888f427, staleness guard OK). FT-CC freeze VERIFIED
+  before any byte: ft_cc_v0.jsonl ea5e0ec4 / ft_cc_ground_v0.json 88a14f9d (both MATCH -> set not drifted).
+  s2b_v0.py pulled == 75ba0a71 (vv, no drift) + falsifier 8307d97d + cc/j5/ground.
+
+STEP 2 (implement) DONE. s2b_v0.py 75ba0a71 -> 5cd0d11c (495 -> 762 lines ; ON DISK, NOT committed). ADDITIVE only:
+  - downstream UNCLEAR-only full-text resolver in judge(). Fires ONLY on abstract verdict UNCLEAR with reason in
+    {no_abstract, b2_unclear}. Abstract SUPPORTS/NOT/off_topic/wrong_binding PASS THROUGH UNCHANGED (G6). Disabled
+    when oa_getter is None -> the abstract-layer selftest path is byte-identical. The 8 frozen abstract-layer fns
+    (b1_binding/parse_citation/parse_year_only/venue_compatible/off_topic/subj_tokens/b2_supports/check_bars/run_g5)
+    VERIFIED byte-IDENTICAL to 75ba0a71 -> G1-G6 cannot regress by construction.
+  - read-strategy = CHUNK-WITH-COVERAGE-GUARANTEE (gate sec5 STEP2 ii ; chosen over whole-text-under-budget because
+    truncation = unread bytes = a SILENT G8 violation). chunk 6000c / overlap 400 / MAX 20 chunks / fetch cap 600KB.
+    Aggregation: SUPPORTS if ANY chunk supports ; NOT only if NO chunk supports AND coverage complete ; else
+    UNCLEAR(no_coverage). Support in UNREAD bytes (chunk cap / fetch trunc) -> UNCLEAR(no_coverage), NEVER NOT.
+  - OA resolver resolve_oa_fulltext: arXiv -> ar5iv HTML ; Europe-PMC fullTextXML (isOpenAccess only) ; Unpaywall
+    best-OA landing (HTML). No OA full text -> UNCLEAR(no_fulltext) fail-closed (G9). No paywall scrape, no PDF guess.
+  - B2 callables gained an optional system= kwarg (backward-compat ; abstract path system defaults to B2_SYS,
+    unchanged) ; B2_FT_SYS for chunk reads (same grounded non-proposing instance, excerpt-scoped).
+  - post-hoc mode_score (joins ft_cc_ground by id ; predicate stays BLIND, R7) ; --in-md5 freeze guard ; --no-fulltext.
+
+STEP 3 (--selftest, real B2 Qwen2.5-7B CPU offload, box) PASS: BARS PASS G1-G4 (J1->SUPPORTS, J2->NOT/binding,
+  J3->UNCLEAR [B2-soft -- not SUPPORTS so G2 HOLDS], J4->UNCLEAR/no_abstract) ; G5 0/18 CC->NOT ; FT-SELFTEST
+  G7/G8/G9 PASS offline (incl g8b_unread + g8c_trunc -> UNCLEAR/no_coverage, never NOT). No regression. Logic VALID.
+
+STEP 4a (net pre-check) PASS: NETCHECK Crossref live (control eLife.00065) ; resolve_oa_fulltext LIVE arXiv ar5iv
+  63401c + Europe-PMC PMC4698781 30036c, both trunc=False. The OA getter works live.
+
+STEP 4 (--run live on FT-CC ea5e0ec4-guarded + --score post-hoc) -- VERDICT PASS on HARD bars, RUN DEGRADED (R2/R16):
+  BARS: G7 no-poison PASS (0 FT-wrong->SUPPORTS) ; G8 no-castration PASS (0 FT-thin-correct->NOT) ; G9 honesty PASS
+  (all 4 FT-no-OA -> UNCLEAR/no_fulltext). VERDICT PASS = G6&G7&G8&G9. resolution yield 7/24 (DIAGNOSTIC).
+  BUT 9/24 items = ERROR (leg=getter, HTTP 404) -- ALL arXiv DataCite DOIs (10.48550/arXiv.*): ftc02,04,05,06,07,
+  08,09,10 (8 of 10 FT-thin-correct) + adj05,adj06 (2 FT-wrong). ROOT CAUSE (R16): judge() calls fetch_crossref
+  FIRST for metadata ; Crossref 404s on arXiv DataCite DOIs -> exception -> ERROR BEFORE B1/B2/fallback run. The OA
+  resolver HANDLES arXiv (proven 4a) but is never reached -- the abstract-layer Crossref entry dies first. So the
+  bars are NOT falsified (ERROR != SUPPORTS, != NOT), but the G8 CASTRATION SURFACE WAS UNDER-EXERCISED: only ftc01
+  actually adjudicated SUPPORTS through full text (8/10 thin-correct crashed). The 15 items that DID run all landed
+  right: 5 FT-wrong (adj01-04,adj07,id18) -> fulltext_not ; id12/id29 (FT-wrong reals) -> UNCLEAR/no_fulltext
+  (wrong-target paper has no OA full text -> fail-closed ; gate sec6 OA gap, a MISS not a poison) ; ftc03 (medRxiv,
+  not in Europe-PMC OA) -> no_fulltext ; 4 FT-no-OA -> no_fulltext. The PASS is REAL on the bars but THIN on
+  coverage -- NOT a clean validation.
+
+DECISION (R7, eval+fix never share). Did NOT patch the getter + re-run this session. Did NOT relabel/tune any bar
+  (the bars PASSED). HELD the git commit: a public VERDICT-PASS report with 9/24 ERROR + only 1 thin-correct
+  adjudicated would overstate the validation (R7 honesty). Committing 5cd0d11c -- a version known to 404 on arXiv --
+  also hurts reproducibility. Commit the getter-FIXED version next session after a clean re-run.
+
+THE FIX (next session ; getter-robustness ; touches NO bar, NO frozen gate, NOT the fallback logic): in
+  fetch_crossref, on Crossref HTTPError 404 (or an arXiv/DataCite DOI), fall back to OpenAlex for FULL metadata
+  (title/year/authors/abstract via the works endpoint -- OpenAlex covers arXiv ; fetch_openalex_abstract already
+  exists, extend to full metadata). Then arXiv items reach B1/B2 + the (already arXiv-capable) OA resolver -> the
+  8 thin-correct exercise G8 for real. Re-run FT-CC clean -> re-score -> THEN commit s2b_v0.py + public report.
+
+GIT: NOTHING committed (STEP 5 HELD). s2b_v0.py (5cd0d11c) on disk + selftest-proven, NOT pushed. FT-CC + ground +
+  ft_cc_v0_s2b_out.jsonl all LOCAL-ONLY (gitignored). R12 leak (audit_v2_stdout.txt + onto_index_harvest.txt)
+  STILL standing -- gitignore/move BEFORE any git add .
+
+carry: DO-NOT-REDO -- (a) the fallback LOGIC is built + selftest-proven (G7/G8/G9 offline + judge() integration) ;
+  do NOT rebuild it. (b) bars PASS but the run is DEGRADED by the arXiv-Crossref-404 GETTER gap -- the fix is the
+  GETTER (Crossref-404 -> OpenAlex metadata fallback), NOT the fallback logic, NOT any bar. (c) ft_cc_v0.jsonl
+  id18/id29 still carry PLACEHOLDER claim_text in the LOCKED file (ea5e0ec4) -- the (vz) re-pull landed in the
+  draft, not the assembled+locked set (baton-vs-disk drift, 3.10) ; both are FT-wrong->NOT and resolved correctly,
+  but decide at the clean re-run whether to re-lock with real claim_text. (d) commit is HELD until a clean run.
+  (e) read-strategy (chunk+coverage) + the OA-source order (arXiv/EPMC/Unpaywall) are SETTLED ; do not relitigate.
+Resume next: trigger "LABA, S2B FULLTEXT GETTER". Pull s2b_v0.py (5cd0d11c) + ft_cc_v0.jsonl (ea5e0ec4) +
+  ft_cc_ground_v0.json (88a14f9d) + falsifier (8307d97d) + cc/j5/ground. Patch fetch_crossref (Crossref-404 ->
+  OpenAlex full metadata) ; --selftest (no regression, G1-G9) ; --netcheck ; --run clean (expect <=2 ERROR) ;
+  --score ; on clean PASS -> commit s2b_v0.py + public report + close pack.
+
+================================================================================
+## (wc) -- S2B FULLTEXT GETTER FIX : getter PASS, but the clean run exposed a latent G8 resolver castration -> REJECT, commit HELD
+Trigger executed: "LABA, S2B FULLTEXT GETTER". Pack v168 intake VALID (9/9 md5, PACK_SPEC f888f427 staleness-guard OK).
+Plane = getter-robustness in fetch_crossref ONLY ; bars + frozen gate + fallback logic untouched.
+
+STEP A -- PATCH (s2b_v0.py 5cd0d11c -> ad4d71794f678b5a3c1febccf24bf46e ; +53 lines). Three surgical edits, getter-only:
+  (1) new sibling fetch_openalex_meta(doi) -- FULL metadata off the OpenAlex works endpoint: title=display_name,
+      venue=primary_location.source.display_name (host_venue fallback), year=publication_year, author_surnames=
+      last-token of each authorships[].author.display_name (mirrors Crossref family), abstract=reconstructed
+      inverted index. Returns None when OpenAlex has no record (-> caller fails honest, never fabricates).
+  (2) fetch_crossref: DataCite prefix (10.48550/) routes straight to OpenAlex up front (skips the guaranteed 404) ;
+      PLUS a Crossref-HTTPError-404 safety net -> OpenAlex. OpenAlex empty too -> re-raise -> honest ERROR (R7).
+      Crossref STAYS primary for everything it resolves (success path byte-equivalent ; only 404 is intercepted).
+  (3) --netcheck gained an arXiv-via-OpenAlex probe (ftc04 DOI 10.48550/arXiv.2312.14311).
+  PROOF no-regression: 15 frozen fns (b1_binding/parse_citation/parse_year_only/venue_compatible/off_topic/
+  subj_tokens/b2_supports/check_bars/run_g5/fetch_openalex_abstract/resolve_oa_fulltext/fulltext_resolve/judge/
+  _reconstruct_inverted_index/strip_jats) md5 BYTE-IDENTICAL before/after (diff empty). py_compile OK. ASCII-clean
+  (the one non-ASCII char = pre-existing SPEC-section sign in a header comment, present in 5cd0d11c).
+
+STEP A VERIFY -- --selftest PASS, identical to wb STEP 3: J1->SUPPORTS x4, J2->NOT/wrong_binding x4, J3->UNCLEAR
+  x4 (G2 holds : not SUPPORTS), J4->UNCLEAR/no_abstract x4 ; BARS PASS G1-G4 ; G5 0/18 CC->NOT ; FT-SELFTEST G7/G8/
+  G9 PASS (g8b_unread + g8c_trunc -> UNCLEAR/no_coverage). --netcheck PASS (crossref=True arxiv-openalex=True):
+  eLife.00065 (title/venue=eLife/2012/14 authors/abstract 739) + arXiv.2312.14311 via OpenAlex (title="Crystal
+  Growth Characterization of WSe2 Thin Film..."/venue="arXiv (Cornell University)"/2023/3 authors/abstract 1647).
+  OpenAlex works-schema CONFIRMED LIVE (the one R2 load-bearing assumption -- field names -- falsifier passed).
+  R16 false-alarm RESOLVED: the WSe2 title is the PAPER ; ftc04's claim is the augmentation-ablation result INSIDE
+  it (x2.95 "nearly tripled") -- title+claim consistent, frozen ftc04 doi correct, set not touched.
+
+STEP B -- CLEAN RUN. --run ft_cc_v0.jsonl (--in-md5 ea5e0ec4 guard OK) -> 24 items, ERROR = 0 (was 9/24). verdicts
+  {UNCLEAR:7, NOT:10, SUPPORTS:7} ; legs {fulltext:23, supports:1}. The getter fix WORKS -- every arXiv DataCite
+  item now reaches B1/B2 + the OA resolver ; no getter/error leg. --score (ground joined by id, post-hoc):
+  VERDICT REJECT. G7 no-poison PASS (0 FT-wrong->SUPPORTS). G9 honesty PASS (4/4 FT-no-OA->UNCLEAR/no_fulltext).
+  G8 no-castration FAIL: ftc02, ftc03, ftc08 (FT-thin-correct) -> NOT (fulltext_not) = CASTRATION. resolution yield
+  16/24 (was 7/24, diagnostic).
+
+ROOT CAUSE (R16): the getter ERROR was MASKING a latent G8 resolver castration. Now that arXiv items resolve, the
+  full-text resolver / B2-FT reads ABSENCE-of-support-in-the-retrieved-span as a CONTRADICTION (emits fulltext_not
+  -> NOT) instead of no_coverage -> UNCLEAR. Gate sec5/A2 is explicit: a support missed because its bytes were
+  unread = no-coverage UNCLEAR, NEVER NOT. The 3 fails are quantitative claims: ftc02 (arXiv.1704.08463, CuxTiSe2
+  penetration-depth probe-asymmetry), ftc03 (medRxiv 10.1101/2025.10.22.25338568, 40Hz ASSR null), ftc08
+  (arXiv.2407.02420, OSIRIS-REx Mach 45.6). NOT is wrong for all three regardless of coverage (should be SUPPORTS
+  if read, UNCLEAR if unread) -> the fix target is the resolver's contradiction-vs-no_coverage discrimination.
+
+DECISION (R7, eval+fix never share a session). The getter fix is CORRECT and on disk (ad4d71). COMMIT HELD: the
+  integrated gate VERDICT = REJECT (G8 red) -> we do not push a red-gate state as "accepted". Did NOT touch the
+  resolver/bars this session (the G8 castration is a NEW front = next plane, not opened mid-session). Did NOT tune
+  G8 to pass (tuning a bar = fabrication, R7). Sunk cost = 0.
+
+GIT: NOTHING pushed (commit HELD). s2b_v0.py ad4d71 on disk, NOT committed (5cd0d11c known to 404 on arXiv; ad4d71
+  known G8-red -> neither is a clean public artifact). ft_cc_v0_s2b_out.jsonl LOCAL-ONLY. R12 leak (audit_v2_stdout
+  .txt + onto_index_harvest.txt) STILL standing -> gitignore/move BEFORE any git add. HYGIENE: 2 duplicate
+  s2b_v0.py.bak.* (both 5cd0d11c) in lab\dpo from the deploy retry -> dedup at the eventual git step.
+
+carry: DO-NOT-REDO -- (a) GETTER FIX DONE: DataCite/arXiv -> OpenAlex full-metadata fallback ; ad4d71 IS the
+  version ; do NOT rebuild the getter. (b) the OPEN defect is the full-text RESOLVER (no_coverage vs contradiction),
+  NOT the getter, NOT abstract B1/B2, NOT any bar, NOT the frozen gate. (c) ft_cc_v0.jsonl id18/id29 still carry
+  PLACEHOLDER claim_text in the LOCKED file (ea5e0ec4) ; both FT-wrong->NOT, resolve correctly ; decide at the next
+  clean run whether to re-lock. (d) commit HELD until G8 clean. (e) OA source order (arXiv/EPMC/Unpaywall) + chunk/
+  read-coverage strategy are SETTLED -- do not relitigate ; the fix is the VERDICT logic on top of them.
+Resume next: trigger "LABA, S2B FT G8 RESOLVER". Pull s2b_v0.py (ad4d71) + ft_cc_v0.jsonl (ea5e0ec4) +
+  ft_cc_ground_v0.json (88a14f9d) + ft_cc_v0_s2b_out.jsonl (the REJECT run, to read ftc02/03/08 resolver evidence)
+  + falsifier (8307d97d) + ground_candidates/cc/j5/cc_j5_ground. STEP A diagnose: inspect the 3 items' retrieved
+  span + B2-FT call -- wrong chunk, truncation, or over-strict judgment? STEP B fix the resolver (NOT only on
+  affirmative contradiction ; absence-in-read-span = no_coverage -> UNCLEAR) -> --selftest (G1-G9, abstract layer
+  byte-identical, FT-SELFTEST g8b/g8c stay UNCLEAR). STEP C --run clean -> --score ; on G7/G8/G9 PASS -> commit
+  getter+resolver fix + public-safe report (R12 leak moved first, explicit-path add) + close pack.
+
+================================================================================
+(wd) S2B FT G8 RESOLVER FIX -- DONE, gate VERDICT PASS, committed fd2b9ba.
+================================================================================
+PLANE: fix the full-text resolver verdict logic so absence-of-support in a READ span yields UNCLEAR, and NOT is
+  emitted only on affirmative contradiction. Substrate: s2b_v0.py ad4d71 (getter-fixed, pre-resolver). Gate +
+  FT-CC FROZEN before any byte (eval+fix split honored). TYPE C build.
+
+STEP A -- DIAGNOSE (no edit). From ft_cc_v0_s2b_out.jsonl (wc REJECT run) read ftc02/03/08: all coverage_complete
+  =true, all chunks read (9/9, 2/2, 2/2), abstract_verdict UNCLEAR, fulltext leg -> NOT reason fulltext_not. Code
+  read: fulltext_resolve checked ONLY `if v=="SUPPORTS"`, then `if coverage_complete: return NOT`. Per-chunk
+  NOT/UNCLEAR discarded -> absence-of-affirmative-SUPPORTS misread as contradiction. One structural defect,
+  identical for all 3. Ground confirms all 3 = FT-thin-correct expect SUPPORTS, proof OA-retrievable. Secondary
+  R16 flag (out-of-plane, getter): coverage_complete may overstate coverage on ftc03 (unpaywall:landing) / ftc08
+  (2 chunks) -- if so the honest post-fix verdict is UNCLEAR via no_coverage, never NOT.
+
+GATE CHECK (sec5 STEP2 + A3) -- the fix is PINNED by the contract, not chosen: A3 aggregation = SUPPORTS if ANY
+  chunk SUPPORTS ; else NOT (fulltext_contradicted) only if SOME chunk affirmatively CONTRADICTS ; else if
+  coverage complete UNCLEAR (fulltext_inconclusive) ; else UNCLEAR (no_coverage). NOT reserved for affirmative
+  contradiction ONLY. A3 explicitly supersedes the v0 "NOT if no support AND full coverage" rule that conflated
+  absence with contradiction.
+
+STEP B -- FIX (s2b_v0.py ad4d71 -> 35eefda12c0774ef6e13522febfe1447, LF/git-blob canonical). fulltext_resolve:
+  accumulate `contradicted` over read chunks ; after loop, contradicted->NOT(fulltext_contradicted) ; else
+  coverage_complete->UNCLEAR(fulltext_inconclusive) ; else UNCLEAR(no_coverage). Selftest g7 expectations
+  realigned to A3 (g7_contra NOT/fulltext_contradicted ; g7_neutral UNCLEAR/fulltext_inconclusive). Abstract layer
+  byte-identical (diff = resolver + selftest only). --selftest on real Qwen2.5-7B: BARS PASS G1&G2&G3 G4 held ;
+  G5 PASS (0/18) ; FT-SELFTEST PASS (g8b_unread/g8c_trunc STAY UNCLEAR/no_coverage). Scorer keys verdict+leg, not
+  reason -> reason rename safe.
+
+STEP C -- RUN+SCORE. --run ft_cc_v0.jsonl (--in-md5 ea5e0ec4 OK) -> 24 items, ERROR 0, verdicts {UNCLEAR:16,
+  NOT:1, SUPPORTS:7}. --score: G7 PASS (0 wrong->SUPPORTS), G8 PASS (0 thin-correct->NOT ; ftc02/08 UNCLEAR/
+  fulltext_inconclusive, ftc03 UNCLEAR/no_fulltext -- the 3 castrations gone), G9 PASS. VERDICT PASS. The single
+  NOT = adj05 (FT-wrong, abstract-leg b2_not, affirmative contra) -- legitimate. resolution yield 7/24 (DIAGNOSTIC).
+  Low yield = honest under-resolution: per-chunk affirmative CONTRADICTS is rare under the grounded judge, so many
+  FT-wrong land UNCLEAR. Per gate that is honest, NOT a bar fail. R7: G8 bar NOT tuned.
+
+STEP D -- COMMIT. onto-research main: explicit-path add s2b_v0.py + reports/REPORT_s2b_g8_resolver_fix.md only.
+  R12 leak (audit_v2_stdout.txt + onto_index_harvest.txt) moved into eval/_local/ (gitignored). 8 stray
+  s2b_v0.py.bak.* deleted (gitignored stale dupes ; git = rollback). Commit 20c4db6. INCIDENT: rollback block was
+  given inline with the forward step (protocol violation: rollback must be a separate message) and was run -> revert
+  239b3b4 undid the fix on main + reverted the working file. Recovered by revert-of-revert -> Reapply fd2b9ba (no
+  history rewrite). EOL: working-disk md5 = 2625754e (CRLF, Windows autocrlf on checkout) ; LF-normalized md5 =
+  35eefda1 = git-blob = byte-identical content. Canonical artifact id = 35eefda1 (git-blob/LF).
+
+GIT: PUSHED. onto-research main HEAD = fd2b9ba (Reapply s2b G8 fix). Carries s2b_v0.py (getter+resolver, blob=
+  35eefda1) + REPORT_s2b_g8_resolver_fix.md (public-safe: provenance + bars + yield, no FT-CC/ground/DOI).
+  FT-CC + ground + run in/out remain LOCAL-ONLY. Prior held commit (wc) now superseded.
+
+carry: DO-NOT-REDO -- (a) full-text fallback predicate (B1 + B2-abstract + off_topic + getter + resolver) is now
+  COMPLETE and gate-valid end-to-end (G6&G7&G8&G9 PASS). Do NOT rebuild getter OR resolver OR any bar OR the frozen
+  gate. (b) canonical s2b_v0.py blob = 35eefda1 (LF) ; Windows working copy is CRLF (2625754e) = same content, do
+  not treat the EOL md5 as drift. (c) id18/id29 PLACEHOLDER claim_text still in locked ft_cc_v0.jsonl (ea5e0ec4) ;
+  both FT-wrong, resolve correctly ; re-lock only if a class is ever re-sourced. (d) resolution yield 7/24 is the
+  honest OA+contradiction-detection ceiling -- improving it is a SUPPORTS/CONTRA-leg scaling plane, NOT a bug, and
+  must never be chased by tuning a bar (R7).
+IDEAS (fixate, not opened this session): .gitattributes `*.py text eol=lf` in onto-research -> stabilize checkout
+  EOL so disk md5 == git-blob md5 ; kills the recurring CRLF/md5 confusion. Micro-hygiene plane.
+Resume next: full-text plane CLOSED. Founder picks next from PARKED (L5 FIX behind a fresh gate ; A-channel CI to
+  ~30 ; B2 SUPPORTS/CONTRA-leg at scale = the yield plane ; 4-bit GPU B2 restore = speed). No trigger pre-set.

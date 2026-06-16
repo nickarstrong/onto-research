@@ -84,10 +84,13 @@ BAND A -- TRUST (make it honest before anything else)
       builds  : A-channel + B-channel.
       gate    : false_flag <= 0.10 AND detect >= 0.60 on a >=20+20 held-out set, BOTH channels.
       control : operator applies.
-  2 disposition-audit                         <-- PRIORITY #1, NEXT
+  2 disposition-audit                         <-- CLOSED 2026-06-13
       builds  : the aggregator (flags -> named market-instinct -> proposal card).
-      gate    : on a labelled set of own outputs, flags cluster into the RIGHT named disposition
-                above threshold; false-naming below threshold.
+      gate    : WRITTEN-IN + ORGANIC (reframed 2026-06-13, Founder: no synthetic data). Correctness is
+                SPECIFIED in code -- --selftest's must-fire / must-stay-silent conditions (incl. the
+                careful-disclaimer FP trap) -- and exercised ORGANICALLY via --audit on the model's OWN
+                real outputs; a card on a genuinely clean output is the signal to fix the rule. The old
+                statistical hand-labeled-pool gate is RETIRED (authored-to-vice = semi-confirmatory).
       control : operator applies.
   3 surgical correction
       builds  : corrective-learning (audited fix -> targeted DPO/LoRA), gated.
@@ -138,7 +141,8 @@ gate. The immutable/constitutional layer is touched at NO phase.
 
 ================================================================================
 ## 6  CURRENT POSITION (honest, no idealization)
-We are at the END of phase 1, ENTERING phase 2.
+Phase 2 (disposition-audit) CLOSED 2026-06-13: organ built + written-in validation + organic
+audit on real outputs. Synthetic labeled-pool gate dropped (Founder: all organic). Entering phase 3.
 BUILT (tested + in git):
   - A-channel v0: false_flag 0.000, detect 0.818 on an 11+11 Founder set (SMALL -> wide CI,
     provisional). A2 weakness found by real eval and fixed surgically (re-frozen).
