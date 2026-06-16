@@ -3,10 +3,18 @@
 date   : 2026-06-16
 plane  : RESEARCH / S2(b) -- B2 UNCLEAR-resolver gate. THIS DOC = eval design only. NO predicate byte (R7).
 home   : onto-research/reports (dateable priority + reproducibility ; generic-safe, ZERO dois/claim-texts/abstracts)
-status : FROZEN 2026-06-16 (engineer-applied amendments A1+A2 below ; md5-locked, this is the bar of record).
+status : FROZEN 2026-06-16 (engineer-applied amendments A1+A2+A3 below ; md5-locked, this is the bar of record).
          A1: FT-CC raised 16->24 (10 thin-correct / 10 wrong / 4 no-OA) + G7/G8 declared existence-bars with
          explicit wide-CI honesty line (sec 6). A2: G8 binds to read-coverage -- a support missed because its
          bytes were unread = no-coverage UNCLEAR, never NOT ; read-strategy pinned in sec 5 STEP 2.
+         A3 (reconcile): STEP-2 aggregation RECONCILED to G8. The v0 rule "NOT only if NO chunk supports AND
+         coverage complete" conflated absence-of-support with contradiction and VIOLATED G8 (a READ thin-correct
+         whose support B2 could not lock per-excerpt was forced to NOT -- exposed live on ftc02/ftc03/ftc08).
+         Reconciled: NOT requires an affirmative per-chunk CONTRADICTION (token "NOT" = excerpt states the
+         OPPOSITE) ; read + no-support + no-contradiction -> UNCLEAR (reason=fulltext_inconclusive) ; per-chunk
+         verdict space pinned THREE-WAY (SUPPORTS / CONTRADICTS / UNCLEAR), sec 5 STEP 2. G7/G8/G9 bars
+         UNCHANGED (cited verbatim sec 3) -- A3 corrects the MECHANISM that was failing G8, it moves no bar
+         (eval+fix never share : implementation is the NEXT plane, against THIS re-frozen gate).
 binds  : SPEC_s2b_v0.md (md5 80bdf2a9, frozen ; G1-G4) + GATE_s2b_offtopic_v0.md (frozen ; G5-G6). This gate
          ADDS to their bars ; relitigates none of G1-G6.
 
@@ -87,9 +95,21 @@ All dois grounded LIVE before entry (anti-fab 3.9) ; LOCAL-ONLY, bait-class ; ne
           UNCLEAR-only resolver in s2b_v0.py (it imports no abstract-layer bar ; abstract verdicts pass through
           unchanged). PIN THE READ-STRATEGY HERE (G8 binds to it): full text exceeds the B2 context, so the
           reader must either (i) feed the whole text under a verified token budget, or (ii) chunk with a
-          coverage guarantee -- every chunk adjudicated, verdict = SUPPORTS if ANY chunk supports, NOT only if
-          NO chunk supports AND coverage was complete, else UNCLEAR (reason=no_coverage). A miss caused by
-          unread bytes MUST emit UNCLEAR, never NOT (else G8 catches a build artifact, not castration). STEP 3: --selftest must re-prove G1-G6 (no regression) AND prove G7/G8/G9 offline on a
+          coverage guarantee -- EVERY chunk adjudicated (linear full scan of all chunks up to the cap ; NO
+          retrieval top-k / no embedding pre-select -- a support-bearing chunk is never dropped from scoring),
+          by the SAME grounded non-proposing B2 whose per-chunk verdict space is THREE-WAY and SEMANTICALLY
+          PINNED (A3): SUPPORTS = excerpt affirmatively supports the claim ; CONTRADICTS (token "NOT") = excerpt
+          affirmatively states the OPPOSITE of the claim ; UNCLEAR = excerpt neither supports nor contradicts
+          (absence, off-excerpt, or insufficient). AGGREGATION (A3, reconciled to G8): SUPPORTS if ANY chunk
+          SUPPORTS ; else NOT (reason=fulltext_contradicted) only if SOME chunk affirmatively CONTRADICTS ;
+          else, if coverage was complete, UNCLEAR (reason=fulltext_inconclusive) ; else UNCLEAR
+          (reason=no_coverage). NOT IS RESERVED FOR AFFIRMATIVE CONTRADICTION ONLY -- absence of support in a
+          READ span is UNCLEAR, never NOT (a thin-correct whose support B2 could not lock from any single
+          excerpt is honest UNCLEAR, not castration). A miss caused by UNREAD bytes MUST emit UNCLEAR/no_coverage,
+          never NOT. [A3 supersedes the v0 rule "NOT only if NO chunk supports AND coverage was complete" --
+          that rule conflated absence-of-support with contradiction and VIOLATED G8 (it forced a read
+          thin-correct -> NOT). G7/G8/G9 bars are UNCHANGED ; A3 corrects the read-strategy MECHANISM that was
+          failing G8, it moves no bar.] STEP 3: --selftest must re-prove G1-G6 (no regression) AND prove G7/G8/G9 offline on a
           fake OA-getter, BEFORE any live fetch. STEP 4: run on FT-CC live, report G7/G8/G9 PASS + resolution
           yield readout.
   trigger : "LABA, S2B FULLTEXT POLICY"
@@ -104,5 +124,10 @@ All dois grounded LIVE before entry (anti-fab 3.9) ; LOCAL-ONLY, bait-class ; ne
     stress test teeth but does NOT bound the live false-fire rate -- a 10/10 PASS is precision-first evidence
     with a deliberately wide CI, not a guarantee the policy never poisons/castrates in the wild. Stated up
     front so a clean PASS is not over-read.
+  - A3 yield trade (pre-stated): reserving NOT for affirmative contradiction means an FT-wrong cite whose OA
+    full text simply does NOT mention the claim (off-target paper, no opposing statement) now resolves UNCLEAR,
+    not NOT. This LOWERS the NOT-yield on the wrong surface -- it is the precision-first correct behavior, not a
+    regression. G7 (no-poison: 0 wrong -> SUPPORTS) is UNAFFECTED (UNCLEAR is not SUPPORTS) ; resolution yield is
+    diagnostic, not a bar (sec 3). The reconciliation trades a false-NOT (castration) for an honest UNCLEAR.
 
 freeze: on Founder accept, md5-lock this doc and the section 3 bars before the next plane's first byte.
