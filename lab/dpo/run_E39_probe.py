@@ -122,6 +122,26 @@ def anchor_check(recs, tau_e37):
     if round(m["fa_op"], FA_DP) != E37_FA_OP:
         void("anchor: lambda=0,tau_E37=%s gives fa_op=%.6f (4dp %.4f) != E37 %.4f -- read drifted (E23 guard)"
              % (tau_e37, m["fa_op"], round(m["fa_op"], FA_DP), E37_FA_OP))
+    # (3) DIAGNOSTIC (sec4(3)/sec7 FROZEN falsifier): auth-only decomposition -- exclude pre_demoted (noauth)
+    #     spoofs; con-veto over the AUTH subset MUST give 13/14 = 0.0714 (4dp). Model-independent proof that
+    #     0.0333 is a con-veto(13)+noauth(16) COMPOSITE. round(fa_auth,4) != 0.0714 -> VOID (read drifted).
+    auth_spoofs = [r for r in recs if r["true_class"] == "spoof" and not r["pre_demoted"]]
+    if len(auth_spoofs) == 0:
+        void("anchor(3): no auth (non-pre_demoted) spoofs -- composite decomposition unverifiable, VOID")
+    auth_acc = 0
+    for r in auth_spoofs:
+        if r["S_size"] <= 0:
+            auth_acc += 1                          # empty bound set -> VERIFIED/PASS (accepted)
+        elif d_lambda(r, 0.0) < tau_e37:
+            auth_acc += 1                          # below con-veto threshold -> accepted
+    fa_auth = auth_acc / len(auth_spoofs)
+    E37_FA_AUTH = 0.0714                            # 1/14 = sec4(3) recorded diagnostic (13/14 reject)
+    if round(fa_auth, FA_DP) != E37_FA_AUTH:
+        void("anchor(3): auth-only fa=%.6f (4dp %.4f) over %d auth spoofs != %.4f -- composite decomposition "
+             "broken (sec7 falsifier; 0.0333 is con-veto+noauth, not a pure con statistic)"
+             % (fa_auth, round(fa_auth, FA_DP), len(auth_spoofs), E37_FA_AUTH))
+    m["fa_auth_diag"] = fa_auth
+    m["auth_spoof_n"] = len(auth_spoofs)
     return tau_e37, m
 
 
@@ -196,7 +216,9 @@ def main():
         "lambda_grid": LAMBDA_GRID, "tau_grid": tau_set, "tau_e37": tau_e37,
         "fa_gate": FA_GATE, "b2_gate": B2_GATE,
         "anchor": {"lambda": 0.0, "tau_E37": tau_e37, "fa_op": anchor_m["fa_op"],
-                   "expected_E37_fa_op": E37_FA_OP, "byte_exact": True},
+                   "expected_E37_fa_op": E37_FA_OP, "byte_exact": True,
+                   "fa_auth_diag": anchor_m["fa_auth_diag"], "auth_spoof_n": anchor_m["auth_spoof_n"],
+                   "expected_fa_auth": 0.0714},
         "band": band, "band_pts": n_pts, "band_lambdas": n_lams,
         "best_op": best, "verdict": verdict,
         "full_grid": grid,
@@ -212,6 +234,8 @@ def main():
         f.write("records          : %d (gold %d / spoof %d ; pre_demoted %d)\n" % (len(recs), gold_n, spoof_n, n_pre))
         f.write("anchor lambda=0  : tau_E37=%s fa_op=%.4f (expect %.4f) byte_exact=PASS\n"
                 % (tau_e37, anchor_m["fa_op"], E37_FA_OP))
+        f.write("anchor auth-only : fa=%.4f over %d auth spoofs (expect 0.0714) PASS\n"
+                % (anchor_m["fa_auth_diag"], anchor_m["auth_spoof_n"]))
         f.write("band_pts/lambdas : %d / %d\n" % (n_pts, n_lams))
         if best:
             f.write("best_op          : lambda=%s tau=%s fa_op=%.4f B2=%.4f\n"
