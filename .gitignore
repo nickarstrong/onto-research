@@ -46,3 +46,8 @@ lab/dpo/reports/E34_vs_E32.diff
 lab/dpo/run_E34_probe.py
 lab/dpo/hygiene_audit_step1.ps1
 lab/dpo/hygiene_step2_dedup.ps1
+
+lab/dpo/reports/CONTINUITY_LOG.md
+lab/dpo/reports/STATUS.md
+
+lab/dpo/reports/00_SESSION_PACK.md
