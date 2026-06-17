@@ -32,7 +32,10 @@
     "tau_E37": 0.67,
     "fa_op": 0.03333333333333333,
     "expected_E37_fa_op": 0.0333,
-    "byte_exact": true
+    "byte_exact": true,
+    "fa_auth_diag": 0.07142857142857142,
+    "auth_spoof_n": 14,
+    "expected_fa_auth": 0.0714
   },
   "band": [
     {
