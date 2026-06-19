@@ -1,1 +1,18 @@
 E28_pairs_gold.json
+
+# rung-1 held-out (LOCAL-ONLY, 3.2)
+data/proposer_prompts_heldout_v1.jsonl
+make_heldout_prompts_v1.py
+data/proposals_heldout_v1*.jsonl
+data/raw_heldout_v1*.jsonl
+
+data/label_worksheet_v1*.csv
+data/labels_locked_v1*
+
+data/label_worksheet_v1*.csv
+data/labels_locked_v1*
+
+data/proposals_v01b*.jsonl
+data/raw_v01b.jsonl
+reports/report_seed_intake_*.md
+bq_rescore_fixture.jsonl
