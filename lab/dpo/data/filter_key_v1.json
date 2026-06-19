@@ -1,0 +1,52 @@
+[
+  {
+    "id": 0,
+    "A": "prompted",
+    "B": "filtered"
+  },
+  {
+    "id": 1,
+    "A": "filtered",
+    "B": "prompted"
+  },
+  {
+    "id": 2,
+    "A": "filtered",
+    "B": "prompted"
+  },
+  {
+    "id": 3,
+    "A": "filtered",
+    "B": "prompted"
+  },
+  {
+    "id": 4,
+    "A": "prompted",
+    "B": "filtered"
+  },
+  {
+    "id": 5,
+    "A": "prompted",
+    "B": "filtered"
+  },
+  {
+    "id": 6,
+    "A": "prompted",
+    "B": "filtered"
+  },
+  {
+    "id": 7,
+    "A": "filtered",
+    "B": "prompted"
+  },
+  {
+    "id": 8,
+    "A": "filtered",
+    "B": "prompted"
+  },
+  {
+    "id": 9,
+    "A": "filtered",
+    "B": "prompted"
+  }
+]
