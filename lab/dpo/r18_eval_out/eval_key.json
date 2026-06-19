@@ -1,0 +1,42 @@
+{
+  "p00": {
+    "A": "prompted",
+    "B": "code_filtered"
+  },
+  "p01": {
+    "A": "code_filtered",
+    "B": "prompted"
+  },
+  "p02": {
+    "A": "prompted",
+    "B": "code_filtered"
+  },
+  "p03": {
+    "A": "code_filtered",
+    "B": "prompted"
+  },
+  "p04": {
+    "A": "prompted",
+    "B": "code_filtered"
+  },
+  "p05": {
+    "A": "prompted",
+    "B": "code_filtered"
+  },
+  "p06": {
+    "A": "code_filtered",
+    "B": "prompted"
+  },
+  "p07": {
+    "A": "prompted",
+    "B": "code_filtered"
+  },
+  "p08": {
+    "A": "code_filtered",
+    "B": "prompted"
+  },
+  "p09": {
+    "A": "code_filtered",
+    "B": "prompted"
+  }
+}

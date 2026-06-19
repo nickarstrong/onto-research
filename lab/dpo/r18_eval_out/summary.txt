@@ -1,0 +1,26 @@
+=== Track D: R18 Code Filter — Generation Summary ===
+Model: qwen2.5-coder:7b, temp=0.7, prompts=10
+
+Filler detection (avg per output):
+  Sentences stripped (pure filler): 0.0
+  Sentences trimmed (opener removed): 0.4
+  Inline qualifiers removed: 0.4
+  Filler ratio (stripped/total): 0.00
+
+Word counts (avg):
+  Bare: 294
+  Code-filtered: 293
+  R18-prompted: 109
+
+Output files in r18_eval_out/:
+  eval_pairs.jsonl  — 10 blinded A/B pairs for discipline eval
+  eval_key.json     — answer key (DO NOT read before judging)
+  raw_outputs.jsonl — all three versions per prompt
+  filler_stats.json — per-prompt filler analysis
+
+NEXT: paste eval_pairs.jsonl into Claude for blinded discipline eval.
+Judge each pair on DISCIPLINE ONLY (filler/hedges/padding), NOT accuracy.
+For each pair: A wins / B wins / tie.
+Then unblind with eval_key.json and compute:
+  code_effective_rate = (code_wins + 0.5*ties) / 10
+  PASS criterion: code_effective_rate >= 0.50
