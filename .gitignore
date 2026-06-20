@@ -55,3 +55,7 @@ lab/dpo/reports/00_SESSION_PACK.md
 lab/dpo/proposals_v01b.jsonl
 lab/dpo/raw_v01b.jsonl
 lab/dpo/00_SESSION_PACK.md
+# held-out ground-truth + heldout-derived traces -> LOCAL ONLY (E15, privacy split 3.2)
+lab/dpo/eval/o0/o0_s4_founder_labels.jsonl
+lab/dpo/eval/o0/o0_s4_gate_v2_trace.jsonl
+lab/dpo/eval/o0/o0_subclaim_probe.jsonl
