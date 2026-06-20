@@ -1,0 +1,309 @@
+[
+  {
+    "id": "heldout_03",
+    "label": "DIRTY",
+    "years": [
+      "1925"
+    ],
+    "subjects": [
+      "A Relation Between Distance and Radial Velocity Among Extra-Galactic Nebulae",
+      "Vesto Slipher",
+      "Edwin Hubble",
+      "Relation Between Distance",
+      "Radial Velocity Among Extra",
+      "Galactic Nebulae"
+    ],
+    "per_year": {
+      "1925": "REFUTE"
+    },
+    "claim_verdict": "REFUTE",
+    "detail": {
+      "1925": {
+        "claim_year": "1925",
+        "subjects": [
+          "A Relation Between Distance and Radial Velocity Among Extra-Galactic Nebulae",
+          "Vesto Slipher",
+          "Edwin Hubble",
+          "Relation Between Distance",
+          "Radial Velocity Among Extra",
+          "Galactic Nebulae"
+        ],
+        "wd": [
+          {
+            "label": "A Relation Between Distance and Radial Velocity Among Extra-Galactic Nebulae",
+            "qid": "Q24563361",
+            "years": {
+              "P577": [
+                "1929"
+              ]
+            }
+          },
+          {
+            "label": "Vesto Slipher",
+            "qid": "Q312248",
+            "years": {}
+          },
+          {
+            "label": "Edwin Hubble",
+            "qid": "Q43027",
+            "years": {}
+          },
+          {
+            "label": "Edwin Hubble",
+            "qid": "Q5346529",
+            "years": {}
+          },
+          {
+            "label": "Relation Between Distance",
+            "qid": "Q52551769",
+            "years": {
+              "P577": [
+                "1988"
+              ]
+            }
+          },
+          {
+            "label": "Relation Between Distance",
+            "qid": "Q52083100",
+            "years": {
+              "P577": [
+                "2000"
+              ]
+            }
+          }
+        ],
+        "wiki": [
+          {
+            "label": "A Relation Between Distance and Radial Velocity Among Extra-Galactic Nebulae",
+            "year_in_summary": false,
+            "other_years": []
+          },
+          {
+            "label": "Vesto Slipher",
+            "year_in_summary": false,
+            "other_years": []
+          },
+          {
+            "label": "Edwin Hubble",
+            "year_in_summary": false,
+            "other_years": []
+          },
+          {
+            "label": "Relation Between Distance",
+            "year_in_summary": false,
+            "other_years": []
+          },
+          {
+            "label": "Radial Velocity Among Extra",
+            "year_in_summary": false,
+            "other_years": []
+          },
+          {
+            "label": "Galactic Nebulae",
+            "year_in_summary": false,
+            "other_years": []
+          }
+        ],
+        "refute_years": [
+          "1929",
+          "1988",
+          "2000"
+        ]
+      }
+    }
+  },
+  {
+    "id": "heldout_09",
+    "label": "CLEAN",
+    "years": [
+      "1887"
+    ],
+    "subjects": [
+      "James Clerk Maxwell",
+      "Heinrich Hertz"
+    ],
+    "per_year": {
+      "1887": "ABSTAIN"
+    },
+    "claim_verdict": "ABSTAIN",
+    "detail": {
+      "1887": {
+        "claim_year": "1887",
+        "subjects": [
+          "James Clerk Maxwell",
+          "Heinrich Hertz"
+        ],
+        "wd": [
+          {
+            "label": "James Clerk Maxwell",
+            "qid": "Q9095",
+            "years": {}
+          },
+          {
+            "label": "James Clerk Maxwell",
+            "qid": "Q21503561",
+            "years": {}
+          },
+          {
+            "label": "Heinrich Hertz",
+            "qid": "Q41257",
+            "years": {}
+          },
+          {
+            "label": "Heinrich Hertz",
+            "qid": "Q12363629",
+            "years": {}
+          }
+        ],
+        "wiki": [
+          {
+            "label": "James Clerk Maxwell",
+            "year_in_summary": false,
+            "other_years": []
+          },
+          {
+            "label": "Heinrich Hertz",
+            "year_in_summary": false,
+            "other_years": []
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "heldout_14",
+    "label": "CLEAN",
+    "years": [
+      "1900"
+    ],
+    "subjects": [
+      "Max Planck"
+    ],
+    "per_year": {
+      "1900": "COVERED_IN_ABSTRACT"
+    },
+    "claim_verdict": "N/A_no_loadbearing_year",
+    "detail": {
+      "1900": {}
+    }
+  },
+  {
+    "id": "heldout_16",
+    "label": "CLEAN",
+    "years": [
+      "1847"
+    ],
+    "subjects": [
+      "Ignaz Semmelweis",
+      "Vienna General Hospital"
+    ],
+    "per_year": {
+      "1847": "CONFIRM"
+    },
+    "claim_verdict": "CONFIRM",
+    "detail": {
+      "1847": {
+        "claim_year": "1847",
+        "subjects": [
+          "Ignaz Semmelweis",
+          "Vienna General Hospital"
+        ],
+        "wd": [
+          {
+            "label": "Ignaz Semmelweis",
+            "qid": "Q59736",
+            "years": {}
+          },
+          {
+            "label": "Ignaz Semmelweis",
+            "qid": "Q130559786",
+            "years": {}
+          },
+          {
+            "label": "Vienna General Hospital",
+            "qid": "Q180080",
+            "years": {
+              "P571": [
+                "1686"
+              ]
+            }
+          },
+          {
+            "label": "Vienna General Hospital",
+            "qid": "Q70374870",
+            "years": {
+              "P577": [
+                "1984"
+              ]
+            }
+          }
+        ],
+        "wiki": [
+          {
+            "label": "Ignaz Semmelweis",
+            "year_in_summary": true,
+            "other_years": [
+              "1861"
+            ]
+          },
+          {
+            "label": "Vienna General Hospital",
+            "year_in_summary": false,
+            "other_years": []
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "heldout_18",
+    "label": "DIRTY",
+    "years": [
+      "1950",
+      "2014"
+    ],
+    "subjects": [
+      "Alan Turing"
+    ],
+    "per_year": {
+      "1950": "COVERED_IN_ABSTRACT",
+      "2014": "REFUTE"
+    },
+    "claim_verdict": "REFUTE",
+    "detail": {
+      "1950": {},
+      "2014": {
+        "claim_year": "2014",
+        "subjects": [
+          "Alan Turing"
+        ],
+        "wd": [
+          {
+            "label": "Alan Turing",
+            "qid": "Q7251",
+            "years": {}
+          },
+          {
+            "label": "Alan Turing",
+            "qid": "Q34308373",
+            "years": {
+              "P577": [
+                "1983"
+              ]
+            }
+          }
+        ],
+        "wiki": [
+          {
+            "label": "Alan Turing",
+            "year_in_summary": false,
+            "other_years": []
+          }
+        ],
+        "refute_years": [
+          "1983"
+        ]
+      }
+    }
+  }
+]
