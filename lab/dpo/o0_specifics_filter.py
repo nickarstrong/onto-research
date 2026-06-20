@@ -135,6 +135,138 @@ def specifics_check(claim_text, abstract_text):
     }
 
 
+# --- v2: targeted-retrieval conjunction rescue (BUILD, binds REPORT_S4 sec5) ---
+#
+# v1 (specifics_check) FAILs whenever a load-bearing specific is absent from the
+# single topic-level best_abstract. That conflates "absent from THIS abstract"
+# with "unverified" -> over-rejects CLEAN claims (S4 G3 yield 0.05).
+#
+# v2 keeps v1 as the first pass. On v1 FAIL it does ONE targeted-retrieval rescue:
+#   query = "{verified anchors} {in-scope unverified specifics}"  (conjunction)
+#   -> fetch alt abstracts (Crossref + OpenAlex)
+#   -> CONFIRM only if a SINGLE alt abstract contains ALL in-scope unverified
+#      specifics AND >=1 verified anchor (subject binding).
+#
+# The AND-in-ONE-abstract rule is the safety hinge: it confirms the binding the
+# claim asserts, not each token independently. Binding-fabrications (heldout_18
+# "Cleverbot passed in 2014" = real event was Goostman; heldout_03 "1925" vs the
+# 1929 redshift-distance discovery) are never co-bound in any source -> stay FAIL.
+# Real bindings (Hertz+Maxwell+1887, Semmelweis+1847+Vienna) co-occur -> rescued.
+#
+# In-scope = years + proper nouns (minus leading-article sentence-fragment junk,
+# REPORT_S4 sec5 lever1). Bare numbers are incidental: dropped (non-blocking).
+
+_ARTICLE_LED = ("the ", "a ", "an ", "this ", "that ", "these ", "those ")
+
+
+def _is_loadbearing(spec):
+    """In-scope for rescue: years and real named-entity proper nouns.
+    Drops bare numbers (incidental) and leading-article sentence-fragment junk
+    ('The Doppler', 'The Maxwell') per REPORT_S4_specifics_gate.md sec5 lever1.
+    """
+    t = spec.get("type")
+    v = (spec.get("value") or "").strip()
+    if t == "year":
+        return True
+    if t == "proper_noun":
+        if v.lower().startswith(_ARTICLE_LED):
+            return False
+        return len(v) >= 3
+    # type == "number" (bare statistic) -> incidental
+    return False
+
+
+def specifics_check_v2(claim_text, abstract_text, retrieve_fn,
+                       top_k=10, log=None):
+    """Targeted-retrieval rescue around specifics_check (v1).
+
+    claim_text     : the proposed claim
+    abstract_text  : best_abstract from primary retrieval (frozen for S4)
+    retrieve_fn    : callable(query_str, top_k) -> list[dict] with key "abstract"
+                     (e.g. a Crossref+OpenAlex dual-query fetcher). If None,
+                     behaves exactly like v1 (no rescue).
+    log            : optional list; appended with a trace dict.
+
+    Returns the v1 result dict, plus:
+      rescued     : bool
+      method      : "v1_pass" | "incidental_only" | "rescued" | "no_rescue"
+      rescue_doi  : DOI of the confirming abstract (if rescued)
+      inscope     : list of in-scope unverified specific values
+    """
+    base = specifics_check(claim_text, abstract_text)
+
+    if base["pass"]:
+        base.update({"rescued": False, "method": "v1_pass",
+                     "rescue_doi": None, "inscope": []})
+        return base
+
+    inscope = [u for u in base["unverified"] if _is_loadbearing(u)]
+    inscope_vals = [u["value"] for u in inscope]
+    base["inscope"] = inscope_vals
+
+    # Only incidental (bare-number / junk) specifics were missing -> not a
+    # fabrication signal. Pass (v1's number-strictness was the false-reject).
+    if not inscope:
+        base["pass"] = True
+        base.update({"rescued": True, "method": "incidental_only",
+                     "rescue_doi": None})
+        return base
+
+    if retrieve_fn is None:
+        base.update({"rescued": False, "method": "no_rescue_no_retriever",
+                     "rescue_doi": None})
+        return base
+
+    anchors = [s["value"] for s in base["specifics"] if s["found"]]
+    anchors = [a for a in anchors if not a.lower().startswith(_ARTICLE_LED)]
+
+    # Conjunction query: bind verified subject anchors WITH the missing specifics.
+    q_terms = []
+    for a in anchors[:2]:
+        if a not in q_terms:
+            q_terms.append(a)
+    for v in inscope_vals:
+        if v not in q_terms:
+            q_terms.append(v)
+    query = " ".join(q_terms)
+
+    try:
+        alt = retrieve_fn(query, top_k) or []
+    except Exception as e:
+        base.update({"rescued": False, "method": "retrieve_error:%s" % type(e).__name__,
+                     "rescue_doi": None})
+        return base
+
+    inscope_low = [v.lower() for v in inscope_vals]
+    anchors_low = [a.lower() for a in anchors]
+
+    confirm_doi = None
+    for p in alt:
+        ab = (p.get("abstract") or "").lower()
+        if not ab:
+            continue
+        # ALL in-scope specifics co-occur in THIS one abstract ...
+        if not all(v in ab for v in inscope_low):
+            continue
+        # ... AND it is bound to the claim subject (>=1 verified anchor present).
+        if anchors_low and not any(a in ab for a in anchors_low):
+            continue
+        confirm_doi = p.get("doi", "?")
+        break
+
+    if log is not None:
+        log.append({"query": query, "n_alt": len(alt),
+                    "inscope": inscope_vals, "anchors": anchors[:2],
+                    "confirmed": confirm_doi is not None, "doi": confirm_doi})
+
+    if confirm_doi is not None:
+        base["pass"] = True
+        base.update({"rescued": True, "method": "rescued", "rescue_doi": confirm_doi})
+    else:
+        base.update({"rescued": False, "method": "no_rescue", "rescue_doi": None})
+    return base
+
+
 # --- Test harness for S4 data ---
 
 def load_s4_absorb(enriched_path, verdicts_path):
