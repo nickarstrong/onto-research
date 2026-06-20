@@ -1,0 +1,21 @@
+{
+  "base_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "lora_r": 8,
+  "lora_alpha": 16,
+  "lora_targets": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj"
+  ],
+  "lora_dropout": 0.05,
+  "learning_rate": 5e-06,
+  "num_epochs": 1,
+  "train_records": 52,
+  "training_loss": 1.7246217727661133,
+  "global_steps": 13,
+  "training_time_s": 17.1,
+  "system_prompt": "NONE",
+  "adapter_dir": "adapters/o0_lora/final",
+  "timestamp": "2026-06-20T15:48:57"
+}
