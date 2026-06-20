@@ -68,12 +68,8 @@ def run_loop(n_cycles=100, out_path=DEFAULT_OUT, resume=False):
 
     Returns 0 on success.
     """
-    if n_cycles > len(DOMAIN_TOPICS):
-        print(f"WARNING: n_cycles={n_cycles} > DOMAIN_TOPICS={len(DOMAIN_TOPICS)}, "
-              f"capping at {len(DOMAIN_TOPICS)}")
-        n_cycles = len(DOMAIN_TOPICS)
+    topics = [DOMAIN_TOPICS[i % len(DOMAIN_TOPICS)] for i in range(n_cycles)]
 
-    topics = DOMAIN_TOPICS[:n_cycles]
 
     # Pre-flight: Ollama reachable?
     try:
