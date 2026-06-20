@@ -159,6 +159,75 @@ def specifics_check(claim_text, abstract_text):
 _ARTICLE_LED = ("the ", "a ", "an ", "this ", "that ", "these ", "those ")
 
 
+# --- v2 retrieve-side fix (pack v207): subject-only query + relaxed match ---
+# v206 DEFECT = conjunction query stuffed anchors+specifics into one API query ->
+# pool collapsed (n_alt 1-2) -> rescue starved. Fix: query on SUBJECT only
+# (anchors + unverified proper-noun names + topic keywords); years/numbers are
+# verified in the CHECK by co-occurrence, never put in the query. Token match in
+# the check relaxed: year exact; proper noun by last significant token.
+
+_TOPIC_STOP = set(w.lower() for w in [
+    'the', 'a', 'an', 'this', 'that', 'these', 'those', 'and', 'or', 'but',
+    'nor', 'for', 'of', 'to', 'in', 'on', 'at', 'by', 'with', 'from', 'as',
+    'is', 'was', 'are', 'were', 'be', 'been', 'being', 'has', 'had', 'have',
+    'its', 'it', 'their', 'his', 'her', 'which', 'who', 'when', 'where', 'what',
+    'how', 'than', 'then', 'also', 'such', 'into', 'over', 'under', 'about',
+    'between', 'through', 'during', 'first', 'known', 'discovered', 'proposed',
+    'showed', 'found', 'demonstrated', 'described', 'called', 'used', 'using',
+    'based', 'study', 'research', 'paper', 'results', 'result', 'effect',
+    'theory', 'model', 'approximately', 'around', 'while', 'because', 'since',
+    'they', 'were', 'made', 'work', 'works', 'show', 'shown', 'between',
+])
+
+
+def _last_token(value):
+    """Last significant (len>=3) whitespace token of a value, lowercased.
+    'Heinrich Hertz' -> 'hertz'; 'Vienna' -> 'vienna'."""
+    toks = [t for t in re.split(r'\s+', (value or "").strip()) if len(t) >= 3]
+    return (toks[-1] if toks else (value or "").strip()).lower()
+
+
+def _spec_in_abstract(spec, abstract_low):
+    """Relaxed presence test for ONE in-scope specific (lever 3).
+    year       -> exact substring (no relaxation; the disputed value itself).
+    proper noun-> full phrase OR last significant token (surname/place word)."""
+    v = (spec.get("value") or "").lower().strip()
+    if not v:
+        return False
+    if spec.get("type") == "year":
+        return v in abstract_low
+    if v in abstract_low:
+        return True
+    return _last_token(v) in abstract_low
+
+
+def _anchor_in_abstract(anchor_low, abstract_low):
+    """Anchor (verified subject term) present by phrase or last token."""
+    if anchor_low in abstract_low:
+        return True
+    return _last_token(anchor_low) in abstract_low
+
+
+def _topic_keywords(claim_text, exclude, max_kw=4):
+    """Salient content keywords from the claim for the subject query.
+    Drops stopwords, the in-scope specific tokens (so years / disputed names do
+    not sneak back into the query), and short words. Order-preserving, capped."""
+    excl = set()
+    for v in exclude:
+        for t in re.split(r'\s+', str(v).lower()):
+            if t:
+                excl.add(t)
+    out = []
+    for tok in re.findall(r"[A-Za-z][A-Za-z\-]{3,}", claim_text):
+        tl = tok.lower()
+        if tl in _TOPIC_STOP or tl in excl or tl in out:
+            continue
+        out.append(tl)
+        if len(out) >= max_kw:
+            break
+    return out
+
+
 def _is_loadbearing(spec):
     """In-scope for rescue: years and real named-entity proper nouns.
     Drops bare numbers (incidental) and leading-article sentence-fragment junk
@@ -220,14 +289,23 @@ def specifics_check_v2(claim_text, abstract_text, retrieve_fn,
     anchors = [s["value"] for s in base["specifics"] if s["found"]]
     anchors = [a for a in anchors if not a.lower().startswith(_ARTICLE_LED)]
 
-    # Conjunction query: bind verified subject anchors WITH the missing specifics.
+    # in-scope split: proper-noun names identify the SUBJECT (-> into the query);
+    # years are what we VERIFY by co-occurrence (NEVER into the query -- that is
+    # the v206 over-constraint that collapsed the pool). bare numbers already out.
+    inscope_pn = [u["value"] for u in inscope if u["type"] == "proper_noun"]
+
+    # SUBJECT-only query: verified anchors + unverified proper-noun names + topic
+    # keywords from the claim. NO years/numbers. e.g. "Maxwell Hertz
+    # electromagnetic waves"; "Semmelweis childbed fever Vienna".
     q_terms = []
-    for a in anchors[:2]:
-        if a not in q_terms:
+    for a in anchors[:2] + inscope_pn:
+        if a and a not in q_terms:
             q_terms.append(a)
-    for v in inscope_vals:
-        if v not in q_terms:
-            q_terms.append(v)
+    seen_low = {t.lower() for t in q_terms}
+    for kw in _topic_keywords(claim_text, exclude=inscope_vals + anchors):
+        if kw not in seen_low:
+            q_terms.append(kw)
+            seen_low.add(kw)
     query = " ".join(q_terms)
 
     try:
@@ -237,7 +315,6 @@ def specifics_check_v2(claim_text, abstract_text, retrieve_fn,
                      "rescue_doi": None})
         return base
 
-    inscope_low = [v.lower() for v in inscope_vals]
     anchors_low = [a.lower() for a in anchors]
 
     confirm_doi = None
@@ -245,11 +322,13 @@ def specifics_check_v2(claim_text, abstract_text, retrieve_fn,
         ab = (p.get("abstract") or "").lower()
         if not ab:
             continue
-        # ALL in-scope specifics co-occur in THIS one abstract ...
-        if not all(v in ab for v in inscope_low):
+        # ALL in-scope specifics co-occur in THIS one abstract (relaxed match:
+        # year exact; proper noun by full phrase OR last significant token) ...
+        if not all(_spec_in_abstract(u, ab) for u in inscope):
             continue
-        # ... AND it is bound to the claim subject (>=1 verified anchor present).
-        if anchors_low and not any(a in ab for a in anchors_low):
+        # ... AND it is bound to the claim subject (>=1 verified anchor present,
+        # anchor also matched by last token). Binding semantics UNCHANGED.
+        if anchors_low and not any(_anchor_in_abstract(a, ab) for a in anchors_low):
             continue
         confirm_doi = p.get("doi", "?")
         break
