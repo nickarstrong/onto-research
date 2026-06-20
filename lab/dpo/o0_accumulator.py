@@ -24,13 +24,21 @@ import sys
 from pathlib import Path
 
 from o0_contact import emit as contact_emit
+from o0_specifics_filter import specifics_check
 
 
 class Accumulator:
     """Append-only JSONL verdict store."""
 
-    def __init__(self, path="eval/o0/o0_verdicts.jsonl"):
+    def __init__(self, path="eval/o0/o0_verdicts.jsonl", specifics_gate=True):
         self.path = Path(path)
+        # Post-B2 specifics-coverage gate (v202): after B2=SUPPORTS, verify that
+        # years/proper-nouns/numbers in the claim appear in best_abstract.
+        # Absent => unverified_specifics => downgrade ABSORB->REJECT.
+        # Safety-first default ON: closes the partial-fabrication hole (S4 G1
+        # fa_live 0.118->0.000). Cost: yield collapse (G3 0.25->0.05) on S4 set,
+        # driven by retrieval coverage, not fabrication. See REPORT_S4_specifics_gate.md.
+        self.specifics_gate = specifics_gate
         self.records = []
         self._load()
 
@@ -86,7 +94,25 @@ class Accumulator:
                     "verdict": v["s2b_verdict"],
                     "reason": v.get("reason", ""),
                 }
-                rec["verdict"] = "ABSORB" if v["s2b_verdict"] == "SUPPORTS" else "REJECT"
+                if v["s2b_verdict"] == "SUPPORTS":
+                    if self.specifics_gate:
+                        chk = specifics_check(rec.get("claim", "") or "",
+                                              rec.get("best_abstract", "") or "")
+                        rec["specifics"] = {
+                            "pass": chk["pass"],
+                            "total": chk.get("total", 0),
+                            "verified": chk.get("verified", 0),
+                            "unverified": [u["value"] for u in chk.get("unverified", [])],
+                        }
+                        if chk["pass"]:
+                            rec["verdict"] = "ABSORB"
+                        else:
+                            rec["verdict"] = "REJECT"
+                            rec["s2b"]["reason"] += " | DOWNGRADED: unverified_specifics"
+                    else:
+                        rec["verdict"] = "ABSORB"
+                else:
+                    rec["verdict"] = "REJECT"
             else:
                 # PENDING_B2 with no verdict — flag as error
                 rec["verdict"] = "ERROR"
