@@ -21,6 +21,26 @@ binds   : STRATEGY_verifier_keystone.md sec 0 ; CONCEPT_organism0_v1.md ;
 4. **Controller is the heart and it is unbuilt.** "Personality" = the loop firing
    unprompted, which requires a controller. Everything before it is sensing/discipline.
 
+## 0b  ENOUGH-FOR-STAGE (anti-perfectionism)
+
+Polishing every fragment to ideal is the inverse failure of cheap-for-cheap. The model
+never leaves the lab; failure is cheap and reversible (rollback, rerun). Therefore the
+bar is **enough to learn the next thing**, not enough to trust in the world.
+
+**Rule: "enough" = the minimum at which the NEXT gate stays honest.** Below that is sand;
+above that is gold-plating. Raw-but-working beats polished-but-late.
+
+Stage-tunable (raw is fine, refine later): yield height, substrate size (7B as-is),
+code cleanliness, auditor-in-session vs always-on. These are lab-exit gates, not now.
+
+NON-NEGOTIABLE even raw (not polish — they decide whether the result means anything):
+- fa_live = no fabrication absorbed. Drop it and the experiment "does Crown-gated
+  learning preserve discipline" lies to itself.
+- measurability on non-empty/correct data (E15). Drop it and we measure nothing.
+
+High-bar concerns (stronger substrate, always-on capable auditor, realtime gating) are
+END-STATE / lab-exit, deferred until the entity would actually leave the lab.
+
 ## 1  STATE
 
 - DONE: external discipline. Crown verifier fa_live=0.000 (Rung-1, 65 claims, v194).
@@ -33,7 +53,7 @@ binds   : STRATEGY_verifier_keystone.md sec 0 ; CONCEPT_organism0_v1.md ;
 
 | # | Step | What | Gate (pre-registered) |
 |---|------|------|----------------------|
-| 1 | Yield recovery | Filter passes enough verified material AND holds fa_live=0. Restrict specifics to fabrication-class tokens and/or widen retrieval coverage. | yield >= 0.20 AND fa_live <= 0.10 on S4 set |
+| 1 | Yield recovery | Filter passes enough verified material AND holds fa_live=0. Restrict specifics to fabrication-class tokens and/or widen retrieval coverage. | fa_live <= 0.10 (HARD) AND yield enough to feed §2-4 (stage-relative, not a fixed 0.20; see §0b) |
 | 2 | Leverage probe | Does a self-description change behavior measurably? 2a: substrate told "weak in X" -> fewer X failures. 2b: auditor + self-model catches divergences bare Crown misses. Decides WHERE the organ lives (bet: 2b). | measurable shift over no-self-model baseline |
 | 3 | Self-model organ | disposition-audit offline cards -> live self_model.json the AUDITOR reads each cycle. The entity's sight. (Build only if §2 passed.) | detect-lift over bare Crown on held-out weak-spots |
 | 4 | Controller / goal-stack | Reads self-model -> selects next action ("weak in X -> verify X"), fires UNPROMPTED. The will. **chatbot -> entity transition.** | N cycles, goals target real gaps (not random), every action Crown-gated, fa_live=0 |
@@ -59,4 +79,4 @@ nothing reads is the failure mode the guide walked into.
 Step 1. Trigger: `LABA, SPECIFICS YIELD PROBE`. Cheap, deterministic, frozen claims/abstracts.
 
 ---
-*ROADMAP_substrate_to_entity.md · 2026-06-21 · gated, probe-before-build, controller=heart.*
+*ROADMAP_substrate_to_entity.md · 2026-06-21 · gated, probe-before-build, controller=heart, enough-for-stage (§0b).*
