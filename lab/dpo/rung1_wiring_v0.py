@@ -50,23 +50,7 @@ MAILTO = "council@ontostandard.org"
 HEADERS = {"User-Agent": "ONTO-rung1/1.0 (mailto:%s)" % MAILTO}
 
 # Diverse topics в†’ one claim per topic (15 default).
-TOPICS = [
-    "radiocarbon dating",
-    "deep ocean currents",
-    "CRISPR gene editing",
-    "antibiotic resistance mechanisms",
-    "solar neutrino flux",
-    "plate tectonics evidence",
-    "mRNA vaccine efficacy",
-    "dark matter detection",
-    "dopamine in addiction",
-    "coral reef bleaching",
-    "lithium battery energy density",
-    "quantum error correction",
-    "atmospheric CO2 measurements",
-    "prion disease transmission",
-    "gravitational wave detection",
-]
+from rung1_build_topics import TOPICS  # 65 held-out topics for BUILD
 
 # в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 # 1. PROPOSER (Ollama)
