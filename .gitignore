@@ -59,3 +59,7 @@ lab/dpo/00_SESSION_PACK.md
 lab/dpo/eval/o0/o0_s4_founder_labels.jsonl
 lab/dpo/eval/o0/o0_s4_gate_v2_trace.jsonl
 lab/dpo/eval/o0/o0_subclaim_probe.jsonl
+
+# held-out: local only, never public (pretrain contamination)
+lab/dpo/eval/o0/o0_recut_candidates.jsonl
+lab/dpo/**/recut_labeled.jsonl
