@@ -73,10 +73,31 @@ def extract_numbers(text):
 def _norm(s):
     return re.sub(r'\s+', " ", (s or "")).strip().lower()
 
-def _specific_supported(spec, pool_low):
-    # literal normalized presence in (abstract  UNION  confirming snippet). Precision-first:
-    # literal-only -- a softer fuzzy match risks FALSE support, which is the unsafe direction.
-    return _norm(spec) in pool_low
+def _specific_status(spec, pool_low, per_specific):
+    # Per-specific support under the NON-YEAR oracle (NON-YEAR EVIDENCE plane). Returns:
+    #   SUPPORTED  : literal in abstract/snippet pool, OR oracle CONFIRM (out-of-band, exact+anchored)
+    #   REFUTED    : oracle REFUTE (primary source gives a different value) -> hard DIRTY
+    #   UNVERIFIED : neither -> DIRTY (precision-first; fa_live invariant unchanged)
+    # Literal-only fallback stays precision-first; a CONFIRM may only come from the exact+entity-
+    # anchored oracle (step 2b), so a fabricated value can never be rescued here (F1 safety).
+    ov = per_specific.get(_norm(spec))
+    if ov == "REFUTE":
+        return "REFUTED"
+    if _norm(spec) in pool_low or ov == "CONFIRM":
+        return "SUPPORTED"
+    return "UNVERIFIED"
+
+# --- non-year oracle (NON-YEAR EVIDENCE plane) ---------------------------------------------------
+# Per-specific out-of-band verification vs Wikidata/Wikipedia, mirroring the frozen temporal YEAR
+# channel: entity-anchored, same-sentence co-location, ABSTAIN-on-unconfirmable, EXACT match (no
+# rounding) so a fabricated value can NEVER CONFIRM (F1). CONFIRM lifts ff (rescues a true specific
+# absent from an empty abstract); REFUTE catches a fabricated one; ABSTAIN -> precision-first DIRTY.
+#
+# STEP 2a ships this as a SAFE NO-OP (ABSTAIN-always): no rescue, fa_live cannot move. STEP 2b fills
+# the body with the live oracle on the FROZEN probe's resolve+article primitives (no re-implementation
+# of entity-anchoring -> no drift back to V2-V6 bugs).
+def verify_specific(spec, ctx, T=None):
+    return "ABSTAIN", {"reason": "noop_step2a"}   # 2b: real Wikidata/Wikipedia oracle
 
 def scope_verdict(rec):
     """Deterministic claim verdict under the locked scope rule (REPORT_organ_subclaim_scope_v1
@@ -96,10 +117,13 @@ def scope_verdict(rec):
     parse    = clean_for_parse(rec.get("claim"))
     temporal = rec.get("temporal", {})
     per_year = temporal.get("per_year", {})
-    snip     = " ".join((s.get("snippet") or "")
-                        for s in temporal.get("snippets", {}).values())
+    _snips   = temporal.get("snippets", {})
+    _snlist  = _snips.values() if isinstance(_snips, dict) else (_snips or [])
+    snip     = " ".join((s.get("snippet") or "") for s in _snlist
+                        if isinstance(s, dict))
     abstract = (rec.get("evidence", {}) or {}).get("abstract") or ""
     pool_low = _norm(abstract + " " + snip)
+    per_specific = {k: v for k, v in (temporal.get("per_specific") or {}).items()}
 
     if "REFUTE" in per_year.values():
         bad = [y for y, v in per_year.items() if v == "REFUTE"]
@@ -107,11 +131,14 @@ def scope_verdict(rec):
 
     reasons = []
     for spec in extract_fulldates(parse) + extract_numbers(parse):
-        if not _specific_supported(spec, pool_low):
+        st = _specific_status(spec, pool_low, per_specific)
+        if st == "REFUTED":
+            return "DIRTY", ["non_year_specific_refuted:%r" % spec]
+        if st == "UNVERIFIED":
             reasons.append("unverified_non_year_specific:%r" % spec)
     if reasons:
         return "DIRTY", reasons
-    return "CLEAN", ["year+subject supported; no unverified date/number specific"]
+    return "CLEAN", ["year+subject supported; non-year specifics supported or none"]
 
 def collapse(per_year):
     """Same claim-level collapse as the frozen probe's run_row tail (REFUTE > ABSTAIN;
@@ -153,13 +180,19 @@ def run(in_path, out_path):
             for yb in years_bce:
                 # visible but not confirmable through the frozen CE-only channel (sec 4 guard)
                 per_year[yb] = "ABSTAIN_BCE_unverifiable"
+            per_specific = {}
+            for spec in extract_fulldates(claim) + extract_numbers(claim):
+                sv_, log_ = verify_specific(spec, ctx, T)   # 2a NO-OP -> ABSTAIN
+                per_specific[_norm(spec)] = sv_
             cv = collapse(per_year)            # YEAR-LEVEL diagnostic ONLY -- NOT a claim support flag
             out = dict(r)
-            sv, sr = scope_verdict({**r, "temporal": {"per_year": per_year, "snippets": snippets}})
+            sv, sr = scope_verdict({**r, "temporal": {"per_year": per_year, "snippets": snippets,
+                                                       "per_specific": per_specific}})
             n_clean += sv == "CLEAN"; n_dirty += sv == "DIRTY"
             out["temporal"] = {
                 "per_year": per_year,
                 "snippets": snippets,
+                "per_specific": per_specific,        # non-year oracle verdicts (2a: all ABSTAIN no-op)
                 "year_collapse": cv,                 # diagnostic: year sub-claim state, not claim support
                 "scope": {"verdict": sv, "reasons": sr},   # claim-level safety verdict (2.3)
             }
