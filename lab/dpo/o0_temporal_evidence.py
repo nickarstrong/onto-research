@@ -22,7 +22,7 @@
 #
 # Usage:  python o0_temporal_evidence.py [claims_blind_ev.jsonl] [claims_blind_ev_temporal.jsonl]
 
-import json, re, sys
+import json, re, sys, time
 
 # NOTE: o0_temporal_probe_v5 (frozen V6) is imported LAZILY inside run() only.
 # The deterministic scope functions below (extract_*, scope_verdict) need no probe and
@@ -96,8 +96,51 @@ def _specific_status(spec, pool_low, per_specific):
 # STEP 2a ships this as a SAFE NO-OP (ABSTAIN-always): no rescue, fa_live cannot move. STEP 2b fills
 # the body with the live oracle on the FROZEN probe's resolve+article primitives (no re-implementation
 # of entity-anchoring -> no drift back to V2-V6 bugs).
-def verify_specific(spec, ctx, T=None):
-    return "ABSTAIN", {"reason": "noop_step2a"}   # 2b: real Wikidata/Wikipedia oracle
+def _specific_sentence(claim, spec):
+    c = clean_for_parse(claim)
+    for s in re.split(r'(?<=[.!?])\s+', c):
+        if spec in s:
+            return s
+    return c
+
+def _confirm_specific_in_text(text, spec, subject_label, T):
+    """CONFIRM iff the EXACT spec string and a SUBJECT token share ONE article sentence
+       (header-stripped). Mirrors the frozen confirm_in_text discipline (same-sentence + entity
+       anchor + word-level), but for an arbitrary non-year specific. Exact match => a fabricated
+       value can never CONFIRM (F1). Entity co-location => an incidental same value elsewhere on
+       the page is not enough. Recall gap on date/number FORM variance ("28 February", "56.3 %")
+       -> ABSTAIN -> DIRTY = the SAFE direction (precision-first); measured live, not pre-optimized."""
+    text = T.strip_wiki_markup(text or "")
+    if not text or spec not in text:
+        return False, ""
+    subj_toks = T._TOK(subject_label)
+    spec_re = re.compile(re.escape(spec), re.I)
+    for s in re.split(r'(?<=[.!?])\s+', text):
+        if spec_re.search(s) and (subj_toks & T._TOK(s)):
+            return True, s.strip().replace("\n", " ")[:240]
+    return False, ""
+
+def verify_specific(spec, claim, ctx, T, cache=None):
+    """LIVE non-year oracle (CONFIRM | ABSTAIN). Resolves the spec's sentence subject via the
+       FROZEN probe (resolve_subject / entity_data / wiki_fulltext), then exact same-sentence
+       co-location. No REFUTE: free-text refute is the castration direction (V2-V6); fa_live is
+       held by ABSTAIN->DIRTY, not by refute. Network-bound (LOCAL)."""
+    cache = cache if cache is not None else {}
+    sent = _specific_sentence(claim, spec)
+    for label in T.extract_subjects_in_sentence(sent, spec):
+        role = T.subject_role(label, sent)
+        res = T.resolve_subject(label, ctx, role); time.sleep(0.2)
+        if not res:
+            continue
+        qid = res[0]
+        if qid not in cache:
+            ed = T.entity_data(qid); time.sleep(0.2)
+            title = ed.get("enwiki_title") if isinstance(ed, dict) else ""
+            cache[qid] = T.wiki_fulltext(title) if title else ""
+        ok, snip = _confirm_specific_in_text(cache[qid], spec, label, T)
+        if ok:
+            return "CONFIRM", {"qid": qid, "subject": label, "snippet": snip}
+    return "ABSTAIN", {"reason": "no exact same-sentence co-location with a resolved subject"}
 
 def scope_verdict(rec):
     """Deterministic claim verdict under the locked scope rule (REPORT_organ_subclaim_scope_v1
@@ -180,9 +223,9 @@ def run(in_path, out_path):
             for yb in years_bce:
                 # visible but not confirmable through the frozen CE-only channel (sec 4 guard)
                 per_year[yb] = "ABSTAIN_BCE_unverifiable"
-            per_specific = {}
+            per_specific, _ocache = {}, {}
             for spec in extract_fulldates(claim) + extract_numbers(claim):
-                sv_, log_ = verify_specific(spec, ctx, T)   # 2a NO-OP -> ABSTAIN
+                sv_, log_ = verify_specific(spec, claim, ctx, T, _ocache)  # live oracle (CONFIRM|ABSTAIN)
                 per_specific[_norm(spec)] = sv_
             cv = collapse(per_year)            # YEAR-LEVEL diagnostic ONLY -- NOT a claim support flag
             out = dict(r)
