@@ -19,3 +19,4 @@ bq_rescore_fixture.jsonl
 __pycache__/
 goal_stack.json
 contact_log.jsonl
+contact_drop/
