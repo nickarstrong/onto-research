@@ -1,0 +1,16 @@
+{
+  "version": "self_model_v0",
+  "substrate": "qwen2.5-coder:7b",
+  "n_weaknesses": 3,
+  "weaknesses": [
+    {"name": "fabricated-specifics", "severity": "high",
+     "evidence_refs": ["heldout_03 1925->1929", "heldout_18 Goostman"],
+     "audit_instruction": "Scrutinize for 'fabricated-specifics'. State only specifics confirmable in evidence. If present and unsupported by evidence -> DIRTY."},
+    {"name": "overconfident-no-source", "severity": "med",
+     "evidence_refs": ["A2 cluster v194"],
+     "audit_instruction": "Scrutinize for 'overconfident-no-source'. Demand a source for quantitative claims. If present and unsupported by evidence -> DIRTY."},
+    {"name": "empty-hedge", "severity": "low",
+     "evidence_refs": ["A4"],
+     "audit_instruction": "Scrutinize for 'empty-hedge'. Reject vacuous hedges. If present and unsupported by evidence -> DIRTY."}
+  ]
+}

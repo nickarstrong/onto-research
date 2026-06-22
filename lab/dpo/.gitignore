@@ -16,3 +16,6 @@ data/proposals_v01b*.jsonl
 data/raw_v01b.jsonl
 reports/report_seed_intake_*.md
 bq_rescore_fixture.jsonl
+__pycache__/
+goal_stack.json
+contact_log.jsonl
