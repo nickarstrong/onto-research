@@ -156,7 +156,10 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live):
     verdicts = []
     for c in claims:
         v, reasons = verify(c)
-        verdicts.append({"claim": c, "verdict": v, "reasons": reasons})
+        # rung C delta-3: stamp the SELECTed disposition onto the record.
+        # Post-verify (verify never sees this) -> firewall + T2 byte-identity held.
+        verdicts.append({"claim": c, "verdict": v, "reasons": reasons,
+                         "targeted_weakness": w["name"]})
     n_dirty = sum(1 for v in verdicts if v["verdict"] == "DIRTY")
     n_total = len(verdicts)
     print(f"[CHECK]  {n_total - n_dirty} CLEAN / {n_dirty} DIRTY")
@@ -336,6 +339,7 @@ def live_adapters():
         rec = {"id": f"ctrl_{int(time.time()*1000)}", "claim": v["claim"],
                "verdict": "ABSORB" if (kind == "knowledge") else "REJECT",
                "ctrl_reasons": v["reasons"], "kind": kind,
+               "targeted_weakness": v.get("targeted_weakness"),
                "ts": datetime.now(timezone.utc).isoformat()}
         if kind == "knowledge":
             rec["_absorbed_knowledge"] = True

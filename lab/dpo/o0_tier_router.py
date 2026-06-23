@@ -86,14 +86,23 @@ def _is_weakness_relevant(
 ) -> tuple[bool, str | None]:
     """Check if a record is relevant to any weakness card.
 
-    v1 STUB: always returns (False, None).
-    Reason: verdict records carry no 'targeted_weakness' field, and weakness
-    cards have no domain anchors.  Matching requires either:
-      (a) controller writes targeted weakness into the record (sealed), or
-      (b) content-based classifier (rung C).
-    Until one of those exists, weakness_relevance is structurally inert.
-    The value predicate still routes correctly via crossover + novelty.
+    rung C delta-3: the controller stamps the SELECTed disposition onto every
+    written record (record['targeted_weakness']) via the sanctioned sealed-write
+    path (option (a) of the former v1 stub). A record is weakness-relevant iff
+    that stamp names a known weakness card.
+
+    VERDICT-BLIND: reads only targeted_weakness + self_model names, never the
+    verdict. Orthogonality preserved (the stamp comes from SELECT, which runs
+    BEFORE verify). Records that predate the stamp (sealed 220) carry no field
+    -> (False, None) -> routing on the sealed substrate is unchanged (no
+    regression). No content classifier, no GOLD.
     """
+    tw = record.get("targeted_weakness")
+    if not tw:
+        return False, None
+    known = {w.get("name") for w in self_model.get("weaknesses", [])}
+    if tw in known:
+        return True, tw
     return False, None
 
 
