@@ -39,3 +39,10 @@ adapter_*/
 *.bin
 *.bak
 *.bak.*
+
+# G2 forward-hygiene (sec 3.2): held-out + GOLD-derived never public
+lab/dpo/hard_topics.py
+lab/dpo/hard_topics_meta.json
+lab/dpo/eval/_local/
+lab/dpo/gold_frame.txt
+lab/dpo/gold_corpus_live.json

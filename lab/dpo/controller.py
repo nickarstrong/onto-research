@@ -224,6 +224,67 @@ def run(self_model_path, generate, verify, absorb, n, live, max_cycles):
 # ADAPTERS
 # ════════════════════════════════════════════════════════════════════
 
+# --------------------------------------------------------------------------- #
+# CITATION EXISTENCE PASS (G2 wire -- Q2 verifier BESIDE temporal scope_verdict)
+# --------------------------------------------------------------------------- #
+# Q2 (citation_verify, G1-passed 43b1104) sits beside temporal-verify in the
+# verify path. Temporal catches ungroundable numbers/years; this catches a
+# fabricated *identifier* -- a syntactically valid DOI that does not resolve.
+# FIREWALL (R11 / pack 3.2): oracle = EXTERNAL REGISTRY ONLY (Crossref). GOLD and
+# episodic memory NEVER enter here. citation_pass is a pure function of
+# (claim, oracle); it reads no knowledge-store field.
+import re as _re
+from citation_verify import (verify_citation as _verify_citation, DIRTY as _C_DIRTY,
+                             CrossrefOracle as _CrossrefOracle)
+
+# Unanchored search variant of citation_verify._DOI_RE -- finds DOIs inside prose.
+# (DOIs may contain '.', so '.' is NOT excluded; a trailing sentence period is
+#  stripped below.) Excludes whitespace + common closing punctuation.
+_DOI_FIND = _re.compile(r"10\.\d{4,9}/[^\s\"'<>,;)\]]+")
+
+_CITATION_ORACLE = None  # a test may override via controller._CITATION_ORACLE
+
+
+def _oracle():
+    global _CITATION_ORACLE
+    if _CITATION_ORACLE is None:
+        _CITATION_ORACLE = _CrossrefOracle(timeout=5.0, mailto="council@ontostandard.org")
+    return _CITATION_ORACLE
+
+
+def citation_pass(claim, oracle=None):
+    """Extract DOIs from a free-text claim and check existence against the external
+    registry. Returns (dirty_dois, annotations). DIRTY ONLY on a positive registry
+    'absent'; resolution-failure / malformed -> UNVERIFIED (never a flag)."""
+    orc = oracle or _oracle()
+    seen, dirty, ann = set(), [], []
+    for d in _DOI_FIND.findall(claim or ""):
+        d = d.rstrip(".")  # trailing sentence punctuation is not part of the DOI
+        if d in seen:
+            continue
+        seen.add(d)
+        v = _verify_citation(d, orc)
+        ann.append(f"doi_{v.lower()}:{d}")
+        if v == _C_DIRTY:
+            dirty.append(d)
+    return dirty, ann
+
+
+def merge_verdict(temporal_verdict, temporal_reasons, claim, oracle=None):
+    """DIRTY dominates; UNVERIFIED != CLEAN (temporal verdict stands when no
+    citation flag). SHAPE-PRESERVING: scope_verdict returns a dict and the
+    downstream falsifier.run_arm calls reasons.get(...), so reasons MUST stay a
+    dict. Citation findings go under a 'citation' key -- never coerced to a list."""
+    dirty, ann = citation_pass(claim, oracle)
+    if isinstance(temporal_reasons, dict):
+        reasons = dict(temporal_reasons)
+    else:
+        reasons = {"temporal": temporal_reasons}
+    reasons["citation"] = {"dirty_dois": dirty, "annotations": ann}
+    verdict = "DIRTY" if dirty else temporal_verdict
+    return verdict, reasons
+
+
 def live_adapters():
     """Wire the REAL on-disk pipeline (run from lab/dpo/, Ollama up, net on)."""
     from rung1_wiring_v0 import generate_claim
@@ -268,7 +329,8 @@ def live_adapters():
         rec = {"claim": claim, "evidence": {},
                "temporal": {"per_year": per_year, "snippets": snippets,
                             "per_specific": per_specific}}
-        return TE.scope_verdict(rec)
+        tv, treasons = TE.scope_verdict(rec)
+        return merge_verdict(tv, treasons, claim)
 
     def absorb(v, kind):
         rec = {"id": f"ctrl_{int(time.time()*1000)}", "claim": v["claim"],

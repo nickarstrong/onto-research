@@ -48,9 +48,12 @@ def compose_context(retrieved, gold_frame):
     return "\n\n".join(parts)
 
 
-def _prompt(topic, context, audit_instruction):
-    base = (f"State ONE specific, verifiable scientific fact about: {topic}.\n"
-            f"Discipline: {audit_instruction}")
+def _prompt(topic, context):
+    # Q1 (E6 fix, defect D-B): the audit rubric is a JUDGE instruction, NOT a
+    # generator instruction. Injecting "Discipline: {audit}" made the substrate
+    # self-label DIRTY -> rate_f 0 in BOTH arms (the line rode both). The generator
+    # now states a claim with no self-audit; verification is external (controller).
+    base = f"State ONE specific, verifiable scientific fact about: {topic}."
     if context:
         return context + "\n\n" + base + ("\nExtend from what you already know; "
                                           "do NOT merely repeat the confirmed facts above.")
@@ -61,7 +64,10 @@ def make_generate(conditioned, model, topics, audit_instruction,
                   confirmed=None, retrieve_fn=None, gold_frame="",
                   k=3, options=None, _call=_ollama):
     """Returns generate(n) -> [{"topic","claim"}, ...]. Cursor-stable across arms
-    so BLIND and CONDITIONED walk the SAME topic seed sequence."""
+    so BLIND and CONDITIONED walk the SAME topic seed sequence.
+    NOTE (Q1): audit_instruction is accepted to keep the caller contract stable
+    but is intentionally NOT threaded into the prompt (E6/D-B). It remains a
+    JUDGE-side rubric only."""
     options = options or {"temperature": 0.7, "seed": 0, "num_predict": 220}
     cur = {"i": 0}
 
@@ -75,7 +81,7 @@ def make_generate(conditioned, model, topics, audit_instruction,
                 ctx = compose_context(retrieved, gold_frame)
             else:
                 ctx = ""
-            prompt = _prompt(topic, ctx, audit_instruction)
+            prompt = _prompt(topic, ctx)
             claim = _call(model, prompt, options)
             # FIREWALL: emit ONLY topic+claim. No ctx, no retrieved, no gold leak.
             out.append({"topic": topic, "claim": claim})
