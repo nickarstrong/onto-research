@@ -172,8 +172,14 @@ def run_live(n_cycles: int, curated: bool = True) -> None:
             print(f"  curated view: {n} records")
             verdicts_source = Path(CURATED_FILE)
 
-        # run controller cycle (conditioned arm == curated arm: delta-2)
-        new_record = _run_one_controller_cycle(verdicts_source, cycle, conditioned=curated)
+        # run controller cycle.
+        # rung C (pack v244 sec 3.1 / sec 5): BOTH arms condition the proposer ->
+        # the contrast is memory CONTENT, not wiring. curated arm reads the PRUNED
+        # active-tier view (CURATED_FILE); uncurated arm reads the FULL raw pool
+        # (VERDICTS_RAW). This proves TIERING adds value (pruned > full), which is
+        # the phase capability — NOT the already-proven blind-vs-conditioned A/B
+        # (6010835). conditioned=False (blind) here would re-skin Step 6 = ceremonial.
+        new_record = _run_one_controller_cycle(verdicts_source, cycle, conditioned=True)
 
         if new_record is None:
             print("  no new verdict this cycle (CONTACT/skip)")
@@ -235,9 +241,16 @@ def run_dgate(n_cycles: int = DGATE_N_CYCLES) -> dict:
     arm_b_verdicts = _read_verdicts(VERDICTS_RAW)
     arm_b_stats = _compute_arm_stats(arm_b_verdicts, target_weakness)
 
+    # ── 3.1 PRECONDITION: curated must be a PRUNED, non-inert view ──
+    # The phase is proven only if tiering actually changed the retrievable pool.
+    # If curated == raw (no pruning) the run is ceremonial -> FAIL regardless of
+    # rate_f. Verdict-blind: ABSORB-set difference + optional top-k delta on the
+    # SELECTed weakness's first evidence topic.
+    precond = assert_curated_differs(goal_topic=_weakness_probe_topic(sm, target_weakness))
+
     # ── compare ────────────────────────────────────────────────
     improvement = arm_a_stats["rate_f"] - arm_b_stats["rate_f"]
-    passed = improvement >= DGATE_IMPROVEMENT
+    passed = improvement >= DGATE_IMPROVEMENT and precond["precondition_ok"]
 
     result = {
         "gate": "D-GATE",
@@ -247,6 +260,7 @@ def run_dgate(n_cycles: int = DGATE_N_CYCLES) -> dict:
         "arm_b_curated": arm_b_stats,
         "rate_f_improvement": round(improvement, 4),
         "bar": DGATE_IMPROVEMENT,
+        "precondition_3_1": precond,
         "n_cycles_per_arm": n_cycles,
     }
 
@@ -261,6 +275,8 @@ def run_dgate(n_cycles: int = DGATE_N_CYCLES) -> dict:
     print(f"  rate_f uncurated: {arm_a_stats['rate_f']:.4f}")
     print(f"  rate_f curated:   {arm_b_stats['rate_f']:.4f}")
     print(f"  improvement:      {improvement:.4f} (bar: {DGATE_IMPROVEMENT})")
+    print(f"  precond 3.1:      pruning_ok={precond['pruning_ok']} "
+          f"(pruned {precond['n_pruned']}/{precond['n_raw_absorb']} ABSORB)")
     return result
 
 
@@ -287,13 +303,65 @@ def _compute_arm_stats(verdicts: list[dict], weakness_name: str) -> dict:
 def _matches_weakness(record: dict, weakness_name: str) -> bool:
     """Check if a record is relevant to the target weakness.
 
-    v1 heuristic: returns True for ALL records (cannot filter by weakness
-    because records don't carry a 'targeted_weakness' tag and weakness cards
-    have no domain anchors).  D-GATE thus compares OVERALL rate_f.
-    Precise per-weakness filtering requires controller tagging (rung C/D).
+    rung C (pack v244 sec 3.2): per-weakness-probative. Reads the delta-3
+    controller stamp record['targeted_weakness'] (SELECT-side, written POST-verify
+    -> verdict-blind, firewall held: verify() never sees this field). A record
+    counts for weakness W iff its stamp == W.
+
+    By construction this excludes the sealed 220/120 (no stamp -> None != W),
+    so D-GATE compares ONLY the live tagged cycles on the SAME weakness.
     """
-    # v1: all records count — overall rate_f comparison
-    return True
+    return record.get("targeted_weakness") == weakness_name
+
+
+def _weakness_probe_topic(sm: dict, weakness_name: str) -> str | None:
+    """A goal-topic to probe top-k retrieval for the SELECTed weakness.
+
+    Heuristic, verdict-blind: first evidence_ref string of the matching card
+    (the same surface o0_retrieve tokenises). Returns None if no card/ref ->
+    assert_curated_differs falls back to the ABSORB-set pruning check alone.
+    """
+    for w in sm.get("weaknesses", []):
+        if w.get("name") == weakness_name:
+            refs = w.get("evidence_refs", [])
+            return refs[0] if refs else None
+    return None
+
+
+def assert_curated_differs(goal_topic: str | None = None, k: int = 3) -> dict:
+    """3.1 precondition: the CURATED (pruned) view must differ in CONTENT from
+    the RAW (full) view. Inert (curated == raw) = ceremonial run -> FAIL.
+
+    Primary guard (always): the curated ABSORB pool must be a STRICT subset of
+    raw (>=1 record pruned). Secondary (when goal_topic given): the curated
+    top-k must surface >=1 record the raw top-k lacks (pruning unburied it).
+
+    Verdict-blind: o0_retrieve scores on topic token-overlap only; never reads
+    the verdict. Reads no verify-path handle (firewall held).
+    """
+    from o0_retrieve import load_confirmed, retrieve
+    raw = load_confirmed(VERDICTS_RAW)
+    cur = load_confirmed(CURATED_FILE) if Path(CURATED_FILE).exists() else []
+    raw_ids = {r["id"] for r in raw}
+    cur_ids = {r["id"] for r in cur}
+    pruned = raw_ids - cur_ids
+    out: dict = {
+        "n_raw_absorb": len(raw_ids),
+        "n_curated_absorb": len(cur_ids),
+        "n_pruned": len(pruned),
+        "pruning_ok": len(pruned) >= 1 and cur_ids <= raw_ids,
+    }
+    if goal_topic:
+        raw_tk = {r["id"] for r in retrieve(goal_topic, raw, k)}
+        cur_tk = {r["id"] for r in retrieve(goal_topic, cur, k)}
+        curated_only = sorted(cur_tk - raw_tk)
+        out["goal_topic"] = goal_topic
+        out["raw_topk"] = sorted(raw_tk)
+        out["curated_topk"] = sorted(cur_tk)
+        out["curated_only_topk"] = curated_only
+        out["topk_differs"] = len(curated_only) >= 1
+    out["precondition_ok"] = out["pruning_ok"]
+    return out
 
 
 def _backup_state() -> dict:
