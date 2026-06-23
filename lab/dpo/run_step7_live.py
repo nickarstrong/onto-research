@@ -67,6 +67,7 @@ def _read_verdicts(path: Path) -> list[dict]:
 def _run_one_controller_cycle(
     verdicts_source: Path,
     cycle_index: int,
+    conditioned: bool = False,
 ) -> dict | None:
     """Run one SELECT→GENERATE→VERIFY→ABSORB cycle via the sealed controller.
 
@@ -88,15 +89,18 @@ def _run_one_controller_cycle(
     # --n 1 => one generated claim => one appended record => lossless 1:1 routing
     # (matches this function's single-record return contract).
     #
-    # FORWARD-COMPATIBLE / rung-C note: live_adapters().generate IGNORES
-    # verdicts_source (curated view) — it generates from DOMAIN_TOPICS, not from
-    # memory. So this call is identical across curated/uncurated arms, and D-GATE
-    # is rung-C-gated (no causal curated->generation path yet). When rung C swaps
-    # in retrieval-conditioned generate, THIS invocation is unchanged.
-    # See reports/PHASE7_DGATE_rungC.md.
+    # rung C delta-2 (live): the curated view NOW causally shapes generation.
+    # conditioned=True -> controller routes the CURATED view (verdicts_source) +
+    # GOLD frame into the proposer ONLY; verify() stays sealed (firewall, pack 3.2).
+    # conditioned=False -> BLIND proposer (no memory). Arms are thus differentiable.
     import subprocess
+    argv = [sys.executable, "controller.py", "--live", "--cycles", "1", "--n", "1"]
+    if conditioned:
+        argv += ["--conditioned",
+                 "--curated-path", str(verdicts_source),
+                 "--gold-frame", "gold_frame.txt"]
     subprocess.run(
-        [sys.executable, "controller.py", "--live", "--cycles", "1", "--n", "1"],
+        argv,
         check=True,
         cwd=str(Path(__file__).resolve().parent),
     )
@@ -168,8 +172,8 @@ def run_live(n_cycles: int, curated: bool = True) -> None:
             print(f"  curated view: {n} records")
             verdicts_source = Path(CURATED_FILE)
 
-        # run controller cycle
-        new_record = _run_one_controller_cycle(verdicts_source, cycle)
+        # run controller cycle (conditioned arm == curated arm: delta-2)
+        new_record = _run_one_controller_cycle(verdicts_source, cycle, conditioned=curated)
 
         if new_record is None:
             print("  no new verdict this cycle (CONTACT/skip)")

@@ -288,24 +288,45 @@ def merge_verdict(temporal_verdict, temporal_reasons, claim, oracle=None):
     return verdict, reasons
 
 
-def live_adapters():
-    """Wire the REAL on-disk pipeline (run from lab/dpo/, Ollama up, net on)."""
-    from rung1_wiring_v0 import generate_claim
+def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
+                  gold_frame_path="gold_frame.txt"):
+    """Wire the REAL on-disk pipeline (run from lab/dpo/, Ollama up, net on).
+
+    rung C delta-2: the GENERATE seam now routes through the SEALED Step-6
+    proposer factory (generate_step6.make_generate). BOTH arms share that one
+    substrate call path; the ONLY difference is proposer-context:
+      conditioned=False  (BLIND / raw arm)      -> context = ""   (no memory)
+      conditioned=True   (CONDITIONED / curated)-> context = retrieved CURATED
+                                                   ABSORB facts + GOLD frame
+    FIREWALL (pack 3.2): retrieval/GOLD enter the PROMPT only. The emitted dict
+    is EXACTLY {topic,claim}; verify() below is untouched and never sees the
+    curated view, a retrieval handle, or the frame. generate()/verify() share
+    no field -> belief-checks-belief / memory-checks-memory is impossible.
+    Model string is imported (single source of truth), not re-declared.
+    """
+    from rung1_wiring_v0 import OLLAMA_MODEL          # single source of truth (model)
     from o0_domain_list import DOMAIN_TOPICS
+    from generate_step6 import make_generate          # SEALED proposer factory
     import o0_temporal_evidence as TE
     import o0_temporal_probe_v5 as T  # frozen V6 probe (scope_verdict's oracle)
     from o0_accumulator import Accumulator
 
     acc = Accumulator("eval/o0/o0_verdicts.jsonl")
-    topic_cursor = {"i": 0}
 
-    def generate(n):
-        out = []
-        for _ in range(n):
-            topic = DOMAIN_TOPICS[topic_cursor["i"] % len(DOMAIN_TOPICS)]
-            topic_cursor["i"] += 1
-            out.append({"topic": topic, "claim": generate_claim(topic)})
-        return out
+    # ── GENERATE seam (delta-2): conditioned arm reads the CURATED view ONLY ──
+    if conditioned:
+        from o0_retrieve import load_confirmed, retrieve   # PROPOSER-feed only
+        confirmed = load_confirmed(curated_path) if Path(curated_path).exists() else []
+        gold_frame = (Path(gold_frame_path).read_text(encoding="utf-8")
+                      if Path(gold_frame_path).exists() else "")
+        generate = make_generate(
+            conditioned=True, model=OLLAMA_MODEL, topics=DOMAIN_TOPICS,
+            audit_instruction="", confirmed=confirmed, retrieve_fn=retrieve,
+            gold_frame=gold_frame, k=3)
+    else:
+        generate = make_generate(
+            conditioned=False, model=OLLAMA_MODEL, topics=DOMAIN_TOPICS,
+            audit_instruction="")
 
     def verify(c):
         # autonomous temporal scope: enrich one record's years/specifics live,
@@ -394,8 +415,18 @@ if __name__ == "__main__":
     ap.add_argument("--self-model", default="self_model.json")
     ap.add_argument("--n", type=int, default=8, help="claims generated per cycle")
     ap.add_argument("--cycles", type=int, default=1, help="number of cycles")
+    # rung C delta-2: CONDITIONED GENERATE (curated-view-fed proposer). verify() untouched.
+    ap.add_argument("--conditioned", action="store_true",
+                    help="CONDITIONED arm: feed retrieved CURATED facts + GOLD frame into GENERATE")
+    ap.add_argument("--curated-path", default="o0_verdicts_curated.jsonl",
+                    help="curated-view JSONL the conditioned proposer retrieves over")
+    ap.add_argument("--gold-frame", default="gold_frame.txt",
+                    help="GOLD belief-frame file prepended to the conditioned proposer context")
     args = ap.parse_args()
 
-    gen, ver, abs_ = live_adapters() if args.live else dry_adapters()
+    gen, ver, abs_ = (live_adapters(conditioned=args.conditioned,
+                                    curated_path=args.curated_path,
+                                    gold_frame_path=args.gold_frame)
+                      if args.live else dry_adapters())
     raise SystemExit(run(args.self_model, gen, ver, abs_,
                          n=args.n, live=args.live, max_cycles=args.cycles))
