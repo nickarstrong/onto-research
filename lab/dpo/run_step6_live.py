@@ -45,8 +45,10 @@ def main():
     from controller import live_adapters
     _gen_blind_real, verify, _absorb = live_adapters()   # we use only verify
 
-    from o0_domain_list import DOMAIN_TOPICS
-    topics = list(DOMAIN_TOPICS)
+    # G2-scope fix: SAME 3 DOI provoke_id topics G2 PASSED on (rate_f_blind=0.667).
+    # Single source of truth = step6_hardset_blind_probe.DOI_TOPICS (no copy drift).
+    from step6_hardset_blind_probe import DOI_TOPICS
+    topics = list(DOI_TOPICS)
     conf = R.load_confirmed(a.verdicts)
     gold_frame = Path(a.gold_frame).read_text(encoding="utf-8") if a.gold_frame else ""
 
