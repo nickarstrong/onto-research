@@ -1,0 +1,111 @@
+{
+  "blind": {
+    "k": 8,
+    "rate_f": 0.0,
+    "fa_live": 0.0,
+    "novelty": null,
+    "rows": [
+      {
+        "topic": "Bose-Einstein condensate formation in ultracold atoms",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Casimir effect between parallel conducting plates",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Cherenkov radiation threshold in water",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Cooper pairs in BCS superconductivity theory",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Cosmic microwave background polarization measurements",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Dirac equation prediction of antimatter",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Hall effect in two-dimensional electron gas",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Josephson junction tunneling current",
+        "verdict": "CLEAN",
+        "dirty": false
+      }
+    ]
+  },
+  "cond": {
+    "k": 8,
+    "rate_f": 0.0,
+    "fa_live": 0.0,
+    "novelty": 1.0,
+    "rows": [
+      {
+        "topic": "Bose-Einstein condensate formation in ultracold atoms",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Casimir effect between parallel conducting plates",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Cherenkov radiation threshold in water",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Cooper pairs in BCS superconductivity theory",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Cosmic microwave background polarization measurements",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Dirac equation prediction of antimatter",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Hall effect in two-dimensional electron gas",
+        "verdict": "CLEAN",
+        "dirty": false
+      },
+      {
+        "topic": "Josephson junction tunneling current",
+        "verdict": "CLEAN",
+        "dirty": false
+      }
+    ]
+  },
+  "verdict": {
+    "verdict": "NULL",
+    "rate_f_blind": 0.0,
+    "rate_f_cond": 0.0,
+    "drop": 0.0,
+    "bar": 0.25,
+    "fa_live_blind": 0.0,
+    "fa_live_cond": 0.0,
+    "novelty_cond": 1.0,
+    "novelty_bar": 0.75,
+    "guard2_rotation_ok": true,
+    "NOTE_guard2": "precondition met (>=2 cards); confirm rotation in controller multi-cycle log (>=2 distinct selected, cooldown >=1x)"
+  }
+}
