@@ -24,8 +24,12 @@ Home: C:\\Projects\\onto-research\\lab\\dpo\\o0_tier_router.py
 
 from __future__ import annotations
 import json
+import re
 from pathlib import Path
 from typing import Any
+
+# token surface mirrors o0_retrieve._toks (proposer-side; NOT a verify import).
+_WORD = re.compile(r"[a-z0-9]+")
 
 # ── tiers ──────────────────────────────────────────────────────────
 TIER_GOLD_QUEUE = "gold-queue"   # propose-only, Founder-gated, frozen v1
@@ -59,11 +63,24 @@ def compute_value_features(
     weak_rel, matched_w = _is_weakness_relevant(record, self_model)
     evidential = record.get("verdict") == "REJECT"
 
+    # ── rung C delta-1: composed value axis (STRATEGY_rungC sec 2C) ──
+    # value = weakness_relevance x info_gain.  BOTH inputs verdict-blind:
+    #   weakness_relevance  <- delta-3 targeted_weakness stamp (SELECT, pre-verify)
+    #   info_gain           <- topic-novelty distance vs existing ABSORB pool,
+    #                          recomputed from proposer-held material (the same
+    #                          token surface o0_retrieve uses). NO verdict-path
+    #                          retrieval handle is read off the record (firewall,
+    #                          STRATEGY sec 4 / pack 3.2). Orthogonality structural.
+    info_gain = _info_gain(record, existing_absorb)
+    value = (1.0 if weak_rel else 0.0) * info_gain
+
     return {
         "novelty": novelty,
         "weakness_relevance": weak_rel,
         "evidential_use": evidential,
         "matched_weakness": matched_w,  # for audit; None if !relevant
+        "info_gain": info_gain,         # continuous novelty distance [0,1]
+        "value": value,                 # composed axis (verdict-blind) [0,1]
     }
 
 
@@ -104,6 +121,43 @@ def _is_weakness_relevant(
     if tw in known:
         return True, tw
     return False, None
+
+
+def _toks(text: str) -> set[str]:
+    """ascii word-token set (same surface as o0_retrieve._toks)."""
+    return set(_WORD.findall((text or "").lower()))
+
+
+def _info_gain(record: dict, existing: list[dict]) -> float:
+    """Continuous topic-novelty distance in [0,1] vs the existing ABSORB pool.
+
+    rung C delta-1 info_gain. Mirrors o0_retrieve's token-overlap surface but
+    measured as DISTANCE FROM existing curated memory (1 = fully novel topic,
+    0 = topic fully contained in something already held).
+
+      info_gain = 1.0 - max_over_existing( |g & ex| / |g| )
+
+    where g = token set of record['topic']. VERDICT-BLIND: reads only topic
+    text + the existing-pool topics; never the verdict. Computed from material
+    the proposer side already legitimately holds (no verdict-path retrieval
+    handle), so the firewall is held by construction.
+
+    Empty/whitespace topic -> 1.0 (no basis to call it redundant). This axis
+    only gates value on weakness-relevant records (untagged -> value=0), so the
+    empty-topic default never affects routing of the sealed substrate.
+    """
+    g = _toks(record.get("topic", ""))
+    if not g:
+        return 1.0
+    max_overlap = 0.0
+    for ex in existing:
+        e = _toks(ex.get("topic", ""))
+        if not e:
+            continue
+        frac = len(g & e) / len(g)
+        if frac > max_overlap:
+            max_overlap = frac
+    return 1.0 - max_overlap
 
 
 def _normalise(text: str) -> str:

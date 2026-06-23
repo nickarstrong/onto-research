@@ -78,25 +78,44 @@ def gate_t1(
 
     crossover_ok = clean_discard >= 1 and dirty_keep >= 1
 
-    # Correlation: value_score vs verdict_binary
-    # value_score = 1 if tier in (permanent, temporary), 0 if discard
-    # verdict_binary = 1 if ABSORB, 0 if REJECT
+    # Correlation: composed value axis vs verdict_binary (STRATEGY sec 5 T1b).
+    # rung C delta-1: correlate the REAL composed value scalar
+    #   value = weakness_relevance x info_gain  (verdict-blind, from _value_features)
+    # Fallback to tier-binary only for pre-delta-1 routed dicts lacking the field.
+    # verdict_binary = 1 if ABSORB, 0 if REJECT.
     value_scores = []
     verdict_bins = []
+    val_absorb: list[float] = []
+    val_reject: list[float] = []
     for r in routed:
-        tier = r.get("_tier", "")
         verdict = r.get("verdict", "")
         if verdict not in ("ABSORB", "REJECT"):
             continue
-        vs = 1.0 if tier in (TIER_PERMANENT, TIER_TEMPORARY) else 0.0
+        vf = r.get("_value_features", {})
+        if "value" in vf:
+            vs = float(vf["value"])
+        else:
+            tier = r.get("_tier", "")
+            vs = 1.0 if tier in (TIER_PERMANENT, TIER_TEMPORARY) else 0.0
         vb = 1.0 if verdict == "ABSORB" else 0.0
         value_scores.append(vs)
         verdict_bins.append(vb)
+        (val_absorb if verdict == "ABSORB" else val_reject).append(vs)
 
     corr = _pearson(value_scores, verdict_bins) if len(value_scores) >= 3 else 0.0
     corr_ok = abs(corr) < T1_CORR_BAR
 
-    passed = crossover_ok and corr_ok
+    # Verdict-separability: ABSORB vs REJECT value ranges MUST overlap. A clean
+    # separation means value is a hidden verdict proxy -> FAIL even if corr<bar.
+    if val_absorb and val_reject:
+        overlap_ok = (
+            max(val_absorb) >= min(val_reject)
+            and max(val_reject) >= min(val_absorb)
+        )
+    else:
+        overlap_ok = True  # one side empty -> separability undefined, not a fail
+
+    passed = crossover_ok and corr_ok and overlap_ok
     return {
         "gate": "T1",
         "status": "PASS" if passed else "FAIL",
@@ -106,6 +125,8 @@ def gate_t1(
         "correlation": round(corr, 4),
         "corr_bar": T1_CORR_BAR,
         "corr_ok": corr_ok,
+        "overlap_ok": overlap_ok,
+        "value_source": "composed" if any("value" in r.get("_value_features", {}) for r in routed) else "tier_binary",
     }
 
 
