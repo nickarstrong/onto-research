@@ -82,24 +82,23 @@ def _run_one_controller_cycle(
     """
     before_count = _count_lines(VERDICTS_RAW)
 
-    # ── WIRE HERE ──────────────────────────────────────────────
-    # Example (adapt to actual interface):
+    # ── WIRE (subprocess -> sealed controller, real interface) ──────
+    # controller.py --live runs ONE SELECT->GENERATE->VERIFY->ABSORB cycle and
+    # appends verdict record(s) to eval/o0/o0_verdicts.jsonl (== VERDICTS_RAW).
+    # --n 1 => one generated claim => one appended record => lossless 1:1 routing
+    # (matches this function's single-record return contract).
     #
-    #   from controller import Controller
-    #   ctrl = Controller(verdicts_path=str(verdicts_source), ...)
-    #   ctrl.run_one_cycle()
-    #
-    # OR:
-    #   import subprocess
-    #   subprocess.run([
-    #       sys.executable, "run_step6_live.py",
-    #       "--cycles", "1",
-    #       "--verdicts", str(verdicts_source),
-    #   ], check=True)
-    #
-    raise NotImplementedError(
-        "INTEGRATION: wire _run_one_controller_cycle to on-disk controller. "
-        "See comments above.  Dry-val does not need this."
+    # FORWARD-COMPATIBLE / rung-C note: live_adapters().generate IGNORES
+    # verdicts_source (curated view) — it generates from DOMAIN_TOPICS, not from
+    # memory. So this call is identical across curated/uncurated arms, and D-GATE
+    # is rung-C-gated (no causal curated->generation path yet). When rung C swaps
+    # in retrieval-conditioned generate, THIS invocation is unchanged.
+    # See reports/PHASE7_DGATE_rungC.md.
+    import subprocess
+    subprocess.run(
+        [sys.executable, "controller.py", "--live", "--cycles", "1", "--n", "1"],
+        check=True,
+        cwd=str(Path(__file__).resolve().parent),
     )
     # ── END WIRE ───────────────────────────────────────────────
 
