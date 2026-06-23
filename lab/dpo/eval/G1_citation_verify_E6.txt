@@ -1,0 +1,12 @@
+G1 RESULT (deterministic, no GPU, no network)
+=============================================
+Gate step6_apparatus_v1, G1: PASS
+  fake 10.1038/nature20547 -> DIRTY   (Founder-sealed, gate/E15)
+  real 10.1038/nature14539 -> CLEAN   (web-verified existence, R7)
+false-DIRTY-free guard (3/3): unknown well-formed, malformed, empty -> UNVERIFIED
+
+Module: citation_verify.py   (verify_citation + FrozenOracle[test] + CrossrefOracle[prod])
+Test:   test_citation_verify.py
+Firewall: oracle = external registry ONLY; GOLD/episodic never enter verify.
+Vocab emitted: {CLEAN, DIRTY, UNVERIFIED} -- matches verify path.
+Integration into controller.py verify path = G2 wire-up (deferred; G1 closeable in isolation).
