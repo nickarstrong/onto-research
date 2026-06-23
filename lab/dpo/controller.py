@@ -107,6 +107,20 @@ def select_weakness(self_model, gstack):
     return eligible[0][4]
 
 
+def pin_or_select(self_model, gstack, pin_weakness):
+    """D-GATE pin path (pack v246 sec 3.1, kills D1): when --pin-weakness is set,
+    bypass rotation and return that card every cycle, so a targeted A/B stamps the
+    SAME disposition on every cycle (n_relevant scales to n_cycles -> real stats).
+    PIN IS PRE-VERIFY (SELECT side) -> verdict-blind, firewall intact. Rotation is
+    correct for the autonomous organism; the GATE pins, never the organism."""
+    if not pin_weakness:
+        return select_weakness(self_model, gstack)
+    for w in self_model["weaknesses"]:
+        if w["name"] == pin_weakness:
+            return w
+    sys.exit(f"FATAL: --pin-weakness '{pin_weakness}' not in self_model")
+
+
 # ════════════════════════════════════════════════════════════════════
 # CONTACT  (D5: map onto o0_contact triggers; DRY logs locally)
 # ════════════════════════════════════════════════════════════════════
@@ -131,12 +145,12 @@ def contact(reason, cycle, detail, live):
 # CYCLE  (PLAN -> EXECUTE[GENERATE->VERIFY->ABSORB] -> MEASURE -> CONTACT)
 # ════════════════════════════════════════════════════════════════════
 
-def run_cycle(self_model, gstack, generate, verify, absorb, n, live):
+def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weakness=None):
     """One self-improvement cycle. Returns the contact event (cycle terminator)."""
     cyc = gstack.state["cycle"]
 
     # ---- SELECT ----
-    w = select_weakness(self_model, gstack)
+    w = pin_or_select(self_model, gstack, pin_weakness)
     baseline = TIER_BASELINE[w["severity"]]
     print(f"\n[SELECT] weakness='{w['name']}' severity={w['severity']} "
           f"baseline_rate_f={baseline}")
@@ -197,7 +211,7 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live):
                    f"no improvement", live)
 
 
-def run(self_model_path, generate, verify, absorb, n, live, max_cycles):
+def run(self_model_path, generate, verify, absorb, n, live, max_cycles, pin_weakness=None):
     self_model = json.loads(Path(self_model_path).read_text(encoding="utf-8"))
     if "weaknesses" not in self_model or not self_model["weaknesses"]:
         sys.exit("FATAL: self_model has no weaknesses (run selfmodel_compile first)")
@@ -213,7 +227,8 @@ def run(self_model_path, generate, verify, absorb, n, live, max_cycles):
 
     for _ in range(max_cycles):
         gstack.state["cycle"] += 1
-        ev = run_cycle(self_model, gstack, generate, verify, absorb, n, live)
+        ev = run_cycle(self_model, gstack, generate, verify, absorb, n, live,
+                       pin_weakness=pin_weakness)
         gstack.save()
         if ev["reason"] == "FA_LIVE_BREACH":
             print("\n[HALT] fa_live breach -> STOP (operator must clear).")
@@ -406,6 +421,14 @@ def dry_adapters():
 # ════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
+    # pack v246 sec 1 (durable cp1251 fix): force UTF-8 stdio so decorative prints
+    # cannot HARD-CRASH the live runner under a cp1251 console. Replaces the env-only
+    # PYTHONUTF8 workaround (structural, not ceremonial).
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
     ap = argparse.ArgumentParser(description="organism-0 controller (Step 4)")
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run", action="store_true",
@@ -422,6 +445,9 @@ if __name__ == "__main__":
                     help="curated-view JSONL the conditioned proposer retrieves over")
     ap.add_argument("--gold-frame", default="gold_frame.txt",
                     help="GOLD belief-frame file prepended to the conditioned proposer context")
+    # pack v246 sec 3.1: gate-only SELECT pin (no rotation) for a targeted A/B.
+    ap.add_argument("--pin-weakness", default=None,
+                    help="D-GATE only: pin SELECT to this weakness every cycle (verdict-blind)")
     args = ap.parse_args()
 
     gen, ver, abs_ = (live_adapters(conditioned=args.conditioned,
@@ -429,4 +455,5 @@ if __name__ == "__main__":
                                     gold_frame_path=args.gold_frame)
                       if args.live else dry_adapters())
     raise SystemExit(run(args.self_model, gen, ver, abs_,
-                         n=args.n, live=args.live, max_cycles=args.cycles))
+                         n=args.n, live=args.live, max_cycles=args.cycles,
+                         pin_weakness=args.pin_weakness))

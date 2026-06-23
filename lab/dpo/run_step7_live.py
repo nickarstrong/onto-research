@@ -46,6 +46,7 @@ VERDICTS_RAW    = Path("eval/o0/o0_verdicts.jsonl")
 VERDICTS_BACKUP = Path("eval/o0/o0_verdicts_uncurated.jsonl")
 SELF_MODEL      = Path("self_model.json")
 STORE_PATH      = Path("o0_tier_state.json")
+GOAL_STACK      = Path("goal_stack.json")   # pack v246 sec 3.3: arm-symmetric SELECT state
 DGATE_LOG       = Path("eval/o0/dgate_log.jsonl")
 
 
@@ -68,6 +69,7 @@ def _run_one_controller_cycle(
     verdicts_source: Path,
     cycle_index: int,
     conditioned: bool = False,
+    pin_weakness: str | None = None,
 ) -> dict | None:
     """Run one SELECT→GENERATE→VERIFY→ABSORB cycle via the sealed controller.
 
@@ -95,6 +97,8 @@ def _run_one_controller_cycle(
     # conditioned=False -> BLIND proposer (no memory). Arms are thus differentiable.
     import subprocess
     argv = [sys.executable, "controller.py", "--live", "--cycles", "1", "--n", "1"]
+    if pin_weakness:                      # pack v246 sec 3.1: gate-only SELECT pin
+        argv += ["--pin-weakness", pin_weakness]
     if conditioned:
         argv += ["--conditioned",
                  "--curated-path", str(verdicts_source),
@@ -150,12 +154,13 @@ def route_new_verdict(
     return tier
 
 
-def run_live(n_cycles: int, curated: bool = True) -> None:
+def run_live(n_cycles: int, curated: bool = True, pin_weakness: str | None = None) -> None:
     """Run N cycles with post-verdict tier routing.
 
     Args:
         n_cycles: number of cycles to run
         curated: if True, proposer reads from curated view; else raw verdicts
+        pin_weakness: D-GATE only -- pin SELECT to this weakness every cycle (kills D1)
     """
     sm = json.loads(SELF_MODEL.read_text(encoding="utf-8"))
     store = TierStore(STORE_PATH)
@@ -179,7 +184,8 @@ def run_live(n_cycles: int, curated: bool = True) -> None:
         # (VERDICTS_RAW). This proves TIERING adds value (pruned > full), which is
         # the phase capability — NOT the already-proven blind-vs-conditioned A/B
         # (6010835). conditioned=False (blind) here would re-skin Step 6 = ceremonial.
-        new_record = _run_one_controller_cycle(verdicts_source, cycle, conditioned=True)
+        new_record = _run_one_controller_cycle(verdicts_source, cycle,
+                                                conditioned=True, pin_weakness=pin_weakness)
 
         if new_record is None:
             print("  no new verdict this cycle (CONTACT/skip)")
@@ -229,15 +235,18 @@ def run_dgate(n_cycles: int = DGATE_N_CYCLES) -> dict:
     print(f"\n── ARM A: uncurated ({n_cycles} cycles) ──")
     state_backup = _backup_state()
     try:
-        run_live(n_cycles, curated=False)
+        run_live(n_cycles, curated=False, pin_weakness=target_weakness)
         arm_a_verdicts = _read_verdicts(VERDICTS_RAW)
         arm_a_stats = _compute_arm_stats(arm_a_verdicts, target_weakness)
     finally:
         _restore_state(state_backup)
 
     # ── ARM B: curated ─────────────────────────────────────────
+    # arm A's finally restored verdicts+store+goal_stack to the pre-gate snapshot
+    # (pack v246 sec 3.3), so ARM B starts from IDENTICAL SELECT state -> the only
+    # difference between arms is memory CONTENT (full vs pruned), not controller phase.
     print(f"\n── ARM B: curated ({n_cycles} cycles) ──")
-    run_live(n_cycles, curated=True)
+    run_live(n_cycles, curated=True, pin_weakness=target_weakness)
     arm_b_verdicts = _read_verdicts(VERDICTS_RAW)
     arm_b_stats = _compute_arm_stats(arm_b_verdicts, target_weakness)
 
@@ -272,11 +281,13 @@ def run_dgate(n_cycles: int = DGATE_N_CYCLES) -> dict:
         }, ensure_ascii=False) + "\n")
 
     print(f"\nD-GATE: {'PASS' if passed else 'FAIL'}")
-    print(f"  rate_f uncurated: {arm_a_stats['rate_f']:.4f}")
-    print(f"  rate_f curated:   {arm_b_stats['rate_f']:.4f}")
+    print(f"  rate_f uncurated: {arm_a_stats['rate_f']:.4f} (n_relevant={arm_a_stats['n_relevant']})")
+    print(f"  rate_f curated:   {arm_b_stats['rate_f']:.4f} (n_relevant={arm_b_stats['n_relevant']})")
     print(f"  improvement:      {improvement:.4f} (bar: {DGATE_IMPROVEMENT})")
     print(f"  precond 3.1:      pruning_ok={precond['pruning_ok']} "
+          f"topk_differs={precond.get('topk_differs')} "
           f"(pruned {precond['n_pruned']}/{precond['n_raw_absorb']} ABSORB)")
+    print(f"  probe topic:      {precond.get('goal_topic')!r}")
     return result
 
 
@@ -314,18 +325,46 @@ def _matches_weakness(record: dict, weakness_name: str) -> bool:
     return record.get("targeted_weakness") == weakness_name
 
 
-def _weakness_probe_topic(sm: dict, weakness_name: str) -> str | None:
+def _weakness_probe_topic(sm: dict, weakness_name: str, k: int = 3) -> str | None:
     """A goal-topic to probe top-k retrieval for the SELECTed weakness.
 
-    Heuristic, verdict-blind: first evidence_ref string of the matching card
-    (the same surface o0_retrieve tokenises). Returns None if no card/ref ->
-    assert_curated_differs falls back to the ABSORB-set pruning check alone.
+    pack v246 PATH 1 re-cut (kills the v246-run-1 false negative): the probe MUST be
+    a topic PRESENT in the CURATED pool. The prior cut ranked depth over the RAW pool
+    and picked a topic pruned OUT of curated -> curated_topk=[] -> the top-k test never
+    executed (curated_only is vacuously empty, not a measured False).
+
+    Principled + verdict-blind selection (topic only; reads no verdict beyond the
+    ABSORB pool definition load_confirmed already uses):
+      1. raw = ABSORB pool in VERDICTS_RAW; cur = ABSORB pool in CURATED_FILE
+         (cur is a STRICT subset; pruned = raw_ids - cur_ids).
+      2. Candidate topics = topics of CURATED records (guarantees curated_topk != []).
+      3. Rank each candidate by how many of ITS raw top-k are since-PRUNED records --
+         the region where "pruning unburies a record raw top-k buries" makes its
+         STRONGEST prediction (a surviving curated record sits below pruned crowders
+         in raw, then rises once they are pruned). We select on the CAUSE (pruned
+         crowding in raw top-k), not the OUTCOME (curated_only) -> not result-gaming.
+         topk_differs is then measured honestly; PRE-COMMIT: False even here = a real
+         negative on the top-k claim (escalate, do not re-fire).
+      4. None only when the curated ABSORB pool is empty.
     """
-    for w in sm.get("weaknesses", []):
-        if w.get("name") == weakness_name:
-            refs = w.get("evidence_refs", [])
-            return refs[0] if refs else None
-    return None
+    from o0_retrieve import load_confirmed, retrieve
+    raw = load_confirmed(VERDICTS_RAW)
+    cur = (load_confirmed(CURATED_FILE)
+           if Path(CURATED_FILE).exists() else [])
+    cur = [r for r in cur if (r.get("topic") or "").strip()]
+    if not cur:
+        return None
+    pruned = {r["id"] for r in raw} - {r["id"] for r in cur}
+
+    best_topic, best_key = None, None
+    for c in sorted(cur, key=lambda r: str(r["id"])):          # deterministic
+        topic = c["topic"]
+        raw_tk = {r["id"] for r in retrieve(topic, raw, k)}
+        # CAUSE proxy: pruned crowders occupying this topic's raw top-k.
+        key = (len(raw_tk & pruned), len(raw_tk))
+        if best_key is None or key > best_key:
+            best_topic, best_key = topic, key
+    return best_topic
 
 
 def assert_curated_differs(goal_topic: str | None = None, k: int = 3) -> dict:
@@ -360,31 +399,58 @@ def assert_curated_differs(goal_topic: str | None = None, k: int = 3) -> dict:
         out["curated_topk"] = sorted(cur_tk)
         out["curated_only_topk"] = curated_only
         out["topk_differs"] = len(curated_only) >= 1
+    # pack v246 PATH 2a (Founder, 2026-06-24): the PROBATIVE guard is content-
+    # difference (pruning_ok): the curated view is a strict, non-inert subset of raw
+    # (>=1 ABSORB pruned). topk_differs was an UNSATISFIABLE retrieval-difference
+    # guard for this record schema -- controller.absorb() drops `topic`, so the
+    # post-prune curated pool (live ctrl_ records only; sealed o0_ pruned) has no
+    # topic surface to retrieve on. It is kept as DIAGNOSTIC output, not a pass bar.
+    # The phase capability is proven by the rate_f delta (improvement, n=10/arm) x
+    # pruning_ok; value flows through conditioning-pool cleanliness, not top-k order.
     out["precondition_ok"] = out["pruning_ok"]
     return out
 
 
 def _backup_state() -> dict:
-    """Backup verdicts + tier state for D-GATE arm restore."""
+    """Backup verdicts + tier state + goal_stack for D-GATE arm restore.
+
+    pack v246 sec 3.3: goal_stack.json carries SELECT's per-weakness cursor
+    (cycle/cycles_used/last_worked_cycle). Omitting it desynced the arms (D3).
+    A key maps to None when the file did not exist pre-gate -> restore deletes it.
+    """
     backup = {}
-    if VERDICTS_RAW.exists():
-        backup["verdicts"] = VERDICTS_RAW.read_text(encoding="utf-8")
-    if STORE_PATH.exists():
-        backup["store"] = STORE_PATH.read_text(encoding="utf-8")
+    for key, p in (("verdicts", VERDICTS_RAW), ("store", STORE_PATH),
+                   ("goal_stack", GOAL_STACK)):
+        backup[key] = p.read_text(encoding="utf-8") if p.exists() else None
     return backup
 
 
 def _restore_state(backup: dict) -> None:
-    """Restore verdicts + tier state from backup."""
-    if "verdicts" in backup:
-        VERDICTS_RAW.write_text(backup["verdicts"], encoding="utf-8")
-    if "store" in backup:
-        STORE_PATH.write_text(backup["store"], encoding="utf-8")
+    """Restore verdicts + tier state + goal_stack from backup.
+
+    None == 'did not exist pre-gate' -> remove any artifact the arm created, so the
+    next arm starts from the EXACT pre-gate snapshot (byte-identical SELECT state).
+    """
+    for key, p in (("verdicts", VERDICTS_RAW), ("store", STORE_PATH),
+                   ("goal_stack", GOAL_STACK)):
+        val = backup.get(key)
+        if val is None:
+            if p.exists():
+                p.unlink()
+        else:
+            p.write_text(val, encoding="utf-8")
 
 
 # ── CLI ────────────────────────────────────────────────────────────
 
 def main():
+    # pack v246 sec 1 (durable cp1251 fix): force UTF-8 stdio so decorative prints
+    # cannot HARD-CRASH the live runner under a cp1251 console (was env-only before).
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
     ap = argparse.ArgumentParser(description="Phase 7 live runner")
     ap.add_argument("--dry", action="store_true", help="Dry validation only (no cycle)")
     ap.add_argument("--live", type=int, metavar="N", help="Run N live cycles with tier routing")

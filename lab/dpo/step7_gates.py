@@ -35,7 +35,8 @@ T2_DIVERGENCE_BAR = 0      # byte divergence must be exactly 0
 T3_MISMATCH_BAR   = 0      # count(removed) - count(tombstones) must be 0
 T4_GOLD_WRITES    = 0      # autonomous GOLD writes must be 0
 T5_MIN_PER_TIER   = 1      # each live tier >= 1 record
-DGATE_N_CYCLES    = 6      # minimum cycles for D-GATE comparison
+DGATE_N_CYCLES    = 10     # pack v246 sec 3.1: >=10 on-target cycles/arm for power
+                           # (was 6; pinned SELECT now makes n_relevant == n_cycles)
 DGATE_IMPROVEMENT = 0.10   # curated rate_f must be lower by at least this
 
 
