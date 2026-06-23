@@ -1,5 +1,5 @@
 # ONTO STRATEGIC MAP
-*single source of truth: NEXT / BLOCKED / IDEAS per plane. v2026-06-23b.*
+*single source of truth: NEXT / BLOCKED / IDEAS per plane. v2026-06-24a.*
 
 ## PHASE 7 RESULT (2026-06-23)
 > Plumbing validated. Architecture hypothesis remains untested.
@@ -18,28 +18,26 @@ Critical distinction (do not collapse in future sessions):
 Some gates measure infrastructure; others measure the emergence of a new ability.
 They must never be summed into one score.
 
-## NEXT -- rung C (value/weakness axis) [CONCEPT, new design]
-Phase 7 collapsed to ONE architectural problem (good: one gap, not five). The two
-unproven areas share one missing mechanism:
-    value ⟂ verdict   +   conditioned generation   +   weakness tagging
-Deliverables:
-  1. Value feature in router INDEPENDENT of verdict -> unblocks T1b
-     (target corr(value,verdict) < 0.50; currently -0.9465, INVARIANT under labels).
-  2. Wire Step-6 conditioned generate (generate_step6.py) into the live controller
-     path so curated memory causally shapes generation (curated arm != raw arm).
-  3. Per-record targeted_weakness tag so _matches_weakness filters per-weakness
-     (kills the 220:N rate_f dilution). -> together (2)+(3) unblock D-GATE.
-Then T1b + D-GATE fire as the TRUE phase proof. This is CONCEPT (changes
-architecture), NOT TYPE C.
-Triggers: "rung C" (open concept).
+## NEXT -- rung C BUILD (value/weakness axis) [concept locked: reports/STRATEGY_rungC.md]
+Concept CLOSED (variant C: value = weakness_relevance × info_gain, verdict-blind
+inputs; build order 3->2->1). delta-3 DONE (8ed8e10). Remaining, order delta-2 -> delta-1:
+  delta-2  Wire Step-6 conditioned generate (generate_step6.py) into the live
+     controller path so curated memory causally shapes generation (curated arm !=
+     raw arm). Surfaces retrieval distance for delta-1 info_gain. With delta-3
+     (done) -> unblocks D-GATE.
+  delta-1  value = weakness_relevance (delta-3) × info_gain (delta-2 retrieval
+     distance), grafted into o0_tier_router; verdict-blind inputs. -> unblocks T1b
+     (target corr(value,verdict) < 0.50 AND value NOT verdict-separable).
+Then T1b + D-GATE fire as the TRUE phase proof. TYPE C (design locked, build only).
+Triggers: "rung C delta-2" (next) OR "rung C BUILD".
 
 ## BLOCKED
-- T1b (corr < 0.50): blocked on value axis (NEXT.1). Root: router tiers on
+- T1b (corr < 0.50): blocked on value axis (delta-1). Root: router tiers on
   verdict+novelty only -> value ~ inverse(verdict). Proof + record:
   reports/PHASE7_T1_split.md.
 - D-GATE (curated rate_f < uncurated by >=0.10): blocked on conditioned generation
-  + weakness tagging (NEXT.2/3). DO NOT run --gate d for a verdict (inert ~0
-  improvement = false fail). Record: reports/PHASE7_DGATE_rungC.md.
+  (delta-2). Weakness tagging DONE (delta-3, 8ed8e10). DO NOT run --gate d for a
+  verdict yet (arms non-differentiable until delta-2). Record: reports/PHASE7_DGATE_rungC.md.
 
 ## IDEAS
 - relevance-verify on top of existence-verify ("DOI real but wrong source").
@@ -64,6 +62,11 @@ Triggers: "rung C" (open concept).
     3.2 wiring + D-GATE->rungC 3d408a7 (smoke PASS, substrate restored 220,
       md5 7C9662EE...AAA5).
     T1 worth-labels E15 provenance 4d1cc6c (1 CLEAN->discard + 2 DIRTY->keep).
+- rung C CONCEPT CLOSED; reports/STRATEGY_rungC.md locked (variant C: value =
+    weakness_relevance × info_gain, verdict-blind; build order 3->2->1).
+- rung C delta-3 DONE 8ed8e10 (per-weakness tagging: controller stamps SELECTed
+    disposition post-verify, router reads tag verdict-blind; dry-val PASS --
+    no-regression sealed 220 wrel=0 + liveness tag->permanent; firewall+T2 held).
 
 ## ARCHIVE
 - "T3 escalation to GOLD_MINIMAL_T3" (pre-G3-close idea): superseded by rung-C
