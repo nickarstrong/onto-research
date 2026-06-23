@@ -1,22 +1,21 @@
-E28_pairs_gold.json
+# lab/dpo/.gitignore -- keep held-out / bait / runtime OUT of public git
+# (pack v244 sec 3.0 DO-FIRST landmine: one `git add .` publishes these and
+#  kills the measurement -- §3.2). Public git carries ONLY datable provenance +
+#  reproducibility (data + scripts + gate.log + reports).
 
-# rung-1 held-out (LOCAL-ONLY, 3.2)
-data/proposer_prompts_heldout_v1.jsonl
-make_heldout_prompts_v1.py
-data/proposals_heldout_v1*.jsonl
-data/raw_heldout_v1*.jsonl
+# held-out eval (poisons measurement if it enters a future pretrain)
+o0_heldout_gen.jsonl
+o0_heldout*.jsonl
 
-data/label_worksheet_v1*.csv
-data/labels_locked_v1*
+# bait sets + manual bait verdicts
+*bait*
 
-data/label_worksheet_v1*.csv
-data/labels_locked_v1*
+# runtime tier state / curated view (rebuilt each run; NOT provenance -- pack sec 1)
+o0_tier_state.json
+o0_verdicts_curated.jsonl
 
-data/proposals_v01b*.jsonl
-data/raw_v01b.jsonl
-reports/report_seed_intake_*.md
-bq_rescore_fixture.jsonl
+# backups / caches / logs / local data
+*.bak.*
 __pycache__/
-goal_stack.json
-contact_log.jsonl
-contact_drop/
+logs/
+data/

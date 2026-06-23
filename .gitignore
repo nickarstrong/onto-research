@@ -1,48 +1,32 @@
-__pycache__/
-*.pyc
-# ONTO 3.2: held-out claims / Founder labels / derived judge data -- LOCAL ONLY
-claims_blind*.jsonl
-claims_reharvested.jsonl
-*.repaired.jsonl
-sealed_labels*.jsonl
-verdicts_*.jsonl
-self_model.json
-audit*.txt
-audit*.jsonl
-auditor_*.txt
-leverage_out/
-RUN.txt
-fresh_topics.txt
-reharvest_ids.txt
-reharvest_task.json
-REPORT_2b.json
-REPORT_3*.json
-# ONTO 3.2 hard: bait-sets / held-out / Founder labels -- NEVER public
-bait_*.jsonl
-bait_spotcheck_*.md
-heldout_*.jsonl
-*_founder_labels.jsonl
-o0_recut_candidates.jsonl
-o0_s4_*.jsonl
-proposals_v*.jsonl
-raw_v*.jsonl
-ordinary_window_*.jsonl
-# weights / models / envs -- never public, heavy
-gold/
-models/
-venv/
-llama-cpp/
-adapters/
-adapter_*/
-# packs / weights / editor clutter
-*.zip
-*.bin
-*.bak
-*.bak.*
+# onto-research/.gitignore -- PUBLIC repo. NEVER publish held-out / bait / runtime.
+# (pack v244/v245 sec 3.0 + 3.2: held-out poisons the measurement if eaten by a
+#  future pretrain; bait + weights are local-only. Public git carries ONLY datable
+#  provenance + reproducibility: data + scripts + gate.log + reports.)
 
-# G2 forward-hygiene (sec 3.2): held-out + GOLD-derived never public
-lab/dpo/hard_topics.py
-lab/dpo/hard_topics_meta.json
-lab/dpo/eval/_local/
-lab/dpo/gold_frame.txt
-lab/dpo/gold_corpus_live.json
+# ── held-out: ALL files with 'heldout' in the name, any depth, any extension ──
+# data AND generators. Leak = measurement death. A deterministic generator is as
+# disclosive as the data, so it stays local BY DEFAULT. To publish a specific
+# generator as a reproducibility script, add an explicit negation below, e.g.:
+#   !lab/dpo/make_heldout_prompts_v1.py
+*heldout*
+**/*heldout*
+
+# bait sets + manual bait verdicts (any depth)
+*bait*
+**/*bait*
+
+# held-out / bait / runtime data + log dirs (lab siblings -- the live landmine)
+lab/data/
+lab/logs/
+
+# runtime tier state / curated view (rebuilt each run; NOT provenance -- pack sec 1)
+o0_tier_state.json
+o0_verdicts_curated.jsonl
+**/o0_tier_state.json
+**/o0_verdicts_curated.jsonl
+
+# backups / caches
+*.bak.*
+**/*.bak.*
+__pycache__/
+**/__pycache__/
