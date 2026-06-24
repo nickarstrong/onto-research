@@ -30,3 +30,29 @@ o0_verdicts_curated.jsonl
 **/*.bak.*
 __pycache__/
 **/__pycache__/
+
+# -- hardened v253 (OWED-3): self-model / sealed labels / goal stack (runtime identity) --
+self_model.json
+self_model.demo.json
+**/self_model*.json
+sealed_labels*
+**/sealed_labels*
+goal_stack.json
+**/goal_stack.json
+
+# -- weights / adapters / venv / vendored runtimes / GOLD (local only) --
+adapters/
+**/adapters/
+**/adapter_*/
+lab/models/
+lab/venv/
+lab/gold/
+lab/llama-cpp/
+*.bin
+**/*.bin
+*.gguf
+**/*.gguf
+
+# -- .md.bak style (existing *.bak.* misses trailing .bak) --
+*.bak
+**/*.bak
