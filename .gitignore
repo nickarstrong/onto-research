@@ -73,3 +73,7 @@ lab/dpo/*_out.zip
 #    public and embeds no bait strings.
 **/hard_topics*
 **/fresh_topics*
+
+# v260: --hard-topics traces embed hard-topic strings -> LOCAL only
+lab/dpo/hl_baseline*.jsonl
+lab/dpo/hl_baseline*.jsonl.frozen*
