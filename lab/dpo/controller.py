@@ -216,7 +216,9 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weaknes
             _emit_trace(trace_path, {
                 "cycle": cyc, "weakness": w["name"], "select_target": w["name"],
                 "rate_f": round((n_dirty / n_total) if n_total else 1.0, 4),
-                "clean_count": absorbed, "retrieval_hit": retrieval_hit, "fa_live": fa,
+                "clean_count": absorbed, "pool_size": getattr(absorb, "pool_size", None),
+                "topics": [c.get("topic", "") for c in claims],
+                "retrieval_hit": retrieval_hit, "fa_live": fa,
                 "ts": datetime.now(timezone.utc).isoformat()})
         return contact("FA_LIVE_BREACH", cyc,
                        f"{len(leaked)} DIRTY reached knowledge -> HALT", live)
@@ -232,6 +234,8 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weaknes
         _emit_trace(trace_path, {
             "cycle": cyc, "weakness": w["name"], "select_target": w["name"],
             "rate_f": round(observed, 4), "clean_count": absorbed,
+            "pool_size": getattr(absorb, "pool_size", None),
+            "topics": [c.get("topic", "") for c in claims],
             "retrieval_hit": retrieval_hit, "fa_live": 0.0,
             "ts": datetime.now(timezone.utc).isoformat()})
 
@@ -387,7 +391,7 @@ def _live_retrieve_fn(trail_path):
 
 
 def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
-                  gold_frame_path="gold_frame.txt"):
+                  gold_frame_path="gold_frame.txt", hard_topics=False):
     """Wire the REAL on-disk pipeline (run from lab/dpo/, Ollama up, net on).
 
     rung C delta-2: the GENERATE seam now routes through the SEALED Step-6
@@ -404,12 +408,40 @@ def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
     """
     from rung1_wiring_v0 import OLLAMA_MODEL          # single source of truth (model)
     from o0_domain_list import DOMAIN_TOPICS
+    # v259 TYPE C: topic source = PROPOSER-INPUT only. HARD_TOPICS (24, fabrication-prone,
+    # Founder-confirmed 2026-06-23) replaces the 100 general DOMAIN_TOPICS when hard_topics=True,
+    # to express the F1 HEADROOM precondition (blind rate_f >~ 0.30). verify()/firewall untouched.
+    if hard_topics:
+        from hard_topics import HARD_TOPICS as _TOPIC_SRC
+    else:
+        _TOPIC_SRC = DOMAIN_TOPICS
     from generate_step6 import make_generate          # SEALED proposer factory
     import o0_temporal_evidence as TE
     import o0_temporal_probe_v5 as T  # frozen V6 probe (scope_verdict's oracle)
     from o0_accumulator import Accumulator
 
     acc = Accumulator("eval/o0/o0_verdicts.jsonl")
+
+    # v259 TYPE C (STEP 3a): cumulative conditioning-pool size witness for F2 (direct
+    # accumulation). pool = knowledge-ABSORB records in the live trail (the SAME file the
+    # conditioned proposer retrieves over). clean_count = per-batch clean-gen, NOT pool size;
+    # this counts the actual conditioning corpus. measure-side side-channel (mirrors
+    # generate.retrieval_hits) carried on absorb; verify() never sees it -> firewall intact.
+    def _count_pool(path):
+        p = Path(path)
+        if not p.exists():
+            return 0
+        n_pool = 0
+        for ln in p.read_text(encoding="utf-8").splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            try:
+                if json.loads(ln).get("_absorbed_knowledge"):
+                    n_pool += 1
+            except Exception:
+                pass
+        return n_pool
 
     # ── GENERATE seam (delta-2): conditioned arm reads the CURATED view ONLY ──
     if conditioned:
@@ -423,12 +455,12 @@ def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
         gold_frame = (Path(gold_frame_path).read_text(encoding="utf-8")
                       if Path(gold_frame_path).exists() else "")
         generate = make_generate(
-            conditioned=True, model=OLLAMA_MODEL, topics=DOMAIN_TOPICS,
+            conditioned=True, model=OLLAMA_MODEL, topics=_TOPIC_SRC,
             audit_instruction="", confirmed=[], retrieve_fn=retrieve_fn,
             gold_frame=gold_frame, k=3)
     else:
         generate = make_generate(
-            conditioned=False, model=OLLAMA_MODEL, topics=DOMAIN_TOPICS,
+            conditioned=False, model=OLLAMA_MODEL, topics=_TOPIC_SRC,
             audit_instruction="")
 
     def verify(c):
@@ -473,6 +505,10 @@ def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
             rec["_absorbed_knowledge"] = True
         acc.append(rec)
         v["_absorbed_knowledge"] = (kind == "knowledge")
+        if kind == "knowledge":
+            absorb.pool_size = getattr(absorb, "pool_size", 0) + 1
+
+    absorb.pool_size = _count_pool("eval/o0/o0_verdicts.jsonl")  # boot = existing conditioning corpus
 
     return generate, verify, absorb
 
@@ -542,11 +578,17 @@ if __name__ == "__main__":
                     help="D-GATE only: pin SELECT to this weakness every cycle (verdict-blind)")
     ap.add_argument("--selflearn-trace", default=None,
                     help="GATE_selflearn: append per-visit witness rows to this JSONL")
+    # v259 TYPE C: harder claim-distribution (F1 VOID-by-saturation route). Topic source is
+    # PROPOSER-INPUT ONLY (verify()/firewall untouched). Default OFF -> DOMAIN_TOPICS, byte-
+    # identical to the confirmed-trail run.
+    ap.add_argument("--hard-topics", action="store_true",
+                    help="swap proposer topic source DOMAIN_TOPICS -> HARD_TOPICS (hard_topics.py)")
     args = ap.parse_args()
 
     gen, ver, abs_ = (live_adapters(conditioned=args.conditioned,
                                     curated_path=args.curated_path,
-                                    gold_frame_path=args.gold_frame)
+                                    gold_frame_path=args.gold_frame,
+                                    hard_topics=args.hard_topics)
                       if args.live else dry_adapters())
     raise SystemExit(run(args.self_model, gen, ver, abs_,
                          n=args.n, live=args.live, max_cycles=args.cycles,

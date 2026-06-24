@@ -67,3 +67,9 @@ lab/llama-cpp/
 **/o0_verdicts_pool*.jsonl
 # -- build clutter (source bundles, not deliverables) --
 lab/dpo/*_out.zip
+# -- v259 (OWED-3): hard-topics set is BAIT-DERIVED (src bait_v2_n32.jsonl); bait-named-free
+#    so *bait* missed it. topic set + meta + recite-control = LOCAL ONLY. leak -> a future
+#    pretrain eats it -> F1 HEADROOM signal poisoned. mechanism (controller.py + smoke) is
+#    public and embeds no bait strings.
+**/hard_topics*
+**/fresh_topics*
