@@ -42,6 +42,7 @@ import argparse
 import json
 import sys
 import time
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -54,6 +55,16 @@ REGRIND_COOLDOWN = 1  # don't re-pick the same weakness within N cycles (anti-gr
 
 CONTACT_LOG = "contact_log.jsonl"
 GOAL_STACK = "goal_stack.json"
+SELFLEARN_TRACE = "selflearn_trace.jsonl"
+
+
+def _emit_trace(trace_path, row):
+    """Append ONE per-visit witness row (GATE_selflearn signals). Binary-LF write
+    (ENV PRECONDITION sec1: text-mode CRLF-translates and breaks LF md5 anchors)."""
+    line = (json.dumps(row, ensure_ascii=False) + "\n").encode("utf-8")
+    Path(trace_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(trace_path, "ab") as f:
+        f.write(line)
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -145,7 +156,8 @@ def contact(reason, cycle, detail, live):
 # CYCLE  (PLAN -> EXECUTE[GENERATE->VERIFY->ABSORB] -> MEASURE -> CONTACT)
 # ════════════════════════════════════════════════════════════════════
 
-def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weakness=None):
+def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weakness=None,
+              trace_path=None):
     """One self-improvement cycle. Returns the contact event (cycle terminator)."""
     cyc = gstack.state["cycle"]
 
@@ -165,6 +177,10 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weaknes
     except Exception as e:
         return contact("RESOURCE", cyc, f"GENERATE failed: {e}", live)
     print(f"[EXEC]   generated {len(claims)} claim(s)")
+    # MECHANISM-USE witness: retrieval-hit = records retrieve() ACTUALLY returned at
+    # generate time (prereg L51). Read from the proposer SIDE-CHANNEL only; verify()
+    # never sees it -> firewall intact. dry/blind generate -> absent/zeros -> 0.
+    retrieval_hit = sum(getattr(generate, "retrieval_hits", []) or [])
 
     # ---- EXECUTE: VERIFY ----
     verdicts = []
@@ -190,6 +206,13 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weaknes
     # above, so the invariant holds by construction; assert it explicitly.
     leaked = [v for v in verdicts if v["verdict"] == "DIRTY" and v.get("_absorbed_knowledge")]
     if leaked:
+        fa = round(len(leaked) / max(1, absorbed + len(leaked)), 4)  # F4: fa_live>0
+        if trace_path:
+            _emit_trace(trace_path, {
+                "cycle": cyc, "weakness": w["name"], "select_target": w["name"],
+                "rate_f": round((n_dirty / n_total) if n_total else 1.0, 4),
+                "clean_count": absorbed, "retrieval_hit": retrieval_hit, "fa_live": fa,
+                "ts": datetime.now(timezone.utc).isoformat()})
         return contact("FA_LIVE_BREACH", cyc,
                        f"{len(leaked)} DIRTY reached knowledge -> HALT", live)
     print(f"[ABSORB] {absorbed} -> knowledge, {n_total - absorbed} -> catch-record, fa_live=0")
@@ -200,6 +223,12 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weaknes
     gstack.mark_worked(w["name"], observed, baseline, improved)
     print(f"[MEASURE] observed_rate_f={observed:.3f} vs baseline={baseline} "
           f"-> {'IMPROVED' if improved else 'NOT IMPROVED'}")
+    if trace_path:
+        _emit_trace(trace_path, {
+            "cycle": cyc, "weakness": w["name"], "select_target": w["name"],
+            "rate_f": round(observed, 4), "clean_count": absorbed,
+            "retrieval_hit": retrieval_hit, "fa_live": 0.0,
+            "ts": datetime.now(timezone.utc).isoformat()})
 
     # ---- CONTACT ----
     if improved:
@@ -211,7 +240,8 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weaknes
                    f"no improvement", live)
 
 
-def run(self_model_path, generate, verify, absorb, n, live, max_cycles, pin_weakness=None):
+def run(self_model_path, generate, verify, absorb, n, live, max_cycles, pin_weakness=None,
+        trace_path=None):
     self_model = json.loads(Path(self_model_path).read_text(encoding="utf-8"))
     if "weaknesses" not in self_model or not self_model["weaknesses"]:
         sys.exit("FATAL: self_model has no weaknesses (run selfmodel_compile first)")
@@ -228,7 +258,7 @@ def run(self_model_path, generate, verify, absorb, n, live, max_cycles, pin_weak
     for _ in range(max_cycles):
         gstack.state["cycle"] += 1
         ev = run_cycle(self_model, gstack, generate, verify, absorb, n, live,
-                       pin_weakness=pin_weakness)
+                       pin_weakness=pin_weakness, trace_path=trace_path)
         gstack.save()
         if ev["reason"] == "FA_LIVE_BREACH":
             print("\n[HALT] fa_live breach -> STOP (operator must clear).")
@@ -303,6 +333,20 @@ def merge_verdict(temporal_verdict, temporal_reasons, claim, oracle=None):
     return verdict, reasons
 
 
+def _live_retrieve_fn(trail_path):
+    """Proposer retrieval feed, re-read PER generate() call from the LIVE ABSORB
+    trail (where absorb() writes verify-confirmed knowledge). Fixes BUILD-FRONT #1
+    root cause: a boot-time snapshot of an empty cold-start curated file pinned
+    retrieval_hit==0 -> within-run self-learning was unwitnessable.
+    FIREWALL UNCHANGED: output feeds compose_context -> PROMPT only; the emitted
+    dict stays {topic,claim}; verify() (external oracle) never sees it."""
+    from o0_retrieve import load_confirmed, retrieve  # PROPOSER-feed only
+    def _fn(topic, _confirmed_ignored, k=3):
+        confirmed_now = load_confirmed(trail_path) if Path(trail_path).exists() else []
+        return retrieve(topic, confirmed_now, k=k)
+    return _fn
+
+
 def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
                   gold_frame_path="gold_frame.txt"):
     """Wire the REAL on-disk pipeline (run from lab/dpo/, Ollama up, net on).
@@ -330,13 +374,18 @@ def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
 
     # ── GENERATE seam (delta-2): conditioned arm reads the CURATED view ONLY ──
     if conditioned:
-        from o0_retrieve import load_confirmed, retrieve   # PROPOSER-feed only
-        confirmed = load_confirmed(curated_path) if Path(curated_path).exists() else []
+        # WIRING FIX (BUILD-FRONT #1, F3=0 root cause): retrieve over the LIVE ABSORB
+        # trail PER generate() call -- NOT a boot snapshot of the (empty, cold-start)
+        # curated file. live feed = the SAME path absorb()/Accumulator writes to above,
+        # so within-run confirmed knowledge becomes retrievable -> retrieval_hit can fire.
+        # curated_path retained for API stability (no daemon signature break).
+        live_trail = "eval/o0/o0_verdicts.jsonl"  # == Accumulator path; single source
+        retrieve_fn = _live_retrieve_fn(live_trail)
         gold_frame = (Path(gold_frame_path).read_text(encoding="utf-8")
                       if Path(gold_frame_path).exists() else "")
         generate = make_generate(
             conditioned=True, model=OLLAMA_MODEL, topics=DOMAIN_TOPICS,
-            audit_instruction="", confirmed=confirmed, retrieve_fn=retrieve,
+            audit_instruction="", confirmed=[], retrieve_fn=retrieve_fn,
             gold_frame=gold_frame, k=3)
     else:
         generate = make_generate(
@@ -372,7 +421,11 @@ def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
         return merge_verdict(tv, treasons, claim)
 
     def absorb(v, kind):
-        rec = {"id": f"ctrl_{int(time.time()*1000)}", "claim": v["claim"],
+        c = v["claim"]
+        topic = c.get("topic", "") if isinstance(c, dict) else ""
+        claim_str = c.get("claim", "") if isinstance(c, dict) else c
+        rec = {"id": f"ctrl_{int(time.time()*1000)}_{uuid.uuid4().hex[:6]}",
+               "topic": topic, "claim": claim_str, "best_abstract": "",
                "verdict": "ABSORB" if (kind == "knowledge") else "REJECT",
                "ctrl_reasons": v["reasons"], "kind": kind,
                "targeted_weakness": v.get("targeted_weakness"),
@@ -448,6 +501,8 @@ if __name__ == "__main__":
     # pack v246 sec 3.1: gate-only SELECT pin (no rotation) for a targeted A/B.
     ap.add_argument("--pin-weakness", default=None,
                     help="D-GATE only: pin SELECT to this weakness every cycle (verdict-blind)")
+    ap.add_argument("--selflearn-trace", default=None,
+                    help="GATE_selflearn: append per-visit witness rows to this JSONL")
     args = ap.parse_args()
 
     gen, ver, abs_ = (live_adapters(conditioned=args.conditioned,
@@ -456,4 +511,5 @@ if __name__ == "__main__":
                       if args.live else dry_adapters())
     raise SystemExit(run(args.self_model, gen, ver, abs_,
                          n=args.n, live=args.live, max_cycles=args.cycles,
-                         pin_weakness=args.pin_weakness))
+                         pin_weakness=args.pin_weakness,
+                         trace_path=args.selflearn_trace))
