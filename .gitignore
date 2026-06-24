@@ -56,3 +56,14 @@ lab/llama-cpp/
 # -- .md.bak style (existing *.bak.* misses trailing .bak) --
 *.bak
 **/*.bak
+
+# -- GATE_selflearn held-out / answer-keys / derived-state (local only; never public) --
+**/*_pairs_gold.json
+**/*founder_labels.jsonl
+**/*heldout*
+**/*held_out*
+**/o0_verdicts.jsonl
+**/o0_verdicts_curated.jsonl
+**/o0_verdicts_pool*.jsonl
+# -- build clutter (source bundles, not deliverables) --
+lab/dpo/*_out.zip

@@ -203,7 +203,8 @@ def daemon_loop(args, generate, verify, absorb):
 
         # wrap controller.run for exactly ONE cycle (it persists goal_stack itself)
         rc = controller.run(args.self_model, generate, verify, absorb,
-                            n=args.n, live=args.live, max_cycles=1)
+                            n=args.n, live=args.live, max_cycles=1,
+                            trace_path=args.selflearn_trace)
 
         # 3. real-channel contact
         n_new, dropped, last_reason = drain_contacts(args.contact_drop, contact_seen)
@@ -253,14 +254,22 @@ def main():
                     help="G_drift fa_live ceiling (pack gate)")
     ap.add_argument("--verdict-trail", default=DEFAULT_TRAIL)
     ap.add_argument("--contact-drop", default=DROP_DIR)
+    ap.add_argument("--selflearn-trace", default=None,
+                    help="GATE_selflearn: per-visit witness JSONL (off = no trace)")
+    ap.add_argument("--conditioned", action="store_true",
+                    help="GATE_selflearn: wire CONDITIONED proposer (retrieval+frame)")
+    ap.add_argument("--curated-path", default="o0_verdicts_curated.jsonl")
+    ap.add_argument("--gold-frame", default="gold_frame.txt")
     args = ap.parse_args()
 
     if args.live and args.n > 10:
         sys.exit(f"FATAL: --n {args.n} > 10 violates LOCAL routing (pack §3).")
 
     _install_signals()
-    gen, ver, abs_ = (controller.live_adapters() if args.live
-                      else controller.dry_adapters())
+    gen, ver, abs_ = (controller.live_adapters(conditioned=args.conditioned,
+                                                curated_path=args.curated_path,
+                                                gold_frame_path=args.gold_frame)
+                      if args.live else controller.dry_adapters())
     raise SystemExit(daemon_loop(args, gen, ver, abs_))
 
 

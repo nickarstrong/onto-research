@@ -73,18 +73,23 @@ def make_generate(conditioned, model, topics, audit_instruction,
 
     def generate(n):
         out = []
+        hits = []  # per-candidate retrieval-hit count (MECHANISM-USE witness; NEVER enters out)
         for _ in range(n):
             topic = topics[cur["i"] % len(topics)]
             cur["i"] += 1
             if conditioned:
                 retrieved = retrieve_fn(topic, confirmed, k=k) if retrieve_fn else []
                 ctx = compose_context(retrieved, gold_frame)
+                hits.append(len(retrieved))
             else:
                 ctx = ""
+                hits.append(0)  # BLIND arm: structural 0 (prereg L53)
             prompt = _prompt(topic, ctx)
             claim = _call(model, prompt, options)
             # FIREWALL: emit ONLY topic+claim. No ctx, no retrieved, no gold leak.
             out.append({"topic": topic, "claim": claim})
+        generate.retrieval_hits = hits  # SIDE-CHANNEL: read by run_cycle measure-side ONLY
         return out
 
+    generate.retrieval_hits = []  # init so a pre-call read is safe
     return generate
