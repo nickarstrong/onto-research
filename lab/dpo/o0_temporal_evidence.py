@@ -75,22 +75,55 @@ def extract_fulldates(text):
 def extract_numbers(text):
     return [m.group(0).strip() for m in _NUMBER.finditer(text)]
 
+# --- C-1 (PREREG v4): YEAR SINGLE-OWNERSHIP ------------------------------------------------------
+# A token claimed by the YEAR channel must NOT also enter the non-year number gate (the v264
+# dominant FF: 14/24 year-only, e.g. the range "1856 and 1864"). ONE shared pure helper subtracts
+# year-channel-claimed tokens from extract_numbers() output, feeding BOTH gate consumers
+# (scope_verdict loop + run() per_specific loop) so the two sites cannot diverge.
+# Claimed = extract_years_ext() output (per_year keys) + numeric components of extract_fulldates()
+# + both integers of an `NNNN (and|to|-) NNNN` range bigram (a lone band match can miss the 2nd).
+# LIMITATION (R3, flagged to Founder): extract_years_ext is band-only (1000-2099, no context gate),
+# so an in-band TRUE 4-digit quantity ("1500 mg") and any `NNNN and NNNN` quantity pair are
+# subtracted -> false-NEGATIVE. Sealed-spec mechanism; not re-opened here.
+_YEAR_RANGE_PAIR = re.compile(r'\b(\d{4})\s*(?:and|to|through|[-\u2013\u2014])\s*(\d{4})\b', re.I)
+
+def _year_claimed_tokens(text):
+    """Pure. Tokens the YEAR channel owns, to be subtracted from the non-year number gate."""
+    claimed = set()
+    ce, bce = extract_years_ext(text)
+    claimed.update(ce)
+    claimed.update(y.lstrip("-") for y in bce)
+    for m in _YEAR_RANGE_PAIR.finditer(text):
+        claimed.add(m.group(1)); claimed.add(m.group(2))
+    for fd in extract_fulldates(text):
+        claimed.update(re.findall(r'\d+', fd))
+    return claimed
+
+def extract_numbers_nonyear(text):
+    """C-1 single-ownership: extract_numbers() minus year-channel-claimed tokens. Pure; the ONLY
+       number feeder both gate consumers may call (firewall: shared site, no divergence)."""
+    claimed = _year_claimed_tokens(text)
+    return [n for n in extract_numbers(text) if n not in claimed]
+
 def _norm(s):
     return re.sub(r'\s+', " ", (s or "")).strip().lower()
 
 def _specific_status(spec, pool_low, per_specific):
-    # Per-specific support under the NON-YEAR oracle (NON-YEAR EVIDENCE plane). Returns:
-    #   SUPPORTED  : literal in abstract/snippet pool, OR oracle CONFIRM (out-of-band, exact+anchored)
-    #   REFUTED    : oracle REFUTE (primary source gives a different value) -> hard DIRTY
-    #   UNVERIFIED : neither -> DIRTY (precision-first; fa_live invariant unchanged)
-    # Literal-only fallback stays precision-first; a CONFIRM may only come from the exact+entity-
-    # anchored oracle (step 2b), so a fabricated value can never be rescued here (F1 safety).
+    # C-2 (PREREG v4): evidence-state 3-state gate. DIRTY requires POSITIVE disagreement, never
+    # mere non-confirmation (absence of evidence != fabrication). Returns:
+    #   SUPPORTED  : literal in abstract/snippet pool, OR oracle CONFIRM (exact+entity-anchored)
+    #   REFUTED    : oracle REFUTE (primary source gives a different value) -> hard DIRTY (contradiction)
+    #   ABSTAIN    : non-confirm with NO contradiction -> quarantine, NOT DIRTY (was "UNVERIFIED"->DIRTY).
+    #                Kills the FALSIFIED oracle-rescue path: a true bare-qty on an empty abstract
+    #                passes by ABSTAINing, not by waiting on the near-dead live oracle (2/48 CONFIRM).
+    # A CONFIRM may only come from the exact+entity-anchored oracle, so a fabricated value can never
+    # be rescued (F1); a fab value on an EMPTY abstract is UNCATCHABLE -> ABSTAIN (declared, not faked).
     ov = per_specific.get(_norm(spec))
     if ov == "REFUTE":
         return "REFUTED"
     if _norm(spec) in pool_low or ov == "CONFIRM":
         return "SUPPORTED"
-    return "UNVERIFIED"
+    return "ABSTAIN"
 
 # --- non-year oracle (NON-YEAR EVIDENCE plane) ---------------------------------------------------
 # Per-specific out-of-band verification vs Wikidata/Wikipedia, mirroring the frozen temporal YEAR
@@ -163,7 +196,9 @@ def scope_verdict(rec):
          gating the subject name against an empty abstract would regress year-only CLEANs
          (falsifier sec 5 secondary guard).
 
-       Returns (verdict, reasons). verdict in {"CLEAN","DIRTY"}.
+       Returns (verdict, reasons). verdict in {"CLEAN","DIRTY","ABSTAIN"} (C-2: ABSTAIN = a
+       non-confirm number specific with no contradiction -> quarantine, neither train-positive
+       nor fab-rejected; pool/conditioning routes it to a quarantine bucket, not CLEAN).
     """
     parse    = clean_for_parse(rec.get("claim"))
     temporal = rec.get("temporal", {})
@@ -181,14 +216,15 @@ def scope_verdict(rec):
         return "DIRTY", ["year_refuted:" + ",".join(bad)]
 
     reasons = []
-    for spec in extract_fulldates(parse) + extract_numbers(parse):
+    abstains = []
+    for spec in extract_fulldates(parse) + extract_numbers_nonyear(parse):
         st = _specific_status(spec, pool_low, per_specific)
         if st == "REFUTED":
             return "DIRTY", ["non_year_specific_refuted:%r" % spec]
-        if st == "UNVERIFIED":
-            reasons.append("unverified_non_year_specific:%r" % spec)
-    if reasons:
-        return "DIRTY", reasons
+        if st == "ABSTAIN":
+            abstains.append("abstain_non_year_specific:%r" % spec)
+    if abstains:
+        return "ABSTAIN", abstains
     return "CLEAN", ["year+subject supported; non-year specifics supported or none"]
 
 def collapse(per_year):
@@ -206,7 +242,7 @@ def collapse(per_year):
 def run(in_path, out_path):
     import o0_temporal_probe_v5 as T   # frozen V6 probe (lazy: only the live wire needs it)
     rows = [json.loads(l) for l in open(in_path, encoding="utf-8") if l.strip()]
-    n_clean = n_dirty = 0
+    n_clean = n_dirty = n_abstain = 0
     with open(out_path, "w", encoding="utf-8") as f:
         for r in rows:
             claim_orig = r["claim"]
@@ -232,14 +268,14 @@ def run(in_path, out_path):
                 # visible but not confirmable through the frozen CE-only channel (sec 4 guard)
                 per_year[yb] = "ABSTAIN_BCE_unverifiable"
             per_specific, _ocache = {}, {}
-            for spec in extract_fulldates(claim) + extract_numbers(claim):
+            for spec in extract_fulldates(claim) + extract_numbers_nonyear(claim):
                 sv_, log_ = verify_specific(spec, claim, ctx, T, _ocache, topic=r.get("topic", ""))  # live oracle, topic-anchored (CONFIRM|ABSTAIN)
                 per_specific[_norm(spec)] = sv_
             cv = collapse(per_year)            # YEAR-LEVEL diagnostic ONLY -- NOT a claim support flag
             out = dict(r)
             sv, sr = scope_verdict({**r, "temporal": {"per_year": per_year, "snippets": snippets,
                                                        "per_specific": per_specific}})
-            n_clean += sv == "CLEAN"; n_dirty += sv == "DIRTY"
+            n_clean += sv == "CLEAN"; n_dirty += sv == "DIRTY"; n_abstain += sv == "ABSTAIN"
             out["temporal"] = {
                 "per_year": per_year,
                 "snippets": snippets,
@@ -251,7 +287,7 @@ def run(in_path, out_path):
             print("  %-14s years=%-18s year=%-9s scope=%s" %
                   (r["id"], ",".join(years_ce) or "-", cv, sv))
     print("\n[temporal] %d claims -> %s" % (len(rows), out_path))
-    print("[temporal] SCOPE claim_verdict: CLEAN=%d DIRTY=%d" % (n_clean, n_dirty))
+    print("[temporal] SCOPE claim_verdict: CLEAN=%d DIRTY=%d ABSTAIN=%d (quarantine)" % (n_clean, n_dirty, n_abstain))
     print("[temporal] a year CONFIRM supports the YEAR sub-claim only; non-year date/number "
           "specifics are gated independently (precision-first).")
 
