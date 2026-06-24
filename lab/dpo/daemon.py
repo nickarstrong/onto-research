@@ -264,6 +264,8 @@ def main():
                     help="GATE_selflearn F1: if >0 (+ --live + --selflearn-trace), measure "
                          "ONE unconditioned cold baseline (blind adapter, retrieval+absorb "
                          "OFF) and emit trace cycle:0 phase:baseline BEFORE the tick loop")
+    ap.add_argument("--hard-topics", action="store_true",
+                    help="swap proposer topic source DOMAIN_TOPICS -> HARD_TOPICS (proposer-input only; verify()/firewall untouched; default OFF byte-identical)")
     args = ap.parse_args()
 
     if args.live and args.n > 10:
@@ -272,7 +274,7 @@ def main():
     _install_signals()
     gen, ver, abs_ = (controller.live_adapters(conditioned=args.conditioned,
                                                 curated_path=args.curated_path,
-                                                gold_frame_path=args.gold_frame)
+                                                gold_frame_path=args.gold_frame, hard_topics=args.hard_topics)
                       if args.live else controller.dry_adapters())
 
     # GATE_selflearn F1: one-time unconditioned cold baseline BEFORE the conditioned loop.
@@ -281,7 +283,7 @@ def main():
     if args.live and args.baseline_n and args.selflearn_trace:
         gen_b, ver_b, _abs_b = controller.live_adapters(
             conditioned=False, curated_path=args.curated_path,
-            gold_frame_path=args.gold_frame)
+            gold_frame_path=args.gold_frame, hard_topics=args.hard_topics)
         controller.capture_cold_baseline(gen_b, ver_b, args.baseline_n,
                                          args.selflearn_trace)
 
