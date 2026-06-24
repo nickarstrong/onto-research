@@ -260,6 +260,10 @@ def main():
                     help="GATE_selflearn: wire CONDITIONED proposer (retrieval+frame)")
     ap.add_argument("--curated-path", default="o0_verdicts_curated.jsonl")
     ap.add_argument("--gold-frame", default="gold_frame.txt")
+    ap.add_argument("--baseline-n", type=int, default=0,
+                    help="GATE_selflearn F1: if >0 (+ --live + --selflearn-trace), measure "
+                         "ONE unconditioned cold baseline (blind adapter, retrieval+absorb "
+                         "OFF) and emit trace cycle:0 phase:baseline BEFORE the tick loop")
     args = ap.parse_args()
 
     if args.live and args.n > 10:
@@ -270,6 +274,17 @@ def main():
                                                 curated_path=args.curated_path,
                                                 gold_frame_path=args.gold_frame)
                       if args.live else controller.dry_adapters())
+
+    # GATE_selflearn F1: one-time unconditioned cold baseline BEFORE the conditioned loop.
+    # Blind adapter (conditioned=False -> retrieval OFF); does NOT absorb -> proposer stays
+    # cold for the run that follows. Gives the F1 reader a true pre-conditioning anchor.
+    if args.live and args.baseline_n and args.selflearn_trace:
+        gen_b, ver_b, _abs_b = controller.live_adapters(
+            conditioned=False, curated_path=args.curated_path,
+            gold_frame_path=args.gold_frame)
+        controller.capture_cold_baseline(gen_b, ver_b, args.baseline_n,
+                                         args.selflearn_trace)
+
     raise SystemExit(daemon_loop(args, gen, ver, abs_))
 
 

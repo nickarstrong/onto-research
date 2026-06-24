@@ -245,6 +245,40 @@ def run_cycle(self_model, gstack, generate, verify, absorb, n, live, pin_weaknes
                    f"no improvement", live)
 
 
+def capture_cold_baseline(generate_blind, verify, n, trace_path, phase_label="baseline"):
+    """BUILD-FRONT #3 (F1): emit ONE unconditioned pre-conditioning reference row
+    BEFORE any ABSORB feeds the proposer, so the F1 early->late |delta(rate_f)| has a
+    genuine cold anchor.
+
+    Prior design had NO unconditioned window: every trace row was already inside the
+    wired run, so 'early' == first conditioned visits == already saturated (cycle-1
+    rate_f 0.000/0.125 vs no headroom). This measures rate_f with the BLIND adapter
+    (conditioned=False -> context="" -> retrieval OFF) and writes NOTHING to the absorb
+    trail, so the conditioned run that follows starts cold (proposer un-fed).
+
+    Emits cycle:0, phase:"baseline", retrieval_hit:0 -> the reader pairs this against the
+    LATE conditioned window. FIREWALL: generate_blind emits {topic,claim}; verify()
+    (external oracle) never sees a retrieval handle. NO absorb() call here by design."""
+    claims = generate_blind(n)
+    n_dirty = 0
+    for c in claims:
+        v, _reasons = verify(c)
+        if v == "DIRTY":
+            n_dirty += 1
+    n_total = len(claims)
+    rate_f = round((n_dirty / n_total) if n_total else 1.0, 4)
+    if trace_path:
+        _emit_trace(trace_path, {
+            "cycle": 0, "phase": phase_label,
+            "weakness": "__baseline__", "select_target": "__baseline__",
+            "rate_f": rate_f, "clean_count": n_total - n_dirty,
+            "retrieval_hit": 0, "fa_live": 0.0,
+            "ts": datetime.now(timezone.utc).isoformat()})
+    print(f"[BASELINE] unconditioned cold rate_f={rate_f:.3f} "
+          f"({n_dirty}/{n_total} DIRTY, retrieval+absorb OFF) -> trace cycle:0 phase:{phase_label}")
+    return rate_f
+
+
 def run(self_model_path, generate, verify, absorb, n, live, max_cycles, pin_weakness=None,
         trace_path=None):
     self_model = json.loads(Path(self_model_path).read_text(encoding="utf-8"))
