@@ -1,0 +1,8 @@
+# verify() seam re-anchor -- TYPE C build (PREREG v3, knobs a/b/c)
+# AST-node hash = md5(ast.dump(FunctionDef 'verify_specific', include_attributes=False))
+# knob a AUTHORIZED the frozen-verify() edit; the seam byte-identity MOVED as designed.
+target: o0_temporal_evidence.py :: verify_specific
+seam_hash_old: 360bfea79eede8a695f769ee710fcc56
+seam_hash_new: c6eafcdb68c08395503d065007f7f1ad
+change: CHANGE 2 shape-A topic-anchor (subject source claim-sentence -> record topic referent)
+co-change: CHANGE 1 widened _NUMBER (module-level, not in this function node)

@@ -62,7 +62,12 @@ _FULLDATE = re.compile(r'(?:%s)\s+\d{1,2}(?:st|nd|rd|th)?|\d{1,2}(?:st|nd|rd|th)
 # NUMBER = percentages and fractions only (the v219 fa_live class: "56.3%", "8/14"). Kept narrow on
 # purpose -- gating every integer in prose would inject false specifics; names/places are the
 # SEPARATE out-of-band ff plane (v218), intentionally not gated on the safety axis here.
-_NUMBER = re.compile(r'\b\d{1,3}(?:\.\d+)?\s*%|\b\d+\s*/\s*\d+\b')
+_NUMBER = re.compile(
+    r'\b\d{1,3}(?:\.\d+)?\s*%'                 # 1 percent      (OLD, byte-identical)
+    r'|\b\d+\s*/\s*\d+\b'                      # 2 fraction a/b (OLD, byte-identical)
+    r'|(?<![\w-])\d{1,3}(?:,\d{3})+(?:\.\d+)?' # 3 thousands-comma
+    r'|(?<![\w-])\d+(?:\.\d+)?'                # 4 bare int/decimal, not identifier-embedded
+)
 
 def extract_fulldates(text):
     return [m.group(0).strip() for m in _FULLDATE.finditer(text)]
@@ -120,16 +125,19 @@ def _confirm_specific_in_text(text, spec, subject_label, T):
             return True, s.strip().replace("\n", " ")[:240]
     return False, ""
 
-def verify_specific(spec, claim, ctx, T, cache=None):
-    """LIVE non-year oracle (CONFIRM | ABSTAIN). Resolves the spec's sentence subject via the
-       FROZEN probe (resolve_subject / entity_data / wiki_fulltext), then exact same-sentence
-       co-location. No REFUTE: free-text refute is the castration direction (V2-V6); fa_live is
-       held by ABSTAIN->DIRTY, not by refute. Network-bound (LOCAL)."""
+def verify_specific(spec, claim, ctx, T, cache=None, topic=""):
+    """LIVE non-year oracle (CONFIRM | ABSTAIN). SHAPE A (knob c, PREREG v3): anchors specifics to
+       the TOPIC referent (record `topic` / hard_topics referent), NOT the model's in-sentence
+       subject -- structurally closes the in-sentence subject-laundering path (DMSO). Subjects are
+       drawn from the TOPIC string and resolved via the FROZEN probe (resolve_subject / entity_data
+       / wiki_fulltext); exact same-sentence co-location in the topic-referent article CONFIRMs.
+       no topic subject / no QID / spec absent -> ABSTAIN -> DIRTY downstream (precision-first).
+       No REFUTE: free-text refute is the castration direction (V2-V6). Network-bound (LOCAL)."""
     cache = cache if cache is not None else {}
-    sent = _specific_sentence(claim, spec)
-    for label in T.extract_subjects_in_sentence(sent, spec):
-        role = T.subject_role(label, sent)
-        res = T.resolve_subject(label, ctx, role); time.sleep(0.2)
+    tctx = T._TOK(topic)
+    for label in T.extract_subjects_in_sentence(topic, spec):
+        role = T.subject_role(label, topic)
+        res = T.resolve_subject(label, tctx, role); time.sleep(0.2)
         if not res:
             continue
         qid = res[0]
@@ -139,8 +147,8 @@ def verify_specific(spec, claim, ctx, T, cache=None):
             cache[qid] = T.wiki_fulltext(title) if title else ""
         ok, snip = _confirm_specific_in_text(cache[qid], spec, label, T)
         if ok:
-            return "CONFIRM", {"qid": qid, "subject": label, "snippet": snip}
-    return "ABSTAIN", {"reason": "no exact same-sentence co-location with a resolved subject"}
+            return "CONFIRM", {"qid": qid, "subject": label, "snippet": snip, "anchor": "topic"}
+    return "ABSTAIN", {"reason": "shape-A: topic referent unresolved or spec not co-located"}
 
 def scope_verdict(rec):
     """Deterministic claim verdict under the locked scope rule (REPORT_organ_subclaim_scope_v1
@@ -225,7 +233,7 @@ def run(in_path, out_path):
                 per_year[yb] = "ABSTAIN_BCE_unverifiable"
             per_specific, _ocache = {}, {}
             for spec in extract_fulldates(claim) + extract_numbers(claim):
-                sv_, log_ = verify_specific(spec, claim, ctx, T, _ocache)  # live oracle (CONFIRM|ABSTAIN)
+                sv_, log_ = verify_specific(spec, claim, ctx, T, _ocache, topic=r.get("topic", ""))  # live oracle, topic-anchored (CONFIRM|ABSTAIN)
                 per_specific[_norm(spec)] = sv_
             cv = collapse(per_year)            # YEAR-LEVEL diagnostic ONLY -- NOT a claim support flag
             out = dict(r)
