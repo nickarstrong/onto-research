@@ -103,10 +103,10 @@ class GoalStack:
 # ════════════════════════════════════════════════════════════════════
 
 def select_weakness(self_model, gstack):
-    """Pick the worst-severity weakness eligible under anti-regrind.
-    self_model already sorted worst-first by selfmodel_compile; we re-sort to be
-    explicit and apply the cooldown. Deterministic; ties -> fewer cycles_used,
-    then original order (stable)."""
+    """Pick the eligible weakness with a ROTATION FLOOR: least-worked first so every
+    weakness is visited over a run, worst-severity as the tiebreak (anti-regrind keeps
+    a just-worked card off for REGRIND_COOLDOWN cycles). Deterministic; ties on
+    cycles_used -> worse severity, then original order (stable)."""
     cyc = gstack.state["cycle"]
     cands = []
     for idx, w in enumerate(self_model["weaknesses"]):
@@ -114,7 +114,12 @@ def select_weakness(self_model, gstack):
         cooled = (cyc - rr["last_worked_cycle"]) > REGRIND_COOLDOWN
         cands.append((TIER_RANK[w["severity"]], rr["cycles_used"], idx, cooled, w))
     eligible = [c for c in cands if c[3]] or cands  # fall back to all if all cooling
-    eligible.sort(key=lambda c: (c[0], c[1], c[2]))
+    # ROTATION FLOOR (BUILD-FRONT #2): least-worked PRIMARY, worst-severity tiebreak,
+    # original order last. Severity-primary starved any lower tier whenever >=2 worst-tier
+    # weaknesses existed (cooldown=1 empties only one/cycle) -> 3rd never SELECTed (floor
+    # FAIL, trace 9c960429). cycles_used-primary guarantees every weakness rotates; worst-
+    # first preserved as the tiebreak among equally-worked cards.
+    eligible.sort(key=lambda c: (c[1], c[0], c[2]))  # (cycles_used, TIER_RANK, idx)
     return eligible[0][4]
 
 
