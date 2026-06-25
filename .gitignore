@@ -86,3 +86,5 @@ lab/dpo/eval/o0/SUBSTRATE.md5
 lab/dpo/eval/o0/c2_migration_delta.md
 lab/dpo/*_delta.md
 lab/dpo/eval/o0/*_delta.md
+
+lab/dpo/eval/o0/v282_quarantine_ids*.json
