@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: ascii -*-
 """
-o0_retrieve.py -- Step 6 retrieval adapter (PROPOSER-feed ONLY).
+o0_retrieve.py -- Step 6 retrieval adapter (PROPOSER-feed ONLY). [v280: +pool-hygiene quarantine]
 
 Pulls CONFIRMED episodic memory for retrieval-conditioned GENERATE.
 Reconciled against REAL disk (o0_verdicts.jsonl, v229):
@@ -36,6 +36,12 @@ def load_confirmed(path):
             continue
         r = json.loads(ln)
         if r.get("verdict") != ABSORB:        # CONFIRMED-only filter (hard)
+            continue
+        # v280 POOL HYGIENE: quarantine both-channels-empty ABSORB rows from the PROPOSER feed.
+        # No confirmed specific in EITHER gate channel (_materialised = non-year, _materialised_year
+        # = year) => no-injection seed, must not condition GENERATE. ABSTAIN/REJECT already dropped
+        # above. Missing flag => False (conservative quarantine; surfaces as fewer loaded -> verify).
+        if not (r.get("_materialised", False) or r.get("_materialised_year", False)):
             continue
         out.append({
             "id": r.get("id"),
