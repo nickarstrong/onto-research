@@ -21,3 +21,4 @@ logs/
 data/
 eval/o0/v282_retrieve_audit*.jsonl
 eval/o0/step6_falsifier_E*.json
+reports/PREREG_*.md
