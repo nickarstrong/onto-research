@@ -78,3 +78,9 @@ lab/dpo/*_out.zip
 lab/dpo/hl_baseline*.jsonl
 lab/dpo/hl_baseline*.jsonl.frozen*
 lab/dpo/o0_year_offline_table.jsonl
+
+# v277 close-out: local-only substrate, never public
+lab/dpo/eval/o0/o0_verdicts*
+lab/dpo/eval/o0/swap_delta_*
+lab/dpo/eval/o0/SUBSTRATE.md5
+lab/dpo/eval/o0/c2_migration_delta.md
