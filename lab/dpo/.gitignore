@@ -49,3 +49,4 @@ eval/ordinary_window_v6_dpo_clean.jsonl
 eval/ordinary_window_v7_clean.jsonl
 eval/ordinary_window_v7_dpo_clean.jsonl
 reports/E34_vs_E32.diff
+PREREG_*.md
