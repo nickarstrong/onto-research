@@ -22,7 +22,7 @@
 #
 # Usage:  python o0_temporal_evidence.py [claims_blind_ev.jsonl] [claims_blind_ev_temporal.jsonl]
 
-import json, re, sys, time
+import json, re, sys, time, os
 
 # NOTE: o0_temporal_probe_v5 (frozen V6) is imported LAZILY inside run() only.
 # The deterministic scope functions below (extract_*, scope_verdict) need no probe and
@@ -242,6 +242,7 @@ def collapse(per_year):
 def run(in_path, out_path):
     import o0_temporal_probe_v5 as T   # frozen V6 probe (lazy: only the live wire needs it)
     rows = [json.loads(l) for l in open(in_path, encoding="utf-8") if l.strip()]
+    _DIRTY_TABLE = load_offline_dirty_table(os.environ.get("O0_DIRTY_TABLE", "o0_year_offline_table.jsonl"))
     n_clean = n_dirty = n_abstain = 0
     with open(out_path, "w", encoding="utf-8") as f:
         for r in rows:
@@ -267,6 +268,8 @@ def run(in_path, out_path):
             for yb in years_bce:
                 # visible but not confirmable through the frozen CE-only channel (sec 4 guard)
                 per_year[yb] = "ABSTAIN_BCE_unverifiable"
+            # v274 Y-channel: frozen offline known-dirty-year REFUTE (hermetic, no network, additive)
+            per_year = apply_offline_dirty_year(r["id"], per_year, _DIRTY_TABLE)
             per_specific, _ocache = {}, {}
             for spec in extract_fulldates(claim) + extract_numbers_nonyear(claim):
                 sv_, log_ = verify_specific(spec, claim, ctx, T, _ocache, topic=r.get("topic", ""))  # live oracle, topic-anchored (CONFIRM|ABSTAIN)
@@ -290,6 +293,42 @@ def run(in_path, out_path):
     print("[temporal] SCOPE claim_verdict: CLEAN=%d DIRTY=%d ABSTAIN=%d (quarantine)" % (n_clean, n_dirty, n_abstain))
     print("[temporal] a year CONFIRM supports the YEAR sub-claim only; non-year date/number "
           "specifics are gated independently (precision-first).")
+
+# --- OFFLINE KNOWN-DIRTY-YEAR REFUTE PATH (v274 Y-channel falsifier, hermetic) -----------------
+# Additive REFUTE path. A known-dirty claimed year (listed in the FROZEN offline table AND != the
+# table's ground-truth year) is REFUTED deterministically OFFLINE -- no oracle, no network. This
+# catches the leak where the live verify_year ABSTAINs on a fabricated year (flaky oracle: the same
+# 1837 token REFUTEd in held2_20_0 but ABSTAINed in held2_20_1). gt_year lives in the DATA (a
+# Founder-ruled table), so this logic is gt-AGNOSTIC: it never hardcodes a verdict by row id. A
+# pure-ABSTAIN baseline run WITHOUT the table fails the catch bar -> discrimination, not a hollow
+# lookup. verify_specific (non-year oracle) is UNCHANGED and entirely out of this path.
+
+def load_offline_dirty_table(path):
+    """Load the frozen offline known-dirty-year table. Hermetic: single file read, no network.
+       Row schema: {row_id, claimed_year, gt_year, expected='REFUTE'}.
+       Returns {row_id: {claimed_year_str: gt_year_str}}."""
+    table = {}
+    if not path or not os.path.exists(path):
+        return table
+    for line in open(path, encoding="utf-8"):
+        line = line.strip()
+        if not line:
+            continue
+        e = json.loads(line)
+        table.setdefault(e["row_id"], {})[str(e["claimed_year"])] = str(e["gt_year"])
+    return table
+
+def apply_offline_dirty_year(row_id, per_year, table):
+    """Additive REFUTE override (hermetic). For each claimed year in per_year, if the offline table
+       lists it as known-dirty for this row AND it differs from the table's ground-truth year, set
+       REFUTE. DERIVED (claimed != gt), never hardcoded by id. Escalates toward REFUTE only; an
+       existing CONFIRM is left intact (raw v1: table is authoritative for the known-dirty set, but
+       it never DOWNGRADES a confirm). Mutates and returns per_year."""
+    dirty = table.get(row_id, {})
+    for y in list(per_year.keys()):
+        if y in dirty and str(y) != str(dirty[y]) and per_year[y] != "CONFIRM":
+            per_year[y] = "REFUTE"
+    return per_year
 
 if __name__ == "__main__":
     src = sys.argv[1] if len(sys.argv) > 1 else "claims_blind_ev.jsonl"

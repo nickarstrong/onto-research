@@ -77,3 +77,4 @@ lab/dpo/*_out.zip
 # v260: --hard-topics traces embed hard-topic strings -> LOCAL only
 lab/dpo/hl_baseline*.jsonl
 lab/dpo/hl_baseline*.jsonl.frozen*
+lab/dpo/o0_year_offline_table.jsonl
