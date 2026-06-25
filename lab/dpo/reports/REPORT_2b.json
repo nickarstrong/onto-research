@@ -1,0 +1,28 @@
+{
+  "arm": "2b_auditor_selfmodel",
+  "n_total": 40,
+  "n_dirty": 33,
+  "n_dirty_specifics": 33,
+  "n_clean": 7,
+  "catch_all": {
+    "B0": 0.0,
+    "B1": 0.8484848484848485,
+    "lift": 0.8485
+  },
+  "catch_specifics": {
+    "B0": 0.0,
+    "B1": 0.8484848484848485,
+    "lift": 0.8485
+  },
+  "false_flag_clean": {
+    "B0": 0.0,
+    "B1": 0.14285714285714285
+  },
+  "bars": {
+    "catch_lift>=": 0.2,
+    "false_flag<=": 0.1
+  },
+  "PASS_2b": false,
+  "falsifier_contrib_2b": false,
+  "labels_sha256": "dc4988f11d880987"
+}
