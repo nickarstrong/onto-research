@@ -88,3 +88,5 @@ lab/dpo/*_delta.md
 lab/dpo/eval/o0/*_delta.md
 
 lab/dpo/eval/o0/v282_quarantine_ids*.json
+**/keyfile_*
+**/seeds_structural*
