@@ -1,4 +1,4 @@
-# lab/dpo/.gitignore -- keep held-out / bait / runtime OUT of public git
+﻿# lab/dpo/.gitignore -- keep held-out / bait / runtime OUT of public git
 # (pack v244 sec 3.0 DO-FIRST landmine: one `git add .` publishes these and
 #  kills the measurement -- §3.2). Public git carries ONLY datable provenance +
 #  reproducibility (data + scripts + gate.log + reports).
@@ -19,3 +19,5 @@ o0_verdicts_curated.jsonl
 __pycache__/
 logs/
 data/
+eval/o0/v282_retrieve_audit*.jsonl
+eval/o0/step6_falsifier_E*.json

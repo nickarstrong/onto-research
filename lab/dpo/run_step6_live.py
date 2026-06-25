@@ -18,6 +18,7 @@ from pathlib import Path
 import o0_retrieve as R
 import generate_step6 as G
 import falsifier_step6 as F
+from o0_retrieve_tap import tapped_retrieve
 
 
 def main():
@@ -56,7 +57,7 @@ def main():
     opts = {"temperature": 0.7, "seed": 0, "num_predict": 220}
     g_blind = G.make_generate(False, model, topics, audit, options=opts)
     g_cond = G.make_generate(True, model, topics, audit, confirmed=conf,
-                             retrieve_fn=R.retrieve, gold_frame=gold_frame, k=3, options=opts)
+                             retrieve_fn=tapped_retrieve(R.retrieve, "eval/o0/v282_retrieve_audit.jsonl"), gold_frame=gold_frame, k=3, options=opts)
 
     # retrieved-by-topic for novelty (only the topics the cond arm will hit)
     fed = {}
