@@ -45,6 +45,12 @@ import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+import re as _re_wg  # WATCH-G: strip control codes at gen source
+_WATCHG_CTRL = _re_wg.compile(r"\x1b\[[0-9;]*[A-Za-z]|[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
+def _strip_ctrl(s):
+    """WATCH-G: remove ESC/ANSI CSI + C0/C1 control chars from claim text at
+    absorb source (new generations only). Idempotent; pure string op."""
+    return _WATCHG_CTRL.sub("", s) if isinstance(s, str) else s
 
 # tier baseline (selfmodel_compile._tier thresholds: rate_F at 0.30/0.50/0.70)
 TIER_BASELINE = {"low": 0.30, "med": 0.50, "high": 0.70}
@@ -495,6 +501,7 @@ def live_adapters(conditioned=False, curated_path="o0_verdicts_curated.jsonl",
         c = v["claim"]
         topic = c.get("topic", "") if isinstance(c, dict) else ""
         claim_str = c.get("claim", "") if isinstance(c, dict) else c
+        claim_str = _strip_ctrl(claim_str)  # WATCH-G strip-at-source (new-gen only)
         rec = {"id": f"ctrl_{int(time.time()*1000)}_{uuid.uuid4().hex[:6]}",
                "topic": topic, "claim": claim_str, "best_abstract": "",
                "verdict": "ABSORB" if (kind == "knowledge") else "REJECT",
