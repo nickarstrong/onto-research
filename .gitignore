@@ -90,3 +90,14 @@ lab/dpo/eval/o0/*_delta.md
 lab/dpo/eval/o0/v282_quarantine_ids*.json
 **/keyfile_*
 **/seeds_structural*
+
+lab/dpo/reports/LAYER2_REDESIGN_v293.md
+
+# -- Layer-2 oracle: LOCAL only (OWED-7, ruling B v294). oracle+esc are PUBLIC; these are not. --
+lab/dpo/o0_layer2_falsifier.py
+lab/dpo/o0_layer2_score.py
+lab/dpo/o0_layer2_verdicts.jsonl
+lab/dpo/o0_layer2_probe_verdicts.jsonl
+lab/dpo/probe_pos_pub.jsonl
+lab/dpo/o0_watchf_repro.py
+lab/dpo/_diag_probe.py
