@@ -1122,3 +1122,21 @@ keep-local (ignored .gitignore:102, ruling recorded). NO oracle/probe/verifier e
 tail: per-file ignore lines 99-108 -> one-glob refactor (drift-class) DEFERRED. OWED-5/8 remain OPEN.
 NEXT plane v299 TYPE-A: B-resolve-cov probe (author-identity gate, subject->discoverer P50/P61/P170
 resolve-coverage on >=4 constructed probes).
+
+## 2026-06-26 (wd) -- v299 B-resolve-cov PROBE / author-identity gate eligibility -- RED-FAIL, DEFERRED (HEAD da21d09, read-only TYPE-A)
+Falsifier-first eligibility probe on the author-identity channel (subject -> P50/P61/P170 author/discoverer/
+creator). Pre-registered bar BEFORE measure: coverage >= 0.67 of constructed probes resolve to a single
+unambiguous WD target WITH a non-empty en alias-set. MEASURED 0.333 (2/6) -- RED. Bar held, not weakened.
+Decomposition (real WD bytes; read-only oracle-side fetcher; frozen probe b231da36 UNTOUCHED): edge-resolve
+subject->single author target = 5/6 (resolve capability present); en-alias backstop ABSENT -- canonical
+author-entities carry aliases in many non-en languages but ZERO en aliases (cross-checked Special:EntityData
+full-dump + wbgetentities; parser proven on a control with en_n=2). RULING: DEFER the author-identity gate as
+sketched -- its precision mechanism surface(P) not-in alias-set A is non-B0-safe because A is empty for the en
+author-channel, so legitimate name-variants would false-DIRTY (the exact failure falsifier-first exists to
+catch). NOT BUILT. R16 (falsifiable, future CONCEPT): enwiki redirect-titles / label+sitelink surface-set as
+alias substitute MAY restore B0-safety -- own plane + own eligibility probe required first. Instrument note:
+existing probe entity_data parses only date-props+P31, no author-edge/alias path -> a read-only oracle-side
+fetcher was required to measure the bar's true quantity (pack "existing resolver" premise STALE; disk-wins R9).
+NO oracle/probe/verifier/gate edits this plane. Stale-tile (R15): pack 0a anchor reports/GENGAP_Sclass_v297.md
+-> real path lab/dpo/reports/ (fix at v300 pack). NEXT v300: pick next deferred candidate (granularity-guard
+OR BARE-QUANTITY WD numeric) behind its OWN eligibility probe -- chosen at pack build after reading its spec.
