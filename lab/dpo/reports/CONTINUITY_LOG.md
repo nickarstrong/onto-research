@@ -1111,3 +1111,14 @@ Resume next: rung-1 BUILD+RUN. Trigger "LABA, RUNG-1". STEP 0 anchor (DESIGN c9f
   reuse loop_e2e_v0, organ byte-asserted) -> STEP 3 RUN+SCORE (fa_live/pool_contam/yield) -> STEP 4
   VERDICT vs G-RUNG1 (PASS=transfer holds, run the RFT loop ; FAIL=bank the negative). GOLD routed pull
   flagged at BUILD.
+
+## 2026-06-26 (wd) -- v298 HYGIENE / FOUNDER-GATED public-touch CLOSED (HEAD e635f78 -> 457b0be pushed)
+One semantic mutation: .gitignore +5 -- design-note glob class (GENGAP_*/LAYER2_REDESIGN_*) committed +
+o0_layer2_verdicts_v296.jsonl exact-ignored. R15 proof: zero held-out in committed surface ; BOM-clean
+(head 23 20 6F) ; CRLF->LF normalize only. OWED-3 gen_heldout.py CLOSED no-op -- already TRACKED+PUSHED
+(a46c7df) and R15-clean (32-line mechanism, reads fresh_topics.txt, zero inline Q-id/year/claim) ;
+pack-premise "ignored->un-ignore" was STALE, disk-wins flagged (R9). OWED-6 watchf_repro.py CLOSED
+keep-local (ignored .gitignore:102, ruling recorded). NO oracle/probe/verifier edits. CARRY -> v299
+tail: per-file ignore lines 99-108 -> one-glob refactor (drift-class) DEFERRED. OWED-5/8 remain OPEN.
+NEXT plane v299 TYPE-A: B-resolve-cov probe (author-identity gate, subject->discoverer P50/P61/P170
+resolve-coverage on >=4 constructed probes).
