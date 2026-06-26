@@ -106,3 +106,8 @@ lab/dpo/reports/GENGAP_titlebind_v295.md
 # v296: un-quoted-title probe set + live probe verdicts = BAIT-class positives, LOCAL only (R15/3.2).
 lab/dpo/probe_pos_*.jsonl
 lab/dpo/o0_layer2_probe*verdicts*.jsonl
+
+# -- LOCAL design notes (held-out-citing): GENGAP_* / LAYER2_REDESIGN_* class (v293/v295/v297+) --
+lab/dpo/reports/GENGAP_*.md
+lab/dpo/reports/LAYER2_REDESIGN_*.md
+lab/dpo/o0_layer2_verdicts_v296.jsonl
