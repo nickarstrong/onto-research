@@ -63,6 +63,50 @@ _EVENT_REFERENT = re.compile(
 _GRAN_YEARS = 2
 
 
+# --- v296 Option A: un-quoted title reconstruction (sealed GENGAP_titlebind_v295 sec 3) ----------
+# Deterministic, offline, ADDITIVE. The frozen V6 probe regex [A-Z][a-z]+(\s+[A-Z][a-z]+)+ cannot
+# bridge a lowercase connector, so un-quoted titles like "On the Origin of Species" fragment at
+# "the"/"of". This helper emits the full connector-bridged run as an EXTRA candidate (it never
+# removes the probe's fragments). Pure all-capital runs already bind in the probe and are skipped
+# (no double-emit). No network, no randomness -> hermetic.
+TITLE_CONNECTORS = {"of", "the", "a", "an", "and", "for", "to", "in", "on",
+                    "by", "concerning", "with", "between", "upon", "from"}
+_CAP_WORD = re.compile(r"^[A-Z][a-z']+$")
+_TITLE_TOK = re.compile(r"[A-Za-z']+")
+
+
+def reconstruct_titles(sentence):
+    """Emit verbatim connector-bridged capitalized title runs as extra candidate strings.
+    A title-run (sec 3) is a MAXIMAL token sequence that begins AND ends on a capitalized word
+    [A-Z][a-z']+, whose interior tokens are each a capitalized word OR a TITLE_CONNECTORS token,
+    that contains >=1 LOWERCASE connector bridging two capitalized words (pure all-capital runs
+    already bind in the probe -> skipped to avoid dup), with >=2 capitalized words and <=12 tokens."""
+    toks = _TITLE_TOK.findall(sentence or "")
+    is_cap = lambda t: bool(_CAP_WORD.match(t))
+    is_conn = lambda t: t.lower() in TITLE_CONNECTORS
+    out, i, n = [], 0, len(toks)
+    while i < n:
+        if not is_cap(toks[i]):
+            i += 1
+            continue
+        j = i
+        last_cap = i
+        while j + 1 < n and (is_cap(toks[j + 1]) or is_conn(toks[j + 1])):
+            j += 1
+            if is_cap(toks[j]):
+                last_cap = j
+        run = toks[i:last_cap + 1]              # trim trailing connectors: end on a capitalized word
+        i = j + 1                                # maximal, non-overlapping advance
+        if sum(1 for t in run if is_cap(t)) < 2:                 # rule 2: >=2 capitalized words
+            continue
+        if len(run) > 12:                                        # rule 3: runaway-sentence guard
+            continue
+        if not any(is_conn(t) and not is_cap(t) for t in run):   # rule 1: real lowercase connector
+            continue                                             #         (pure all-cap -> skip dup)
+        out.append(" ".join(run))                                # rule 4: verbatim run
+    return out
+
+
 def _is_temporal_opener(label):
     """G1: True iff label is a leading temporal phrase / bare month / date-only token."""
     low = (label or "").strip().lower()
@@ -105,6 +149,15 @@ def _oracle_year_one(year, sent, ctx, topic, T, cache, art_cache):
     # G1: subject candidates, with temporal-opener / date-only dropped.
     subjects = [s for s in T.extract_subjects_in_sentence(sent, year)
                 if not _is_temporal_opener(s)]
+    # v296 Option A (sealed GENGAP_titlebind_v295 sec 3): ADDITIVE un-quoted-title reconstruction.
+    # Merge connector-bridged title runs as EXTRA candidates; existing fragments are retained
+    # (evolution-only / R-noregress). Dedup by lowercase. B0 stays held by the unchanged G2 P577
+    # gate -- a candidate that does not resolve to a real P577 work cannot false-DIRTY.
+    _seen = {s.lower() for s in subjects}
+    for _t in reconstruct_titles(sent):
+        if _t.lower() not in _seen:
+            subjects.append(_t)
+            _seen.add(_t.lower())
     if topic and topic not in subjects and not _is_temporal_opener(topic):
         subjects.append(topic)
     if not subjects:
@@ -296,6 +349,28 @@ def selftest():
         if got != exp:
             ok = False
         print("  %-16s expect=%-8s got=%-8s  %s" % (name, exp, got, flag))
+
+    # v296: reconstruct_titles unit assertions (offline, deterministic). emit == reconstructed runs.
+    print("  -- reconstruct_titles --")
+    title_cases = [
+        ("origin_unquoted",  "On the Origin of Species was published in 1872.",
+                             ["On the Origin of Species"]),
+        ("dialogue_unquoted","Dialogue Concerning the Two Chief World Systems appeared in 1610.",
+                             ["Dialogue Concerning the Two Chief World Systems"]),
+        ("treatise_drops_A", "A Treatise of Human Nature shaped ethics.",
+                             ["Treatise of Human Nature"]),
+        ("principia_allcap", "Philosophiae Naturalis Principia Mathematica was issued in 1750.",
+                             []),                                    # pure all-cap -> probe binds, skip
+        ("no_title_plain",   "The paper was published in 1799.", []),
+        ("single_cap",       "Newton studied motion.", []),
+    ]
+    for name, sent, exp in title_cases:
+        got = reconstruct_titles(sent)
+        flag = "PASS" if got == exp else "FAIL"
+        if got != exp:
+            ok = False
+        print("  %-16s exp=%s got=%s  %s" % (name, exp, got, flag))
+
     print("\n[selftest] %s" % ("ALL PASS" if ok else "FAILURES PRESENT"))
     return 0 if ok else 1
 
