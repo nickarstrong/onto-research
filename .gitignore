@@ -102,3 +102,7 @@ lab/dpo/probe_pos_pub.jsonl
 lab/dpo/o0_watchf_repro.py
 lab/dpo/_diag_probe.py
 lab/dpo/reports/GENGAP_titlebind_v295.md
+
+# v296: un-quoted-title probe set + live probe verdicts = BAIT-class positives, LOCAL only (R15/3.2).
+lab/dpo/probe_pos_*.jsonl
+lab/dpo/o0_layer2_probe*verdicts*.jsonl
