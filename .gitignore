@@ -101,3 +101,4 @@ lab/dpo/o0_layer2_probe_verdicts.jsonl
 lab/dpo/probe_pos_pub.jsonl
 lab/dpo/o0_watchf_repro.py
 lab/dpo/_diag_probe.py
+lab/dpo/reports/GENGAP_titlebind_v295.md
