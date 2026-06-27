@@ -111,3 +111,23 @@ lab/dpo/o0_layer2_probe*verdicts*.jsonl
 lab/dpo/reports/GENGAP_*.md
 lab/dpo/reports/LAYER2_REDESIGN_*.md
 lab/dpo/o0_layer2_verdicts_v296.jsonl
+
+# --- KEEP-LOCAL: measurement-sensitive (v313, rule-enforced) ---
+# NUMPROP coverage/lever notes + eval label tables taint future measurement if public.
+# Was discipline-only -> now rule. Verify: git check-ignore -v <path>
+lab/dpo/reports/NUMPROP_*
+lab/dpo/reports/*_labels.jsonl
+
+# --- KEEP-LOCAL: measurement-sensitive lab/dpo artifacts (v313, rule-enforced) ---
+# numprop ladder (CLOSED, PATH B): caches/verdicts + probe data/scripts + optionB probes.
+# OWED-5 generators + held-out-adjacent data. Verify: git check-ignore -v <path>
+lab/dpo/numprop_*
+lab/dpo/optionB_*
+lab/dpo/o0_numprop_cov_probe_*.py
+lab/dpo/o0_numprop_propfloor_probe_*.py
+lab/dpo/o0_optionB_resoldisambig_probe_*.py
+lab/dpo/o0_resolve_cov_probe_*.py
+lab/dpo/o0_layer2_delta_v*.py
+lab/dpo/probe_*.jsonl
+lab/dpo/eval/optionB_*_report.md
+lab/dpo/eval/propfloor_*_report.md
