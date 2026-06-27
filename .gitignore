@@ -132,3 +132,8 @@ lab/dpo/probe_*.jsonl
 lab/dpo/eval/optionB_*_report.md
 lab/dpo/eval/propfloor_*_report.md
 lab/dpo/tiering_gate_report_v*.jsonl
+
+# v331 INITIATIVE build -- KEEP-LOCAL (harness + fixture generator embed held-out)
+**/o0_initiative_harness_*.py
+**/_gen_fixture.py
+lab/dpo/eval/initiative_measure_*.jsonl
