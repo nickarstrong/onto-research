@@ -131,3 +131,4 @@ lab/dpo/o0_layer2_delta_v*.py
 lab/dpo/probe_*.jsonl
 lab/dpo/eval/optionB_*_report.md
 lab/dpo/eval/propfloor_*_report.md
+lab/dpo/tiering_gate_report_v*.jsonl
