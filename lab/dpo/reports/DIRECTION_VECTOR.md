@@ -5,3 +5,5 @@ v427 · LoRA weight anatomy · PASS · L18-27 o_proj/q_proj concentrated (3-4x >
 v428 · logit lens base vs adapted · PASS · transition L24-L26-L27 = first-token routing in o_proj, not fact storage; SFT adapter anatomy CLOSED; next = causal tracing on base model for ROME target.
 
 v429 · causal tracing base MLP · G3 FAIL · L7-L8 peak (6/10 facts) but L6-L8 = 30.8% < 50% threshold; too distributed for single-site ROME; MEMIT target = L5-L10 MLP; causal tracing axis CLOSED.
+
+v430 · MEMIT smoke Qwen2.5-Coder-7B · G3 PASS · P(London)=0.997, control drop 6.5%; hook-based 4-bit editing viable on correct substrate; MEMIT method axis CLOSED.
