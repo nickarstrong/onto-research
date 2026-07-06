@@ -13,3 +13,4 @@ v431 · MEMIT abiogenesis 7 facts · G3 FAIL 3/7 (0 new-fact generalization) · 
 v431 · MEMIT abiogenesis 7 facts · G3 FAIL 3/7 (0 new-fact generalization) · edit subject-token-bound: held-out passes only when sharing subject token; SFT+MEMIT both surface-form-bound; MEMIT axis CLOSED
 
 v432 · linear-probe concept-level · PASS · 6/7@L7-L26 7/7@L27; substrate encodes abiogenesis concepts abstractly; SFT/MEMIT failure = method not substrate; repr-eng viable
+v433 · concept-direction-steering · FAIL 0/7 · concepts encoded (v432) but not steerable via linear RepE injection; probe-intervention gap confirmed; writing-to-weights axis exhausted (SFT/MEMIT/RepE); pivot to runtime scaffolding
