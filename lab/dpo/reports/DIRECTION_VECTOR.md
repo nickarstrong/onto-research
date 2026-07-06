@@ -7,3 +7,9 @@ v428 · logit lens base vs adapted · PASS · transition L24-L26-L27 = first-tok
 v429 · causal tracing base MLP · G3 FAIL · L7-L8 peak (6/10 facts) but L6-L8 = 30.8% < 50% threshold; too distributed for single-site ROME; MEMIT target = L5-L10 MLP; causal tracing axis CLOSED.
 
 v430 · MEMIT smoke Qwen2.5-Coder-7B · G3 PASS · P(London)=0.997, control drop 6.5%; hook-based 4-bit editing viable on correct substrate; MEMIT method axis CLOSED.
+
+v431 · MEMIT abiogenesis 7 facts · G3 FAIL 3/7 (0 new-fact generalization) · edit subject-token-bound: held-out passes only when sharing subject token; SFT+MEMIT both surface-form-bound; MEMIT axis CLOSED
+
+v431 · MEMIT abiogenesis 7 facts · G3 FAIL 3/7 (0 new-fact generalization) · edit subject-token-bound: held-out passes only when sharing subject token; SFT+MEMIT both surface-form-bound; MEMIT axis CLOSED
+
+v432 · linear-probe concept-level · PASS · 6/7@L7-L26 7/7@L27; substrate encodes abiogenesis concepts abstractly; SFT/MEMIT failure = method not substrate; repr-eng viable

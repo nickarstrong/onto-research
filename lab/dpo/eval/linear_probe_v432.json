@@ -1,0 +1,1907 @@
+{
+  "session": "v432",
+  "axis": "linear_probe_concept_level",
+  "model": "Qwen/Qwen2.5-Coder-7B",
+  "n_layers": 28,
+  "hidden_size": 3584,
+  "n_train": 35,
+  "n_heldout": 7,
+  "n_controls": 7,
+  "pass_threshold": 5,
+  "fail_threshold": 3,
+  "collection_seconds": 19.5,
+  "method": "last-token hidden state, StandardScaler, LogisticRegression(C=1.0, multinomial)",
+  "heldout_prompts": [
+    {
+      "source_idx": 0,
+      "prompt": "What makes probability arguments against the spontaneous origin of life fundamentally flawed?"
+    },
+    {
+      "source_idx": 1,
+      "prompt": "Out of all possible polypeptide sequences, how many show any enzymatic activity?"
+    },
+    {
+      "source_idx": 2,
+      "prompt": "What fraction of genes in the smallest artificial genome have no known function?"
+    },
+    {
+      "source_idx": 3,
+      "prompt": "What theoretical limit constrains the fidelity of prebiotic molecular copying?"
+    },
+    {
+      "source_idx": 4,
+      "prompt": "Is our observable cosmos large enough for random nucleotide assembly to generate a working replicase?"
+    },
+    {
+      "source_idx": 5,
+      "prompt": "What aspect of communication was intentionally left out of the mathematical theory of information?"
+    },
+    {
+      "source_idx": 6,
+      "prompt": "Under what atmospheric conditions did Lenski's bacteria gain the novel ability to metabolize citrate?"
+    }
+  ],
+  "control_prompts": [
+    "What programming language was created by Guido van Rossum in the early 1990s?",
+    "What is the tallest mountain in the world measured from sea level?",
+    "In what year did the Berlin Wall fall?",
+    "What is the chemical formula for table salt?",
+    "Who wrote the play Romeo and Juliet?",
+    "What is the speed of light in a vacuum measured in meters per second?",
+    "What planet is known as the Red Planet?"
+  ],
+  "per_layer": [
+    {
+      "layer": 0,
+      "train_acc": 1.0,
+      "held_correct": 3,
+      "held_acc": 0.4286,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 5,
+          "correct": false,
+          "max_prob": 0.9348,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.8934,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.7724,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 5,
+          "correct": false,
+          "max_prob": 0.3543,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9966,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9935,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 4,
+          "correct": false,
+          "max_prob": 0.5323,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        2,
+        1,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "layer": 1,
+      "train_acc": 1.0,
+      "held_correct": 3,
+      "held_acc": 0.4286,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 5,
+          "correct": false,
+          "max_prob": 0.464,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.8896,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9454,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 2,
+          "correct": false,
+          "max_prob": 0.5181,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9983,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9895,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 4,
+          "correct": false,
+          "max_prob": 0.6822,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "layer": 2,
+      "train_acc": 1.0,
+      "held_correct": 4,
+      "held_acc": 0.5714,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 3,
+          "correct": false,
+          "max_prob": 0.6483,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9508,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.8852,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8476,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9844,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9911,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 3,
+          "correct": false,
+          "max_prob": 0.5784,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "layer": 3,
+      "train_acc": 1.0,
+      "held_correct": 5,
+      "held_acc": 0.7143,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 3,
+          "correct": false,
+          "max_prob": 0.7856,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.981,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9064,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8835,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9962,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.994,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.4628,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        2,
+        1,
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "layer": 4,
+      "train_acc": 1.0,
+      "held_correct": 5,
+      "held_acc": 0.7143,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 3,
+          "correct": false,
+          "max_prob": 0.6118,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.981,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9651,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9347,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9972,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9829,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.7883,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        2,
+        2,
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "layer": 5,
+      "train_acc": 1.0,
+      "held_correct": 4,
+      "held_acc": 0.5714,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 3,
+          "correct": false,
+          "max_prob": 0.5725,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9919,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9549,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8666,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9917,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9799,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 3,
+          "correct": false,
+          "max_prob": 0.4694,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        2
+      ]
+    },
+    {
+      "layer": 6,
+      "train_acc": 1.0,
+      "held_correct": 5,
+      "held_acc": 0.7143,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 3,
+          "correct": false,
+          "max_prob": 0.46,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9974,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9217,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8548,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9849,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9823,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.4891,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        2,
+        6,
+        1,
+        2
+      ]
+    },
+    {
+      "layer": 7,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.8059,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9958,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9799,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9938,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9975,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9808,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.7346,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        2,
+        6,
+        6,
+        2
+      ]
+    },
+    {
+      "layer": 8,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9076,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.994,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9864,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9951,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9945,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9869,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.816,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        2,
+        2,
+        5,
+        2
+      ]
+    },
+    {
+      "layer": 9,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.94,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.993,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9963,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9847,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9892,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9899,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8697,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        2,
+        2,
+        6,
+        2
+      ]
+    },
+    {
+      "layer": 10,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9135,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.941,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9919,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9941,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9932,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9955,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.9301,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        2,
+        6,
+        6,
+        2
+      ]
+    },
+    {
+      "layer": 11,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.7666,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9574,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9842,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9958,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9924,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9953,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.9139,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        6,
+        2,
+        2,
+        6,
+        2
+      ]
+    },
+    {
+      "layer": 12,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.6198,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9673,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.9911,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9908,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9917,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.991,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8862,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        6,
+        2,
+        2,
+        6,
+        2
+      ]
+    },
+    {
+      "layer": 13,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.6307,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9779,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.943,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9818,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9942,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9969,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.9543,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        6,
+        2,
+        2,
+        6,
+        2
+      ]
+    },
+    {
+      "layer": 14,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.6884,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.99,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.859,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9816,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.996,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9966,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.9596,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        6,
+        2,
+        2,
+        6,
+        2
+      ]
+    },
+    {
+      "layer": 15,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.5896,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9941,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.8151,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9732,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9957,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9952,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.9032,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        6,
+        2,
+        2,
+        6,
+        2
+      ]
+    },
+    {
+      "layer": 16,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.571,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9963,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.8337,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9536,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9958,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9937,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8961,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        6,
+        2,
+        2,
+        2,
+        6
+      ]
+    },
+    {
+      "layer": 17,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.5362,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9941,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.7693,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9439,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9954,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9937,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8747,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        6,
+        2,
+        2,
+        6,
+        6
+      ]
+    },
+    {
+      "layer": 18,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.779,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9916,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.5818,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.873,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9973,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9844,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8366,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        2,
+        2,
+        6,
+        2,
+        2,
+        6,
+        6
+      ]
+    },
+    {
+      "layer": 19,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9002,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9964,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.6495,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8699,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9944,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9878,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8569,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    {
+      "layer": 20,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9333,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.995,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.6882,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8645,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9934,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9898,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8366,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        6,
+        6,
+        3,
+        6
+      ]
+    },
+    {
+      "layer": 21,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9544,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9972,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.7828,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8847,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9925,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.985,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8205,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        6,
+        6,
+        3,
+        6
+      ]
+    },
+    {
+      "layer": 22,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9684,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9984,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.4705,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8972,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9899,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9703,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.6731,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        6,
+        2,
+        3,
+        6
+      ]
+    },
+    {
+      "layer": 23,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9787,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9985,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 6,
+          "correct": false,
+          "max_prob": 0.4385,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9101,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9897,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9825,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.5957,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        6,
+        2,
+        6,
+        6
+      ]
+    },
+    {
+      "layer": 24,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9847,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9982,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 1,
+          "correct": false,
+          "max_prob": 0.4429,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9219,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9925,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9905,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.6781,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    {
+      "layer": 25,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9797,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9986,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 6,
+          "correct": false,
+          "max_prob": 0.4389,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.926,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9916,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9892,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.6842,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    {
+      "layer": 26,
+      "train_acc": 1.0,
+      "held_correct": 6,
+      "held_acc": 0.8571,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9828,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9978,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 6,
+          "correct": false,
+          "max_prob": 0.3719,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.9129,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.9388,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9683,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.8783,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        2,
+        6,
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    {
+      "layer": 27,
+      "train_acc": 1.0,
+      "held_correct": 7,
+      "held_acc": 1.0,
+      "held_detail": [
+        {
+          "source_idx": 0,
+          "predicted": 0,
+          "correct": true,
+          "max_prob": 0.9836,
+          "prompt_short": "What makes probability arguments against the spontaneous ori"
+        },
+        {
+          "source_idx": 1,
+          "predicted": 1,
+          "correct": true,
+          "max_prob": 0.9986,
+          "prompt_short": "Out of all possible polypeptide sequences, how many show any"
+        },
+        {
+          "source_idx": 2,
+          "predicted": 2,
+          "correct": true,
+          "max_prob": 0.424,
+          "prompt_short": "What fraction of genes in the smallest artificial genome hav"
+        },
+        {
+          "source_idx": 3,
+          "predicted": 3,
+          "correct": true,
+          "max_prob": 0.8696,
+          "prompt_short": "What theoretical limit constrains the fidelity of prebiotic "
+        },
+        {
+          "source_idx": 4,
+          "predicted": 4,
+          "correct": true,
+          "max_prob": 0.8467,
+          "prompt_short": "Is our observable cosmos large enough for random nucleotide "
+        },
+        {
+          "source_idx": 5,
+          "predicted": 5,
+          "correct": true,
+          "max_prob": 0.9926,
+          "prompt_short": "What aspect of communication was intentionally left out of t"
+        },
+        {
+          "source_idx": 6,
+          "predicted": 6,
+          "correct": true,
+          "max_prob": 0.755,
+          "prompt_short": "Under what atmospheric conditions did Lenski's bacteria gain"
+        }
+      ],
+      "ctrl_preds": [
+        6,
+        6,
+        6,
+        6,
+        5,
+        6,
+        6
+      ]
+    }
+  ],
+  "best_layer": 27,
+  "best_held_correct": 7,
+  "verdict": "PASS",
+  "conclusion": "Concept-level representation EXISTS at L27 (7/7 held-out). Representation engineering viable."
+}
