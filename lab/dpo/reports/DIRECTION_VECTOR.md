@@ -14,3 +14,4 @@ v431 · MEMIT abiogenesis 7 facts · G3 FAIL 3/7 (0 new-fact generalization) · 
 
 v432 · linear-probe concept-level · PASS · 6/7@L7-L26 7/7@L27; substrate encodes abiogenesis concepts abstractly; SFT/MEMIT failure = method not substrate; repr-eng viable
 v433 · concept-direction-steering · FAIL 0/7 · concepts encoded (v432) but not steerable via linear RepE injection; probe-intervention gap confirmed; writing-to-weights axis exhausted (SFT/MEMIT/RepE); pivot to runtime scaffolding
+v434 · concept-triggered-retrieval · PASS · detect 5/7 held-out; organism reads substrate L13 cosine; boost 5/13 (injection crude); F3/F7 persistent weak; pipeline proven: detect->retrieve->augment
