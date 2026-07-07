@@ -1,0 +1,112 @@
+{
+  "session": "v441",
+  "axis": "retrieval-verification-consistency-probe",
+  "track": "ORGANISM",
+  "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "detect_layer": 13,
+  "method": "cosine-to-centroid @L13 detect; per held-out ans_base(no-GOLD) + ans_gold(detected-GOLD); consistency=cosine(L13 hidden(ans_base), L13 hidden(ans_gold)); PURE MEASUREMENT (no gate/abstain)",
+  "held_out": "ORIGINAL CLOZE_HELD F1h..F7h (detect outcomes known)",
+  "separability": {
+    "min_correct_consistency": 0.2944,
+    "max_wrong_consistency": 1.0,
+    "consistency_gap": -0.7056,
+    "clean_separation": false,
+    "n_correct": 5,
+    "n_wrong": 2
+  },
+  "results": [
+    {
+      "id": "F1h",
+      "true_si": 0,
+      "question": "The standard argument against abiogenesis via random protein assembly is widely regarded as what?",
+      "detected_si": 0,
+      "detect_ok": true,
+      "consistency": 0.6438,
+      "jaccard": 0.3226,
+      "base_ok": false,
+      "gold_ok": true,
+      "ans_base": "The standard argument against abiogenesis via random protein assembly is the \"improbability argument.\"",
+      "ans_gold": "The standard argument against abiogenesis via random protein assembly is widely regarded as misleading because it assumes modern protein complexity rather than simpler precursor molecules that could have initiated life."
+    },
+    {
+      "id": "F2h",
+      "true_si": 1,
+      "question": "Among random polypeptides, the chance of any biological activity is about one in ten to the what?",
+      "detected_si": 1,
+      "detect_ok": true,
+      "consistency": 0.2944,
+      "jaccard": 0.0,
+      "base_ok": false,
+      "gold_ok": true,
+      "ans_base": "12",
+      "ans_gold": "one in ten to the eleven"
+    },
+    {
+      "id": "F3h",
+      "true_si": 2,
+      "question": "Many genes in the synthetic minimal cell have purposes that remain what?",
+      "detected_si": 3,
+      "detect_ok": false,
+      "consistency": 1.0,
+      "jaccard": 1.0,
+      "base_ok": true,
+      "gold_ok": true,
+      "ans_base": "unknown",
+      "ans_gold": "unknown"
+    },
+    {
+      "id": "F4h",
+      "true_si": 3,
+      "question": "In Eigen's framework, replication collapses when mutations overwhelm what?",
+      "detected_si": 3,
+      "detect_ok": true,
+      "consistency": 0.9633,
+      "jaccard": 0.5,
+      "base_ok": false,
+      "gold_ok": true,
+      "ans_base": "In Eigen's framework, replication collapses when mutations overwhelm the selective advantage of existing traits.",
+      "ans_gold": "In Eigen's framework, replication collapses when mutations overwhelm natural selection."
+    },
+    {
+      "id": "F5h",
+      "true_si": 4,
+      "question": "Is the observable universe large enough for chance formation of an RNA replicase?",
+      "detected_si": 4,
+      "detect_ok": true,
+      "consistency": 0.8082,
+      "jaccard": 0.303,
+      "base_ok": false,
+      "gold_ok": true,
+      "ans_base": "Yes, the observable universe is sufficiently large to allow for the random formation of an RNA replicase through natural processes.",
+      "ans_gold": "No, according to Totani (2020), the observable universe is not large enough for random nucleotide assembly to produce a functional RNA replicase by chance alone."
+    },
+    {
+      "id": "F6h",
+      "true_si": 5,
+      "question": "In his 1948 paper, Shannon chose to exclude what?",
+      "detected_si": 5,
+      "detect_ok": true,
+      "consistency": 0.7944,
+      "jaccard": 0.3889,
+      "base_ok": false,
+      "gold_ok": true,
+      "ans_base": "Shannon excluded the concept of time in his 1948 paper on information theory.",
+      "ans_gold": "In his 1948 paper, Shannon chose to exclude the concept of meaning."
+    },
+    {
+      "id": "F7h",
+      "true_si": 6,
+      "question": "Lenski's key evolutionary innovation was citrate metabolism under what?",
+      "detected_si": 3,
+      "detect_ok": false,
+      "consistency": 0.9279,
+      "jaccard": 0.4,
+      "base_ok": false,
+      "gold_ok": true,
+      "ans_base": "Lenski's key evolutionary innovation was the acquisition of citrate metabolism in E. coli bacteria under conditions of glucose limitation.",
+      "ans_gold": "Lenski's key evolutionary innovation was citrate metabolism under aerobic conditions."
+    }
+  ],
+  "verdict": "FAIL",
+  "conclusion": "Consistency does NOT separate: min correct-detect consistency 0.2944 <= max wrong-detect consistency 1.0 (gap -0.7056 <= 0). Baseline (no-context) answer is too weak a second signal / boost-conflation dominates. Do NOT build a verify-gate on this signal. Next link: richer second signal -- top2-GOLD disagreement or explicit entailment of the answer by the injected GOLD."
+}
