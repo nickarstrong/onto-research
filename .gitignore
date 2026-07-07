@@ -19,3 +19,20 @@ __pycache__/
 # internal substrate ledger -- not public (lives in onto-laba)
 reports/DIRECTION_VECTOR.md
 
+reports/ANATOMY_substrate_qwen.md
+reports/B*.md
+reports/C*.md
+reports/LENS*.md
+reports/NUMERIC*.md
+reports/READOUT*.md
+reports/SCALE*.md
+reports/VERDICT*.md
+reports/K_onto*.md
+reports/CL2*.md
+reports/STATE_lab*.md
+reports/AUDIT_*.md
+reports/SPEC_*.md
+reports/STRATEGY_verifier*.md
+reports/ORGAN_*.md
+organism/
+eval/organ_c*
