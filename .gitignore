@@ -1,139 +1,17 @@
-# onto-research/.gitignore -- PUBLIC repo. NEVER publish held-out / bait / runtime.
-# (pack v244/v245 sec 3.0 + 3.2: held-out poisons the measurement if eaten by a
-#  future pretrain; bait + weights are local-only. Public git carries ONLY datable
-#  provenance + reproducibility: data + scripts + gate.log + reports.)
-
-# ── held-out: ALL files with 'heldout' in the name, any depth, any extension ──
-# data AND generators. Leak = measurement death. A deterministic generator is as
-# disclosive as the data, so it stays local BY DEFAULT. To publish a specific
-# generator as a reproducibility script, add an explicit negation below, e.g.:
-#   !lab/dpo/make_heldout_prompts_v1.py
-*heldout*
-**/*heldout*
-
-# bait sets + manual bait verdicts (any depth)
-*bait*
-**/*bait*
-
-# held-out / bait / runtime data + log dirs (lab siblings -- the live landmine)
-lab/data/
-lab/logs/
-
-# runtime tier state / curated view (rebuilt each run; NOT provenance -- pack sec 1)
-o0_tier_state.json
-o0_verdicts_curated.jsonl
-**/o0_tier_state.json
-**/o0_verdicts_curated.jsonl
-
-# backups / caches
-*.bak.*
-**/*.bak.*
-__pycache__/
-**/__pycache__/
-
-# -- hardened v253 (OWED-3): self-model / sealed labels / goal stack (runtime identity) --
-self_model.json
-self_model.demo.json
-**/self_model*.json
-sealed_labels*
-**/sealed_labels*
-goal_stack.json
-**/goal_stack.json
-
-# -- weights / adapters / venv / vendored runtimes / GOLD (local only) --
-adapters/
-**/adapters/
-**/adapter_*/
-lab/models/
+﻿# heavy / regenerable -- never in portable repo (mirror: C:\Projects\onto-heavy)
 lab/venv/
-lab/gold/
+lab/models/
 lab/llama-cpp/
-*.bin
-**/*.bin
+lab/dpo/adapters/
+**/adapter_model.safetensors
 *.gguf
-**/*.gguf
+*.safetensors
+*.pt
+*.bin
+**/*_cache*.json
+**/gold_fixture_full.json
+**/gold_fixture_E18.json
+**/eval/_local/retraction_watch.csv
+__pycache__/
+*.bak.*
 
-# -- .md.bak style (existing *.bak.* misses trailing .bak) --
-*.bak
-**/*.bak
-
-# -- GATE_selflearn held-out / answer-keys / derived-state (local only; never public) --
-**/*_pairs_gold.json
-**/*founder_labels.jsonl
-**/*heldout*
-**/*held_out*
-**/o0_verdicts.jsonl
-**/o0_verdicts_curated.jsonl
-**/o0_verdicts_pool*.jsonl
-# -- build clutter (source bundles, not deliverables) --
-lab/dpo/*_out.zip
-# -- v259 (OWED-3): hard-topics set is BAIT-DERIVED (src bait_v2_n32.jsonl); bait-named-free
-#    so *bait* missed it. topic set + meta + recite-control = LOCAL ONLY. leak -> a future
-#    pretrain eats it -> F1 HEADROOM signal poisoned. mechanism (controller.py + smoke) is
-#    public and embeds no bait strings.
-**/hard_topics*
-**/fresh_topics*
-
-# v260: --hard-topics traces embed hard-topic strings -> LOCAL only
-lab/dpo/hl_baseline*.jsonl
-lab/dpo/hl_baseline*.jsonl.frozen*
-lab/dpo/o0_year_offline_table.jsonl
-
-# v277 close-out: local-only substrate, never public
-lab/dpo/eval/o0/o0_verdicts*
-lab/dpo/eval/o0/swap_delta_*
-lab/dpo/eval/o0/SUBSTRATE.md5
-lab/dpo/eval/o0/c2_migration_delta.md
-lab/dpo/*_delta.md
-lab/dpo/eval/o0/*_delta.md
-
-lab/dpo/eval/o0/v282_quarantine_ids*.json
-**/keyfile_*
-**/seeds_structural*
-
-lab/dpo/reports/LAYER2_REDESIGN_v293.md
-
-# -- Layer-2 oracle: LOCAL only (OWED-7, ruling B v294). oracle+esc are PUBLIC; these are not. --
-lab/dpo/o0_layer2_falsifier.py
-lab/dpo/o0_layer2_score.py
-lab/dpo/o0_layer2_verdicts.jsonl
-lab/dpo/o0_layer2_probe_verdicts.jsonl
-lab/dpo/probe_pos_pub.jsonl
-lab/dpo/o0_watchf_repro.py
-lab/dpo/_diag_probe.py
-lab/dpo/reports/GENGAP_titlebind_v295.md
-
-# v296: un-quoted-title probe set + live probe verdicts = BAIT-class positives, LOCAL only (R15/3.2).
-lab/dpo/probe_pos_*.jsonl
-lab/dpo/o0_layer2_probe*verdicts*.jsonl
-
-# -- LOCAL design notes (held-out-citing): GENGAP_* / LAYER2_REDESIGN_* class (v293/v295/v297+) --
-lab/dpo/reports/GENGAP_*.md
-lab/dpo/reports/LAYER2_REDESIGN_*.md
-lab/dpo/o0_layer2_verdicts_v296.jsonl
-
-# --- KEEP-LOCAL: measurement-sensitive (v313, rule-enforced) ---
-# NUMPROP coverage/lever notes + eval label tables taint future measurement if public.
-# Was discipline-only -> now rule. Verify: git check-ignore -v <path>
-lab/dpo/reports/NUMPROP_*
-lab/dpo/reports/*_labels.jsonl
-
-# --- KEEP-LOCAL: measurement-sensitive lab/dpo artifacts (v313, rule-enforced) ---
-# numprop ladder (CLOSED, PATH B): caches/verdicts + probe data/scripts + optionB probes.
-# OWED-5 generators + held-out-adjacent data. Verify: git check-ignore -v <path>
-lab/dpo/numprop_*
-lab/dpo/optionB_*
-lab/dpo/o0_numprop_cov_probe_*.py
-lab/dpo/o0_numprop_propfloor_probe_*.py
-lab/dpo/o0_optionB_resoldisambig_probe_*.py
-lab/dpo/o0_resolve_cov_probe_*.py
-lab/dpo/o0_layer2_delta_v*.py
-lab/dpo/probe_*.jsonl
-lab/dpo/eval/optionB_*_report.md
-lab/dpo/eval/propfloor_*_report.md
-lab/dpo/tiering_gate_report_v*.jsonl
-
-# v331 INITIATIVE build -- KEEP-LOCAL (harness + fixture generator embed held-out)
-**/o0_initiative_harness_*.py
-**/_gen_fixture.py
-lab/dpo/eval/initiative_measure_*.jsonl
