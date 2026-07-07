@@ -15,3 +15,7 @@ lab/dpo/adapters/
 __pycache__/
 *.bak.*
 
+
+# internal substrate ledger -- not public (lives in onto-laba)
+reports/DIRECTION_VECTOR.md
+
