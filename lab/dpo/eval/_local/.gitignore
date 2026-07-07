@@ -1,4 +1,0 @@
-# LOCAL-ONLY. Bait / GOLD fixture / harvest / labels / thresholds.
-# Never git-add, never carry in a pack (3.2 privacy split).
-*
-!.gitignore

@@ -1,5 +1,0 @@
-{"doi": "10.1038/nature00807", "expected_title": "Pluripotency of mesenchymal stem cells derived from adult marrow", "expected_verdict": "T4_L1_MISMATCH", "note": "mis-attributed: resolves to an unrelated paper"}
-{"doi": "10.1073/pnas.0811124106", "expected_title": "A primitive Late Pliocene cheetah, and evolution of the cheetah lineage", "expected_verdict": "T4_L1_MISMATCH", "note": "ORACLE FIX: SPEC said non-resolve; actually resolves to an unrelated paper -> mismatch"}
-{"doi": "10.1073/pnas.0810435106", "expected_title": "A primitive Late Pliocene cheetah, and evolution of the cheetah lineage", "expected_verdict": "T4_RETRACTED", "note": "real cheetah; retracted 2012 (title flag + RWD)"}
-{"doi": "10.1038/nature00870", "expected_title": "Pluripotency of mesenchymal stem cells derived from adult marrow", "expected_verdict": "T4_RETRACTED", "note": "real Verfaillie; retracted 2024 (title flag + RWD)"}
-{"doi": "10.1038/171737a0", "expected_title": "Molecular Structure of Nucleic Acids", "expected_verdict": "L1L2_PASS", "note": "clean control (Watson-Crick 1953) -- exercises accept path; NOT in SPEC Fixture A, added to defeat VOID-by-construction"}
